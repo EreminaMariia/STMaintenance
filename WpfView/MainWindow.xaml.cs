@@ -44,16 +44,6 @@ namespace WpfView
     //                        };
     //                    };
 
-    //Выполнено:
-    //во внеплановых работах не получается выбрать больше одного ответственного -- работает
-    //Паспортные характеристики -- меняются местами единицы измерения -- работает
-    //фильтры в выпадающих списках не привязаны к размеру букв
-    //в планировщике не пропадает вторая дата при обновлении
-    //добавить обводку в отчёты
-    //сделать тейблы для пасспорта
-    //исправлен пункт Станок - Замена
-    //в планировщике закрепить колонку наименований
-
     public partial class MainWindow : Window
     {
         DataService dataService;
@@ -100,144 +90,26 @@ namespace WpfView
         {
             InitializeComponent();
             dataService = new DataService();
-
-            //materials = dataService.GetMaterialInfoViews();
-            //Materials = new ObservableCollection<MaterialInfoView>(materials);
-            //materialTableService = new TableService<MaterialInfoView>
-            //    (new MaterialInfoViewService(), new TableService<MaterialInfoView>.DeleteHandler(ShowMessage));
-            //foreach (var item in Materials)
-            //{
-            //    item.PropertyChanged += materialTableService.Item_PropertyChanged;
-            //}
-            //Materials.CollectionChanged += materialTableService.Entries_CollectionChanged;
-
-            //suppliers = dataService.GetSupViews();
-            //Suppliers = new ObservableCollection<SupplierView>(suppliers);
-            //supplierTableService = new TableService<SupplierView>
-            //    (new SupplierViewService(), new TableService<SupplierView>.DeleteHandler(ShowMessage));
-            //foreach (var item in Suppliers)
-            //{
-            //    item.PropertyChanged += supplierTableService.Item_PropertyChanged;
-            //}
-            //Suppliers.CollectionChanged += supplierTableService.Entries_CollectionChanged;
-
-            //passports = dataService.GetTechViews(false);
-            //Passports = new ObservableCollection<TechView>(passports);
-            //passportTableService = new TableService<TechView>
-            //    (new TechViewService(), new TableService<TechView>.DeleteHandler(ShowMessage));
-            //foreach (var item in Passports)
-            //{
-            //    item.PropertyChanged += passportTableService.Item_PropertyChanged;
-            //}
-            //Passports.CollectionChanged += passportTableService.Entries_CollectionChanged;
-
-            //oldPassports = dataService.GetTechViews(true);
-            //OldPassports = new ObservableCollection<TechView>(oldPassports);
-            //oldPassportTableService = new TableService<TechView>
-            //    (new TechViewService(), new TableService<TechView>.DeleteHandler(ShowMessage));
-            //foreach (var item in OldPassports)
-            //{
-            //    item.PropertyChanged += oldPassportTableService.Item_PropertyChanged;
-            //}
-            //OldPassports.CollectionChanged += oldPassportTableService.Entries_CollectionChanged;
-
-            //operators = dataService.GetOperatorViews();
-            //Operators = new ObservableCollection<OperatorView>(operators);
-            //operatorTableService = new TableService<OperatorView>
-            //    (new OperatorViewService(), new TableService<OperatorView>.DeleteHandler(ShowMessage));
-            //foreach (var item in Operators)
-            //{
-            //    item.PropertyChanged += operatorTableService.Item_PropertyChanged;
-            //}
-            //Operators.CollectionChanged += operatorTableService.Entries_CollectionChanged;
-
-            //equipmentTypes = dataService.GetEquipmentTypeViews();
-            //EquipmentTypes = new ObservableCollection<EquipmentTypeView>(equipmentTypes);
-            //equipmentTypeTableService = new TableService<EquipmentTypeView>
-            //    (new EquipmentTypeViewService(), new TableService<EquipmentTypeView>.DeleteHandler(ShowMessage));
-            //foreach (var item in EquipmentTypes)
-            //{
-            //    item.PropertyChanged += equipmentTypeTableService.Item_PropertyChanged;
-            //}
-            //EquipmentTypes.CollectionChanged += equipmentTypeTableService.Entries_CollectionChanged;
-
-            //maintenanceTypes = dataService.GetMaintenanceTypeViews();
-            //MaintenanceTypes = new ObservableCollection<MaintenanceTypeView>(maintenanceTypes);
-            //maintenanceTypeTableService = new TableService<MaintenanceTypeView>
-            //    (new MaintenanceTypeViewService(), new TableService<MaintenanceTypeView>.DeleteHandler(ShowMessage));
-            //foreach (var item in MaintenanceTypes)
-            //{
-            //    item.PropertyChanged += maintenanceTypeTableService.Item_PropertyChanged;
-            //}
-            //MaintenanceTypes.CollectionChanged += maintenanceTypeTableService.Entries_CollectionChanged;
-
-            //units = dataService.GetUnitViews();
-            //Units = new ObservableCollection<UnitView>(units);
-            //unitTableService = new TableService<UnitView>
-            //    (new UnitViewService(), new TableService<UnitView>.DeleteHandler(ShowMessage));
-            //foreach (var item in Units)
-            //{
-            //    item.PropertyChanged += unitTableService.Item_PropertyChanged;
-            //}
-            //Units.CollectionChanged += unitTableService.Entries_CollectionChanged;
-
-            //departments = dataService.GetDepartmentViews();
-            //Departments = new ObservableCollection<DepartmentView>(departments);
-            //departmentTableService = new TableService<DepartmentView>
-            //    (new DepartmentViewService(), new TableService<DepartmentView>.DeleteHandler(ShowMessage));
-            //foreach (var item in Departments)
-            //{
-            //    item.PropertyChanged += departmentTableService.Item_PropertyChanged;
-            //}
-            //Departments.CollectionChanged += departmentTableService.Entries_CollectionChanged;
-
-            //points = dataService.GetPointViews();
-            //Points = new ObservableCollection<PointView>(points);
-            //pointTableService = new TableService<PointView>
-            //    (new PointViewService(), new TableService<PointView>.DeleteHandler(ShowMessage));
-            //foreach (var item in Points)
-            //{
-            //    item.PropertyChanged += pointTableService.Item_PropertyChanged;
-            //}
-            //Points.CollectionChanged += pointTableService.Entries_CollectionChanged;
-
-
             materialTableService = new TableService<MaterialInfoView>
                 (new MaterialInfoViewService(), new TableService<MaterialInfoView>.DeleteHandler(ShowMessage));
-
             supplierTableService = new TableService<SupplierView>
                 (new SupplierViewService(), new TableService<SupplierView>.DeleteHandler(ShowMessage));
-
-            //passports = new List<TechView>();
-            //Passports = new ObservableCollection<TechView>(passports);
             passportTableService = new TableService<TechView>
                 (new TechViewService(), new TableService<TechView>.DeleteHandler(ShowMessage));
-            //Passports.CollectionChanged += passportTableService.Entries_CollectionChanged;
-
-            //oldPassports = new List<TechView>();
-            //OldPassports = new ObservableCollection<TechView>(oldPassports);
             oldPassportTableService = new TableService<TechView>
                 (new TechViewService(), new TableService<TechView>.DeleteHandler(ShowMessage));
-            //OldPassports.CollectionChanged += oldPassportTableService.Entries_CollectionChanged;
-
             operatorTableService = new TableService<OperatorView>
                 (new OperatorViewService(), new TableService<OperatorView>.DeleteHandler(ShowMessage));
-
             equipmentTypeTableService = new TableService<EquipmentTypeView>
                 (new EquipmentTypeViewService(), new TableService<EquipmentTypeView>.DeleteHandler(ShowMessage));
-
             maintenanceTypeTableService = new TableService<MaintenanceTypeView>
                 (new MaintenanceTypeViewService(), new TableService<MaintenanceTypeView>.DeleteHandler(ShowMessage));
-
             unitTableService = new TableService<UnitView>
                 (new UnitViewService(), new TableService<UnitView>.DeleteHandler(ShowMessage));
-
             departmentTableService = new TableService<DepartmentView>
                 (new DepartmentViewService(), new TableService<DepartmentView>.DeleteHandler(ShowMessage));
-
             pointTableService = new TableService<PointView>
                 (new PointViewService(), new TableService<PointView>.DeleteHandler(ShowMessage));
-
             DataContext = this;
 
             //MakeArchiveTab(DateTime.Today.AddDays(-30), DateTime.Today);
@@ -295,7 +167,6 @@ namespace WpfView
                 var m = episodes.Where(e => e.FutureDate.Date == maintenance.FutureDate.Date && e.MaintenanceId == maintenance.Id).ToList();
                 if (!episodes.Any(e => e.FutureDate.Date == maintenance.FutureDate.Date && e.MaintenanceId == maintenance.Id))
                 {
-                    //dataService.AddUndoneEpisode(maintenance.Id, maintenance.FutureDate, new List<int>(), maintenance.FutureDate);
                     var eps = episodes.Where(e => e.MaintenanceId == maintenance.Id).ToList();
                     DateTime first = DateTime.MinValue;
                     if (eps.Count > 0)
@@ -316,106 +187,6 @@ namespace WpfView
             }
             return firstEpisodes;
         }
-
-        //private void OldMakePlanTab(DateTime start, DateTime end, List<MaintenanceNewView> maintenanceNewViews, List<AdditionalWorkView> additionalViews, List<MaintenanceEpisodeView> episodeViews)
-        //{
-        //    allPanel.Children.Clear();
-        //    int rowHeight = 60;
-        //    int nameWidth = 250;
-        //    int cellWidth = 60;
-
-        //    plannedViews = new List<IPlanedView>();
-        //    plannedViews.AddRange(maintenanceNewViews);
-        //    plannedViews.AddRange(additionalViews);
-        //    plannedViews.AddRange(episodeViews);
-        //    IEnumerable<IGrouping<int, IPlanedView>>? filtred;
-
-        //    filtred = plannedViews.GroupBy(t => t.MachineId);
-        //    StackPanel headerPanel = new StackPanel();
-        //    headerPanel.Orientation = Orientation.Horizontal;
-        //    headerPanel.Height = rowHeight;
-        //    Button headerButton = new Button();
-        //    headerButton.Width = nameWidth;
-        //    headerButton.Content = "Наименование";
-        //    headerPanel.Children.Add(headerButton);
-
-        //    for (DateTime i = start.Date; i <= end.Date; i = i.AddDays(1))
-        //    {
-        //        Button dateButton = new Button();
-        //        dateButton.Width = cellWidth;
-        //        dateButton.Content = new TextBlock() { Text = i.ToShortDateString(), TextWrapping = TextWrapping.Wrap };
-        //        headerPanel.Children.Add(dateButton);
-        //    }
-        //    allPanel.Children.Add(headerPanel);
-
-        //    foreach (var view in filtred)
-        //    {
-        //        StackPanel viewPanel = new StackPanel();
-        //        viewPanel.Orientation = Orientation.Horizontal;
-        //        viewPanel.Height = rowHeight;
-        //        Button nameButton = new Button();
-        //        nameButton.Width = nameWidth;
-        //        //проверка на null
-        //        string machineName = dataService.GetPassportTechViewById(view.Key).Name;
-        //        nameButton.Content = new TextBlock() { Text = machineName, TextWrapping = TextWrapping.Wrap };
-        //        nameButton.Tag = view.Key;
-        //        nameButton.Click += new RoutedEventHandler(ShowPassport);
-        //        viewPanel.Children.Add(nameButton);
-        //        for (DateTime i = start.Date; i <= end.Date; i = i.AddDays(1))
-        //        {
-        //            Button dateButton = new Button();
-        //            dateButton.Width = cellWidth;
-        //            foreach (var item in view)
-        //            {
-        //                if (i.Date == DateTime.Today.Date && item.GetPlannedDatesForToday().Any(d => d.Date <= i.Date))
-        //                {
-        //                    if (dateButton.Content == null)
-        //                    {
-        //                        dateButton.Click += new RoutedEventHandler(DoWork);
-        //                        dateButton.Content = "";
-        //                    }
-        //                    if (!string.IsNullOrEmpty(item.Type))
-        //                    {
-        //                        dateButton.Content += item.Type + "\n";
-        //                    }
-        //                    dateButton.Background = Brushes.Coral;
-        //                }
-        //                else if (item.GetPlannedDates(start, end).Any(d => d.Date == i.Date))
-        //                {
-        //                    if (i.Date.Date < DateTime.Today.Date)
-        //                    {
-        //                        if (dateButton.Content == null)
-        //                        {
-        //                            dateButton.Content = "";
-        //                            dateButton.Background = Brushes.Beige;
-        //                        }
-        //                        if (!string.IsNullOrEmpty(item.Type))
-        //                        {
-        //                            dateButton.Content += item.Type + "\n";
-        //                        }
-        //                    }
-        //                    else
-        //                    {
-        //                        if (dateButton.Content == null)
-        //                        {
-        //                            dateButton.Click += new RoutedEventHandler(DoWork);
-        //                            dateButton.Content = "";
-        //                            dateButton.Background = Brushes.Aquamarine;
-        //                        }
-        //                        if (!string.IsNullOrEmpty(item.Type))
-        //                        {
-        //                            dateButton.Content += item.Type + "\n";
-        //                        }
-        //                    }
-        //                }
-        //                dateButton.Tag = i.Date;
-        //                dateButton.Name = "button_" + item.MachineId + "_";
-        //            }
-        //            viewPanel.Children.Add(dateButton);
-        //        }
-        //        allPanel.Children.Add(viewPanel);
-        //    }
-        //}
 
         private void MakePlanTab(DateTime start, DateTime end, List<AdditionalWorkView> additionalViews, List<MaintenanceEpisodeView> episodeViews)
         {
@@ -683,23 +454,8 @@ namespace WpfView
 
         public void RefreshPassportGrid()
         {
-            //dataService = new DataService();
             passports = dataService.GetTechViews(false);
-            //var parent = machineDataGrid.Parent;
-            //if (parent != null && parent is Grid)
-            //{
-            //    var pg = (Grid)parent;
-            //    Dictionary<string, string> properties = CommonClass.GetProperties(pg);
-            //    CommonClass.FilterGridByOneField(Passports, passports, new TechViewService(), machineDataGrid, properties);
-            //}
             oldPassports = dataService.GetTechViews(true);
-            //var parentOld = oldMachineDataGrid.Parent;
-            //if (parentOld != null && parentOld is Grid)
-            //{
-            //    var pg = (Grid)parentOld;
-            //    Dictionary<string, string> properties = CommonClass.GetProperties(pg);
-            //    CommonClass.FilterGridByOneField(OldPassports, oldPassports, new TechViewService(), oldMachineDataGrid, properties);
-            //}
             CommonClass.RefreshGrid(passports, Passports, machineDataGrid, passportTableService);
             CommonClass.RefreshGrid(oldPassports, OldPassports, oldMachineDataGrid, oldPassportTableService);
 
@@ -707,89 +463,15 @@ namespace WpfView
             MakePlanTab(DateTime.Today, DateTime.Today.AddDays(30));
         }
 
-        //private void RefreshPointsGrid()
-        //{
-        //    RefreshGrid(points, Points, pointsDataGrid, pointTableService);
-        //}
-
-        //private void RefreshUnitsGrid()
-        //{
-        //    RefreshGrid(units, Units, unitsDataGrid, unitTableService);
-        //}
-
-        //private void RefreshSuppliersGrid()
-        //{
-        //    RefreshGrid(suppliers, Suppliers, suppliersDataGrid, supplierTableService);
-        //}
-
-        //private void RefreshOperatorsGrid()
-        //{
-        //    RefreshGrid(operators, Operators, operatorsDataGrid, operatorTableService);
-        //}
-
-        //private void RefreshMaintenanceTypeGrid()
-        //{
-        //    RefreshGrid(maintenanceTypes, MaintenanceTypes, maintenanceTypesDataGrid, maintenanceTypeTableService);
-        //}
-
-        //private void RefreshEquipmentTypeGrid()
-        //{
-        //    RefreshGrid(equipmentTypes, EquipmentTypes, typesDataGrid, equipmentTypeTableService);
-        //}
-
         private void RefreshMaterialsGrid()
         {
-            //dataService = new DataService();
-            //materials = dataService.GetMaterialInfoViews();
-            //var parent = materialsDataGrid.Parent;
-            //if (parent != null && parent is Grid)
-            //{
-            //    var pg = (Grid)parent;
-            //    Dictionary<string, string> properties = CommonClass.GetProperties(pg);
-            //    CommonClass.FilterGridByOneField(Materials, materials, new MaterialInfoViewService(), materialsDataGrid, properties);
-            //}
-            //RefreshGrid(materials, Materials, materialsDataGrid, new MaterialInfoViewService());
             CommonClass.RefreshGrid(materials, Materials, materialsDataGrid, materialTableService);
         }
 
         private void RefreshDepartmentGrid()
         {
-            //dataService = new DataService();
-            //departments = dataService.GetDepartmentViews();
-            //var parent = departmentsDataGrid.Parent;
-            //if (parent != null && parent is Grid)
-            //{
-            //    var pg = (Grid)parent;
-            //    Dictionary<string, string> properties = CommonClass.GetProperties(pg);
-            //    CommonClass.FilterGridByOneField(Departments, departments, new DepartmentViewService(), departmentsDataGrid, properties);
-            //}
-            //RefreshGrid(dataService.GetDepartmentViews(), Departments, departmentsDataGrid, new DepartmentViewService());
             CommonClass.RefreshGrid(departments, Departments, departmentsDataGrid, departmentTableService);
         }
-
-        //private void RefreshGrid<T>(List<T> items, ObservableCollection<T> collection, DataGrid grid, ITableViewService<T> service) where T : class, ITableView
-        //{
-        //    dataService = new DataService();
-        //    var parent = grid.Parent;
-        //    if (parent != null && parent is Grid)
-        //    {
-        //        var pg = (Grid)parent;
-        //        Dictionary<string, string> properties = CommonClass.GetProperties(pg);
-        //        CommonClass.FilterGridByOneField(collection, items, service, grid, properties);
-        //    }
-        //}
-
-        //private void RefreshGrid<T>(List<T> items, ObservableCollection<T> collection, DataGrid grid, TableService<T> service) where T : class, ITableView
-        //{
-        //    dataService = new DataService();
-        //    var parent = grid.Parent;
-        //    if (parent != null && parent is Grid)
-        //    {
-        //        var pg = (Grid)parent;
-        //        Dictionary<string, string> properties = CommonClass.GetProperties(pg);
-        //        CommonClass.FilterGridByOneField(collection, items, service, grid, properties);
-        //    }
-        //}
 
         private void startPlanPicker_SelectedDateChanged(object sender, SelectionChangedEventArgs e)
         {
@@ -1186,74 +868,11 @@ namespace WpfView
             if (sender == getScrollViewer)
             {
                 setScrollViewer.ScrollToVerticalOffset(e.VerticalOffset);
-                //setScrollViewer.ScrollToHorizontalOffset(e.HorizontalOffset);
             }
             else
             {
                 getScrollViewer.ScrollToVerticalOffset(e.VerticalOffset);
-                //getScrollViewer.ScrollToHorizontalOffset(e.HorizontalOffset);
             }
         }
-
-        //private void PreviewKeyDown(object sender, KeyEventArgs e)
-        //{
-        //    if (e.Key == Key.Delete)
-        //    {
-        //        var dg = (DataGrid)sender;
-        //        if (dg != null)
-        //        {
-        //            var item = (TechView)dg.Items.CurrentItem;
-        //            item.OnDeleting();
-        //            if (!canDelete)
-        //            {
-        //                Dictionary<string, string> properties = new Dictionary<string, string>();
-        //                var parent = dg.Parent;
-        //                if (parent != null && parent is Grid)
-        //                {
-        //                    var pg = (Grid)parent;
-        //                    properties = CommonClass.GetProperties(pg);
-        //                }
-        //                switch (dg.Name)
-        //                {
-        //                    case "machineDataGrid":
-        //                        //passports = dataService.GetTechViews(false);
-        //                        CommonClass.FilterGridByOneField(Passports, passports, passportTableService, machineDataGrid, properties);
-        //                        break;
-        //                    case "oldMachineDataGrid":
-        //                        //oldPassports = dataService.GetTechViews(true);
-        //                        CommonClass.FilterGridByOneField(OldPassports, oldPassports, oldPassportTableService, oldMachineDataGrid, properties);
-        //                        break;
-        //                    case "operatorsDataGrid":
-        //                        CommonClass.FilterGridByOneField(Operators, operators, operatorTableService, operatorsDataGrid, properties);
-        //                        break;
-        //                    case "unitsDataGrid":
-        //                        CommonClass.FilterGridByOneField(Units, units, unitTableService, unitsDataGrid, properties);
-        //                        break;
-        //                    case "materialsDataGrid":
-        //                        CommonClass.FilterGridByOneField(Materials, materials, materialTableService, materialsDataGrid, properties);
-        //                        break;
-        //                    case "suppliersDataGrid":
-        //                        CommonClass.FilterGridByOneField(Suppliers, suppliers, supplierTableService, suppliersDataGrid, properties);
-        //                        break;
-        //                    case "typesDataGrid":
-        //                        CommonClass.FilterGridByOneField(EquipmentTypes, equipmentTypes, equipmentTypeTableService, typesDataGrid, properties);
-        //                        break;
-        //                    case "maintenanceTypesDataGrid":
-        //                        CommonClass.FilterGridByOneField(MaintenanceTypes, maintenanceTypes, maintenanceTypeTableService, maintenanceTypesDataGrid, properties);
-        //                        break;
-        //                    case "departmentsDataGrid":
-        //                        CommonClass.FilterGridByOneField(Departments, departments, departmentTableService, departmentsDataGrid, properties);
-        //                        break;
-        //                    case "pointsDataGrid":
-        //                        CommonClass.FilterGridByOneField(Points, points, pointTableService, pointsDataGrid, properties);
-        //                        break;
-        //                }
-        //                //passports = dataService.GetTechViews(false);
-        //                //CommonClass.RefreshGrid(passports, Passports, machineDataGrid, passportTableService);
-        //                canDelete = true;
-        //            }
-        //        }
-        //    }
-        //}
     }
 }

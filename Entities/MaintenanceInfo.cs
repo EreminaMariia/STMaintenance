@@ -19,7 +19,6 @@ namespace Entities
         public ICollection<Material>? Materials { get; set; }
         public double? Hours { get; set; }
         public ICollection<MaintenanceEpisode>? Episodes { get; set; }
-        //public DateTime? PlannedDate { get; set; }
         public bool? IsInWork { get; set; }
     }
 }

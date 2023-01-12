@@ -951,66 +951,15 @@ namespace Entities
             return maintenance;
         }
 
-        //public List<Material> GetMaterialsForMaintenance(int id)
-        //{
-        //    return context.Materials.Where(x => x.MaintenanceInfo.Id == id).ToList();
-        //}
-
-        //public void AddFile(string name, string path, int maintenanceId)
-        //{
-        //    MaintenanceInfo maintenanceInfo = context.MaintenanceInfos.FirstOrDefault(x => x.Id == maintenanceId);
-        //    Instruction instruction = new Instruction();
-        //    instruction.Path = path;
-        //    instruction.Name = name;
-        //    context.Instructions.Add(instruction);
-        //    context.SaveChanges();
-        //}
-
-        //public Repairing GetRepairingById(int id)
-        //{
-        //    return context.Repairings.Include(w => w.Operators).Where(x => x.Id == id).FirstOrDefault();
-        //}
-
-        //public void AddRepairing(int errorId, List<int> workerIds, double hours, string comment)
-        //{
-        //    Repairing rep = new Repairing();
-        //    List<Operator> workers = GetOperators(workerIds);
-        //    MaintenanceError err = context.MaintenanceErrors.Where(x => x.Id == errorId).FirstOrDefault();
-        //    rep.Operators = workers;
-        //    rep.Hours = hours;
-        //    rep.Comment = comment;
-        //    rep.Error = err;
-        //    context.Repairings.Add(rep);
-        //    context.SaveChanges();
-        //}
-
         public List<Operator> GetOperators(List<int> ids)
         {
             return context.Operators.Include(o => o.MaintananceEpisodes).Include(s => s.Repairings).Where(x => ids.Contains(x.Id)).ToList();
         }
 
-        //public void EditRepairing(int id, List<int> workerIds, double hours, string comment)
-        //{
-        //    Repairing rep = context.Repairings.Where(x => x.Id == id).FirstOrDefault();
-        //    List<Operator> workers = GetOperators(workerIds);
-        //    rep.Operators = workers;
-        //    rep.Hours = hours;
-        //    rep.Comment = comment;
-        //    context.SaveChanges();
-        //}
-
         public List<Material> GetMaterials()
         {
             return context.Materials.Include(s => s.MaterialInfo).ToList();
         }
-
-        //public void AddErrorCode(string code)
-        //{
-        //    ErrorCode errorCode = new ErrorCode();
-        //    errorCode.Code = code;
-        //    context.ErrorCodes.Add(errorCode);
-        //    context.SaveChanges();
-        //}
 
         public int AddMaterialInfo(string name, string inner, string original, List<int> arts, string comment, int supId, int? unitId)
         {
@@ -1299,39 +1248,6 @@ namespace Entities
             }
             context.SaveChanges();
         }
-        //public void EditMaterialInfo(int id, string name, string inner, string original, List<int> arts, string comment, int supId, int unitId)
-        //{
-        //    MaterialInfo materialInfo = context.MaterialInfos.FirstOrDefault(x => x.Id == id);
-        //    materialInfo.Name = name;
-        //    materialInfo.InnerArt = inner;
-        //    materialInfo.Commentary = comment;
-        //    materialInfo.ArtInfos = context.ArtInfos.Where(x => arts.Contains(x.Id)).ToList();
-        //    materialInfo.Unit = context.Units.FirstOrDefault(u => u.Id == unitId);
-
-        //    if (context.ArtInfos.Any(x => arts.Contains(x.Id) && x.IsOriginal == true))
-        //    {
-        //        ArtInfo artInfo = context.ArtInfos.FirstOrDefault(x => arts.Contains(x.Id) && x.IsOriginal == true);
-        //        artInfo.Art = original;
-        //        EquipmentSupplier supplier = context.EquipmentSuppliers.FirstOrDefault(x => x.Id == supId);
-        //        artInfo.Supplier = supplier;
-        //    }
-        //    else
-        //    {
-        //        ArtInfo artInfo = new ArtInfo();
-        //        artInfo.Art = original;
-        //        EquipmentSupplier supplier = context.EquipmentSuppliers.FirstOrDefault(x => x.Id == supId);
-        //        artInfo.Supplier = supplier;
-        //        artInfo.Material = materialInfo;
-        //        artInfo.IsOriginal = true;
-        //        context.ArtInfos.Add(artInfo);
-        //    }
-
-        //    context.SaveChanges();
-        //}
-        //public List<ArtInfo> GetArtInfoByMaterialId(int id)
-        //{
-        //    return context.ArtInfos.Where(x => x.Material.Id == id).ToList();
-        //}
 
         public List<ArtInfo> GetArtInfos()
         {

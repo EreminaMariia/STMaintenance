@@ -90,70 +90,7 @@ namespace WpfView
         public AddMaintenanceEpisodeWindow()
         {
             InitializeComponent();
-        }
-
-        //private void Button_Click(object sender, RoutedEventArgs e)
-        //{
-        //    DateTime date = dateDatePicker.SelectedDate != null ? (DateTime)dateDatePicker.SelectedDate: DateTime.Now;
-
-        //    if (!string.IsNullOrEmpty(hoursTextBox.Text))
-        //    {
-        //        double.TryParse(hoursTextBox.Text.Replace('.', ','), out double hours);
-
-        //        var operators = workerListBox.SelectedItems;
-        //        List<int> operatorsIds = new List<int>();
-        //        foreach (var o in operators)
-        //        {
-        //            operatorsIds.Add(((OperatorView)o).Id);
-        //        }
-        //        if (IsMaintenance)
-        //        {
-        //            if (IsInPassport)
-        //            {
-        //                if (IsEpisode)
-        //                {
-
-        //                }
-        //                else
-        //                {
-        //                    passportMaker.AddMaintananceEpisode(id, date, hours, operatorsIds);
-        //                }
-        //                //passportMaker.ErasePlannedDate(id);
-        //            }
-        //            else
-        //            {
-        //                if (IsEpisode)
-        //                {
-
-        //                }
-        //                else
-        //                {
-        //                    dataService.AddMaintananceEpisode(id, date, hours, operatorsIds);
-        //                    dataService.ErasePlannedDate(id);
-        //                }
-        //            }
-        //        }
-        //        else
-        //        {
-        //            if (IsInPassport)
-        //            {
-        //                passportMaker.ChangeFutureDate(id, date, hours, operatorsIds);
-        //            }
-        //            else
-        //            {
-        //                dataService.ChangeFactDate(id, date, hours, operatorsIds);
-        //            }
-        //        }
-
-        //        DialogResult = true;
-        //        //MessageBox.Show("Информация о проведённых работах добавлена");
-        //        this.Close();
-        //    }
-        //    else
-        //    {
-        //        hoursTextBox.Background = Brushes.Coral;
-        //    }
-        //}
+        }        
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
@@ -171,11 +108,6 @@ namespace WpfView
                 }
                 if (IsInPassport)
                 {
-                    //if (Planed is MaintenanceNewView)
-                    //{
-                    //    passportMaker.AddMaintananceEpisode(id, date, hours, operatorsIds);
-                    //    passportMaker.ErasePlannedDate(id);
-                    //}
                     if (Planed is AdditionalWorkView)
                     {
                         passportMaker.ChangeAdditionalFutureDate(id, date, hours, operatorsIds);
@@ -187,12 +119,6 @@ namespace WpfView
                 }
                 else
                 {
-                    //if (Planed is MaintenanceNewView)
-                    //{
-                    //    dataService.AddMaintananceEpisode(id, date, hours, operatorsIds);
-                    //    //dataService.ErasePlannedDate(id);
-                    //    dataService.SaveEmptyEpisodes(((MaintenanceNewView)Planed).Id, date);
-                    //}
                     if (Planed is AdditionalWorkView)
                     {
                         dataService.ChangeFactDate(id, date, hours, operatorsIds);
@@ -238,10 +164,6 @@ namespace WpfView
 
             if (IsInPassport)
             {
-                //if (Planed is MaintenanceNewView)
-                //{
-                //    passportMaker.AddUndoneEpisode( id, date, operatorsIds, oldDate);
-                //}
                 if (Planed is AdditionalWorkView)
                 {
                     passportMaker.ChangeAdditionalInfo(id, date, operatorsIds);
@@ -253,11 +175,6 @@ namespace WpfView
             }
             else
             {
-                //if (Planed is MaintenanceNewView)
-                //{
-                //    dataService.AddUndoneEpisode(id, date, operatorsIds, oldDate);
-                //    dataService.SaveEmptyEpisodes(((MaintenanceNewView)Planed).Id, date);
-                //}
                 if (Planed is AdditionalWorkView)
                 {
                     dataService.ChangeAdditionalInfo(id, date, operatorsIds);
