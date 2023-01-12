@@ -281,8 +281,18 @@ namespace WpfView
             var episodes = dataService.GetMaintenanceEpisodeViews().Where(
                     m => passports.FirstOrDefault(p => p.Id == m.MachineId) != null &&
                     maintenances.FirstOrDefault(a => a.Id == m.MaintenanceId) != null).ToList();
+            
+            List<MaintenanceEpisodeView> firstEpisodes = new List<MaintenanceEpisodeView>();
+            foreach (var maintenance in maintenances)
+            {
+                if (!episodes.Any(e => e.FutureDate.Date == maintenance.FutureDate.Date))
+                {
+                    dataService.AddUndoneEpisode(maintenance.Id, maintenance.FutureDate, new List<int>(), maintenance.FutureDate);
+                }
+            }
+            episodes.AddRange(firstEpisodes);
 
-            MakePlanTab(start, end, maintenances, adds, episodes);
+            MakePlanTab(start, end, adds, episodes);
         }
 
         //private void OldMakePlanTab(DateTime start, DateTime end, List<MaintenanceNewView> maintenanceNewViews, List<AdditionalWorkView> additionalViews, List<MaintenanceEpisodeView> episodeViews)
@@ -385,7 +395,7 @@ namespace WpfView
         //    }
         //}
 
-        private void MakePlanTab(DateTime start, DateTime end, List<MaintenanceNewView> maintenanceNewViews, List<AdditionalWorkView> additionalViews, List<MaintenanceEpisodeView> episodeViews)
+        private void MakePlanTab(DateTime start, DateTime end, List<AdditionalWorkView> additionalViews, List<MaintenanceEpisodeView> episodeViews)
         {
             allPanel.Children.Clear();
             fixedPanel.Children.Clear();
@@ -394,7 +404,6 @@ namespace WpfView
             int cellWidth = 60;
 
             plannedViews = new List<IPlanedView>();
-            plannedViews.AddRange(maintenanceNewViews);
             plannedViews.AddRange(additionalViews);
             plannedViews.AddRange(episodeViews);
             IEnumerable<IGrouping<int, IPlanedView>>? filtred;
@@ -885,14 +894,22 @@ namespace WpfView
             var episodes = dataService.GetMaintenanceEpisodeViews().Where(
                     m => passports.FirstOrDefault(p => p.Id == m.MachineId) != null &&
                     maintenances.FirstOrDefault(a => a.Id == m.MaintenanceId) != null).ToList();
+            List<MaintenanceEpisodeView> firstEpisodes = new List<MaintenanceEpisodeView>();
+            foreach (var maintenance in maintenances)
+            {
+                if (!episodes.Any(e => e.FutureDate.Date == maintenance.FutureDate.Date))
+                {
+                    dataService.AddUndoneEpisode(maintenance.Id, maintenance.FutureDate, new List<int>(), maintenance.FutureDate);
+                }
+            }
 
             if (string.IsNullOrEmpty(s))
             {
-                MakePlanTab(start, end, maintenances, adds, episodes);
+                MakePlanTab(start, end, adds, episodes);
             }
             else
             {
-                MakePlanTab(start, end, maintenances.Where(x => x.Machine.ToLower().Contains(s.ToLower())).ToList(),
+                MakePlanTab(start, end,
                     adds.Where(x => x.Machine.ToLower().Contains(s.ToLower())).ToList(),
                     episodes.Where(x => x.Machine.ToLower().Contains(s.ToLower())).ToList());
             }
