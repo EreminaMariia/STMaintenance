@@ -1,0 +1,24 @@
+﻿<Window x:Class="WpfView.AddMaintenanceEpisodeWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:WpfView"
+        mc:Ignorable="d"
+        Title="Обслуживание" Height="380" Width="732" FontSize="16" ResizeMode="NoResize">
+    <Grid>
+        <Label Content="Обслуживание" HorizontalAlignment="Left" Margin="21,48,0,0" VerticalAlignment="Top"/>
+        <Label x:Name="workerLabel" Content="Выполнил" HorizontalAlignment="Left" Margin="21,93,0,0" VerticalAlignment="Top"/>
+        <Label Content="Дата" HorizontalAlignment="Left" Margin="21,219,0,0" VerticalAlignment="Top"/>
+        <Label x:Name="hoursLabel" Content="Трудоёмкость (часы)" HorizontalAlignment="Left" Margin="21,256,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.465,1.421"/>
+        <DatePicker x:Name="dateDatePicker" HorizontalAlignment="Left" Margin="199,220,0,0" VerticalAlignment="Top"/>
+        <TextBox x:Name="hoursTextBox" HorizontalAlignment="Left" Margin="199,261,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120"/>
+        <ListBox x:Name="workerListBox" SelectedValue="{Binding Id}" SelectedValuePath="Id" DisplayMemberPath="Name" SelectionMode="Multiple" Margin="199,93,0,0" VerticalAlignment="Top" Height="102" HorizontalAlignment="Left" Width="354"/>
+        <TextBox x:Name="maintenanceTextBox" Margin="199,52,36,0" TextWrapping="Wrap" VerticalAlignment="Top"/>
+        <Button x:Name="doButton" Content="Выполнить" HorizontalAlignment="Center" Margin="0,277,0,0" VerticalAlignment="Bottom" Click="Button_Click" Height="30"/>
+        <RadioButton x:Name="changeRadioButton" Content="Запланировать" HorizontalAlignment="Left" Margin="394,22,0,0" VerticalAlignment="Top" Checked="changeRadioButton_Checked"/>
+        <RadioButton x:Name="doRadioButton" Content="Выполнить" HorizontalAlignment="Left" Margin="259,22,0,0" VerticalAlignment="Top" Checked="doRadioButton_Checked"/>
+        <Button x:Name="changeButton" Content="Планирование" HorizontalAlignment="Center" Margin="0,277,0,0" VerticalAlignment="Bottom" Height="30" Click="changeButton_Click"/>
+
+    </Grid>
+</Window>

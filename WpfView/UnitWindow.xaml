@@ -1,0 +1,30 @@
+﻿<Window x:Class="WpfView.UnitWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:WpfView"
+        mc:Ignorable="d" Height="160" Width="320" ResizeMode="NoResize">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="17*"/>
+            <ColumnDefinition Width="10*"/>
+        </Grid.ColumnDefinitions>
+        <!--IsTextSearchEnabled="True" StaysOpenOnEdit="True" -->
+        <ComboBox x:Name="unitComboBox" 
+                  IsEditable="True" IsTextSearchEnabled="false"
+                  TextSearch.TextPath="Name" 
+                  HorizontalAlignment="Left" Margin="45,27,0,0" VerticalAlignment="Top" 
+                  Width="230" Height="32" Grid.ColumnSpan="2">
+            <ComboBox.ItemTemplate>
+                <DataTemplate>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="{Binding Name}" />
+                    </StackPanel>
+                </DataTemplate>
+            </ComboBox.ItemTemplate>
+        </ComboBox>
+        <Button x:Name="saveButton" Content="Подтвердить" HorizontalAlignment="Left" Margin="117,85,0,0" VerticalAlignment="Top" Height="29" Width="88" Click="saveButton_Click" Grid.ColumnSpan="2"/>
+
+    </Grid>
+</Window>

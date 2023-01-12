@@ -1,0 +1,37 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.1.32319.34
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Entities", "Entities\Entities.csproj", "{3E510D66-B902-4103-888E-ACA15BF1B496}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LogicLibrary", "LogicLibrary\LogicLibrary.csproj", "{3692F550-6105-4EBC-A2EE-310725470261}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WpfView", "WpfView\WpfView.csproj", "{841C5D53-EB8C-4966-AEEB-47B50372A125}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{3E510D66-B902-4103-888E-ACA15BF1B496}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3E510D66-B902-4103-888E-ACA15BF1B496}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3E510D66-B902-4103-888E-ACA15BF1B496}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3E510D66-B902-4103-888E-ACA15BF1B496}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3692F550-6105-4EBC-A2EE-310725470261}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3692F550-6105-4EBC-A2EE-310725470261}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3692F550-6105-4EBC-A2EE-310725470261}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3692F550-6105-4EBC-A2EE-310725470261}.Release|Any CPU.Build.0 = Release|Any CPU
+		{841C5D53-EB8C-4966-AEEB-47B50372A125}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{841C5D53-EB8C-4966-AEEB-47B50372A125}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{841C5D53-EB8C-4966-AEEB-47B50372A125}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{841C5D53-EB8C-4966-AEEB-47B50372A125}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {14B2F384-8095-46AC-AC25-CF188333F6D6}
+	EndGlobalSection
+EndGlobal

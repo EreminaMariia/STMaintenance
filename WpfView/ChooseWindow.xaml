@@ -1,0 +1,14 @@
+﻿<Window x:Class="WpfView.ChooseWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:WpfView"
+        mc:Ignorable="d" Height="160" Width="320" ResizeMode="NoResize">
+    <Grid>
+
+        <Button x:Name="saveButton" Content="Подтвердить" HorizontalAlignment="Left" Margin="117,85,0,0" VerticalAlignment="Top" Height="29" Width="88" Click="saveButton_Click" Grid.ColumnSpan="2"/>
+        <RadioButton x:Name="trueButton" Content="Да" HorizontalAlignment="Left" Margin="117,28,0,0" VerticalAlignment="Top"/>
+        <RadioButton x:Name="falseButton" Content="Нет" HorizontalAlignment="Left" Margin="117,52,0,0" VerticalAlignment="Top"/>
+    </Grid>
+</Window>

@@ -1,0 +1,189 @@
+﻿<Window x:Class="WpfView.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:WpfView"
+        mc:Ignorable="d"
+        Title="Программа ТО" Height="575" Width="1049" FontSize="16">
+    <Grid>
+        <TabControl x:Name="tabControl" Margin="1,0,-1,0" SelectionChanged="tabControl_SelectionChanged" >
+            <TabItem Name="PassportsItem" Header="Оборудование">
+                <Grid >
+                    <Button x:Name="printFiltredInfoButton" Content="Печать" HorizontalAlignment="Right" Margin="0,0,2,0" VerticalAlignment="Top" Click="printFiltredInfoButton_Click" Width="109"/>
+                    <Button x:Name="printFiltredErrorsButton" Content="Состояние оборудования" HorizontalAlignment="Right" Margin="0,0,115,0" VerticalAlignment="Top" Click="printFiltredErrorsButton_Click" Width="200"/>
+                    <Grid Background="#FFE5E5E5" Margin="0,27,0,0" >
+                        <DataGrid x:Name="machineDataGrid" 
+                              AutoGeneratingColumn="HideIdColumn" 
+                              MouseDoubleClick="machineDataGrid_MouseDoubleClick" 
+                              CanUserAddRows="True" ItemsSource="{Binding Passports}" 
+                              Margin="0,27,0,0" 
+                              SizeChanged="SizeChanged" Loaded="Loaded">
+                        </DataGrid>
+                        <!--<Label Content="Поиск" HorizontalAlignment="Left" Margin="2,-4,0,0" VerticalAlignment="Top"/>
+                    <TextBox HorizontalAlignment="Left" Margin="62,0,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="381" Height="27" TextChanged="Passports_TextBox_TextChanged"/>-->
+                    </Grid>
+                </Grid>
+            </TabItem>
+            <TabItem Name="HandBookItem" Header="Справочники">
+                <Grid Background="#FFE5E5E5">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="47*"/>
+                        <ColumnDefinition Width="747*"/>
+                    </Grid.ColumnDefinitions>
+                    <TabControl x:Name="innerTabControl" Grid.ColumnSpan="2" SelectionChanged="innerTabControl_SelectionChanged">
+                        <TabItem Name ="OperatorsItem" Header="Сотрудники">
+                            <Grid Background="#FFE5E5E5">
+                                <DataGrid x:Name="operatorsDataGrid" 
+                                          AutoGeneratingColumn="HideIdColumn" 
+                                          CanUserAddRows="True" 
+                                          ItemsSource="{Binding Operators}" 
+                                          Margin="0,27,0,0"
+                                          SizeChanged="SizeChanged" Loaded="Loaded"/>
+                                <!--<Label Content="Поиск" HorizontalAlignment="Left" Margin="2,-4,0,0" VerticalAlignment="Top"/>
+                                <TextBox HorizontalAlignment="Left" Margin="62,0,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="381" Height="27" TextChanged="Operators_TextBox_TextChanged"/>-->
+                            </Grid>
+                        </TabItem>
+                        <TabItem Name ="UnitsItem" Header="Единицы измерения">
+                            <Grid Background="#FFE5E5E5">
+                                <DataGrid x:Name="unitsDataGrid" AutoGeneratingColumn="HideIdColumn" 
+                                          CanUserAddRows="True" 
+                                          ItemsSource="{Binding Units}" Margin="0,27,0,0"
+                                          SizeChanged="SizeChanged" Loaded="Loaded"/>
+                                <!--<Label Content="Поиск" HorizontalAlignment="Left" Margin="2,-4,0,0" VerticalAlignment="Top"/>
+                                <TextBox HorizontalAlignment="Left" Margin="62,0,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="381" Height="27" TextChanged="Units_TextBox_TextChanged"/>-->
+                            </Grid>
+                        </TabItem>
+                        <TabItem Name ="MaterialsItem" Header="ТМЦ">
+                            <Grid Background="#FFE5E5E5">
+                                <DataGrid x:Name="materialsDataGrid" AutoGeneratingColumn="HideIdColumn" 
+                                          CanUserAddRows="True" ItemsSource="{Binding Materials}" 
+                                          CellEditEnding="сellEditEnding" 
+                                          MouseDoubleClick="materialsDataGrid_MouseDoubleClick" Margin="0,27,0,0"
+                                          SizeChanged="SizeChanged" Loaded="Loaded"/>
+                                <!--<Label Content="Поиск" HorizontalAlignment="Left" Margin="2,-4,0,0" VerticalAlignment="Top"/>
+                                <TextBox HorizontalAlignment="Left" Margin="62,0,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="381" Height="27" TextChanged="Materials_TextBox_TextChanged"/>-->
+                            </Grid>
+                        </TabItem>
+                        <TabItem Name ="SuppliersItem" Header="Поставщики">
+                            <Grid Background="#FFE5E5E5">
+                                <DataGrid x:Name="suppliersDataGrid" 
+                                          AutoGeneratingColumn="HideIdColumn" CanUserAddRows="True" 
+                                          ItemsSource="{Binding Suppliers}" Margin="0,27,0,0"
+                                          SizeChanged="SizeChanged" Loaded="Loaded"/>
+                                <!--<Label Content="Поиск" HorizontalAlignment="Left" Margin="2,-4,0,0" VerticalAlignment="Top"/>
+                                <TextBox HorizontalAlignment="Left" Margin="62,0,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="381" Height="27" TextChanged="Suppliers_TextBox_TextChanged"/>-->
+                            </Grid>
+                        </TabItem>
+                        <TabItem Name ="ETypesItem" Header="Тип оборудования">
+                            <Grid Background="#FFE5E5E5">
+                                <DataGrid x:Name="typesDataGrid" 
+                                          AutoGeneratingColumn="HideIdColumn" 
+                                          CanUserAddRows="True" ItemsSource="{Binding EquipmentTypes}" 
+                                          Margin="0,27,0,0"
+                                          SizeChanged="SizeChanged" Loaded="Loaded"/>
+                                <!--<Label Content="Поиск" HorizontalAlignment="Left" Margin="2,-4,0,0" VerticalAlignment="Top"/>
+                                <TextBox HorizontalAlignment="Left" Margin="62,0,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="381" Height="27" TextChanged="EquipmentTypes_TextBox_TextChanged"/>-->
+                            </Grid>
+                        </TabItem>
+                        <TabItem Name ="MTypesItem" Header="Тип обслуживания">
+                            <Grid Background="#FFE5E5E5">
+                                <DataGrid x:Name="maintenanceTypesDataGrid" 
+                                          AutoGeneratingColumn="HideIdColumn" 
+                                          CanUserAddRows="True" ItemsSource="{Binding MaintenanceTypes}" 
+                                          Margin="0,27,0,0"
+                                          SizeChanged="SizeChanged" Loaded="Loaded"/>
+                                <!--<Label Content="Поиск" HorizontalAlignment="Left" Margin="2,-4,0,0" VerticalAlignment="Top"/>
+                                <TextBox HorizontalAlignment="Left" Margin="62,0,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="381" Height="27" TextChanged="MaintenanceTypes_TextBox_TextChanged"/>-->
+                            </Grid>
+                        </TabItem>
+                        <TabItem Name ="DepartmentsItem" Header="Участок эксплуатации">
+                            <Grid Background="#FFE5E5E5">
+                                <DataGrid x:Name="departmentsDataGrid" 
+                                          AutoGeneratingColumn="HideIdColumn" 
+                                          CanUserAddRows="True" ItemsSource="{Binding Departments}" 
+                                          CellEditEnding="сellEditEnding" 
+                                          MouseDoubleClick="departmentsDataGrid_MouseDoubleClick" 
+                                          Margin="0,27,0,0"
+                                          SizeChanged="SizeChanged" Loaded="Loaded"/>
+                                <!--<Label Content="Поиск" HorizontalAlignment="Left" Margin="2,-4,0,0" VerticalAlignment="Top"/>
+                                <TextBox HorizontalAlignment="Left" Margin="62,0,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="381" Height="27" TextChanged="Departments_TextBox_TextChanged"/>-->
+                            </Grid>
+                        </TabItem>
+                        <TabItem Name ="PointsItem" Header="Точки подключения">
+                            <Grid Background="#FFE5E5E5">
+                                <DataGrid x:Name="pointsDataGrid" 
+                                          AutoGeneratingColumn="HideIdColumn" 
+                                          CanUserAddRows="True" ItemsSource="{Binding Points}" 
+                                          Margin="0,27,0,0"
+                                          SizeChanged="SizeChanged" Loaded="Loaded"/>
+                                <!--<Label Content="Поиск" HorizontalAlignment="Left" Margin="2,-4,0,0" VerticalAlignment="Top"/>
+                                <TextBox HorizontalAlignment="Left" Margin="62,0,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="381" Height="27" TextChanged="Points_TextBox_TextChanged"/>-->
+                            </Grid>
+                        </TabItem>
+                    </TabControl>
+                </Grid>
+            </TabItem>
+            <TabItem Name ="ArchiveItem" Header="Архив выполненных работ">
+                <Grid Background="#FFE5E5E5">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="309*"/>
+                        <ColumnDefinition Width="88*"/>
+                    </Grid.ColumnDefinitions>
+                    <Label Content="Поиск" HorizontalAlignment="Left" Margin="2,-4,0,0" VerticalAlignment="Top"/>
+                    <TextBox x:Name="archiveTextBox" HorizontalAlignment="Left" Margin="62,0,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="381" Height="27" TextChanged="Archive_TextBox_TextChanged"/>
+                    <DataGrid x:Name="archiveDataGrid" AutoGeneratingColumn="HideIdColumn" Margin="0,31,0,0" Grid.ColumnSpan="2"/>
+                    <DatePicker x:Name="startDatePicker" HorizontalAlignment="Left" Margin="480,-3,0,0" VerticalAlignment="Top" SelectedDateChanged="startDatePicker_SelectedDateChanged"/>
+                    <DatePicker x:Name="endDatePicker" HorizontalAlignment="Left" Margin="622,-3,0,0" VerticalAlignment="Top" SelectedDateChanged="endDatePicker_SelectedDateChanged"/>
+                </Grid>
+            </TabItem>
+            <TabItem Name ="PlanItem" Header="Планировщик">
+                <Grid x:Name="planGrid" Background="#FFE5E5E5">
+                    <Label Content="Поиск" HorizontalAlignment="Left" Margin="2,-4,0,0" VerticalAlignment="Top"/>
+                    <TextBox x:Name="plannedTextBox" HorizontalAlignment="Left" Margin="62,0,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="250" Height="27" TextChanged="plannedTextBox_TextChanged"/>
+                    <DatePicker x:Name="startPlanPicker" HorizontalAlignment="Left" Margin="320,0,0,0" VerticalAlignment="Top" SelectedDateChanged="startPlanPicker_SelectedDateChanged"/>
+                    <DatePicker x:Name="endPlanPicker" HorizontalAlignment="Left" VerticalAlignment="Top" SelectedDateChanged="endPlanPicker_SelectedDateChanged" Margin="447,0,0,0"/>
+                    <!--<DataGrid x:Name="planDataGrid" Margin="0,29,0,0" AutoGenerateColumns="False" SelectionUnit="Cell">-->
+                    <ScrollViewer x:Name="setScrollViewer" HorizontalAlignment="Left" HorizontalScrollBarVisibility="Visible" VerticalScrollBarVisibility ="Hidden" 
+                                  Margin="0,60,0,0" Width ="250" ScrollChanged="ScrollChanged">
+                        <StackPanel x:Name="fixedPanel" HorizontalAlignment="Left" Margin="0,0,0,0" Width ="250" Opacity="1"></StackPanel>
+                    </ScrollViewer>
+                    <ScrollViewer x:Name="getScrollViewer" HorizontalScrollBarVisibility="Visible" VerticalScrollBarVisibility ="Auto" 
+                                  Margin="250,60,0,0" ScrollChanged="ScrollChanged">
+                        <StackPanel x:Name="allPanel" Margin="0,0,0,0" Opacity="1"></StackPanel>
+                    </ScrollViewer>
+                    <!--<ScrollViewer VerticalScrollBarVisibility ="Auto" Margin="0,60,0,0">
+                        <Grid>
+                            <StackPanel x:Name="fixedPanel" HorizontalAlignment="Left" Margin="0,0,0,0" Width ="250" Opacity="1"></StackPanel>
+                            <ScrollViewer HorizontalScrollBarVisibility="Auto" Margin="250,0,0,0">
+                                <StackPanel x:Name="allPanel" Margin="0,0,0,0" Opacity="1"></StackPanel>
+                            </ScrollViewer>
+                        </Grid>
+                    </ScrollViewer>-->
+                    <Button x:Name="commonPlanButton" Content="План работ(общий)" HorizontalAlignment="Left" Margin="578,0,0,0" VerticalAlignment="Top" Height="30" Width="150" Click="commonPlanButton_Click"/>
+                    <Button x:Name="planButton" Content="План работ" HorizontalAlignment="Left" Margin="734,0,0,0" VerticalAlignment="Top" Height="30" Width="150" Click="planButton_Click"/>
+                    <Button x:Name="workOrderButton" Content="Наряд" HorizontalAlignment="Left" Margin="891,0,0,0" VerticalAlignment="Top" Height="30" Width="150" Click="workOrderButton_Click"/>
+                    <Button Content=" " Background="Aquamarine" Height="25" Width="25" HorizontalAlignment="Left" Margin="10,31,0,0" VerticalAlignment="Top"/>
+                    <Button Content=" " Background="Coral" Height="25" Width="25" HorizontalAlignment="Left" Margin="232,31,0,0" VerticalAlignment="Top"/>
+                    <Button Content=" " Background="Beige" Height="25" Width="25" HorizontalAlignment="Left" Margin="439,31,0,0" VerticalAlignment="Top"/>
+                    <Label Content="Есть запланированные" HorizontalAlignment="Left" Margin="36,28,0,0" VerticalAlignment="Top"/>
+                    <Label Content="Есть просроченные" HorizontalAlignment="Left" Margin="258,28,0,0" VerticalAlignment="Top"/>
+                    <Label Content="Есть архивные" HorizontalAlignment="Left" Margin="466,28,0,0" VerticalAlignment="Top"/>
+                    <!--</DataGrid>-->
+                </Grid>
+            </TabItem>
+            <TabItem Name="OldPassportsItem" Header="Оборудование, выведенное из эксплуатации">
+                <Grid Background="#FFE5E5E5">
+                    <DataGrid x:Name="oldMachineDataGrid" 
+                              AutoGeneratingColumn="HideIdColumn" 
+                              MouseDoubleClick="oldMachineDataGrid_MouseDoubleClick" 
+                              CanUserAddRows="False" ItemsSource="{Binding OldPassports}" Margin="0,27,0,0"
+                              SizeChanged="SizeChanged" Loaded="Loaded">
+                    </DataGrid>
+                    <!--<Label Content="Поиск" HorizontalAlignment="Left" Margin="2,-4,0,0" VerticalAlignment="Top"/>
+                    <TextBox HorizontalAlignment="Left" Margin="62,0,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="381" Height="27" TextChanged="OldPassports_TextBox_TextChanged"/>-->
+                </Grid>
+            </TabItem>
+        </TabControl>
+    </Grid>
+</Window>
