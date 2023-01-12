@@ -189,8 +189,10 @@ namespace LogicLibrary
                 }
             }
 
+            countedDate = CountDate(info);
+
             if (info.Episodes != null && info.Episodes.Count > 0)
-            {
+            {                
                 foreach (var episode in info.Episodes)
                 {
                     if (episode!= null && episode.Date != null && episode.Date != DateTime.MinValue)
@@ -198,20 +200,16 @@ namespace LogicLibrary
                         episodeDates.Add(episode.Date);
                     }
                 }
-            }
-
-            countedDate = CountDate(info);
-
-            if (info.PlannedDate != null && info.PlannedDate != DateTime.MinValue)
-            {
-                FutureDate = (DateTime)info.PlannedDate;
-            }
-            else
-            {
-                FutureDate = countedDate;
-            }
-            
-
+                var undoneEpisodes = info.Episodes.Where(e => e.IsDone.HasValue && !e.IsDone.Value).ToList();
+                if(undoneEpisodes != null && undoneEpisodes.Count > 0)
+                {
+                    FutureDate = undoneEpisodes.Min(e => e.Date);
+                }
+                else
+                {
+                    FutureDate = countedDate;
+                }
+            }                   
         }
 
         public bool IsDateChanged()

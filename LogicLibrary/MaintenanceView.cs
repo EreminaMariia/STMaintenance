@@ -51,30 +51,30 @@ namespace LogicLibrary
                 LastDate = info.Episodes.MaxBy(x => x.Date).Date;
             }
 
-            if (info.PlannedDate != null && info.PlannedDate != DateTime.MinValue)
-            {
-                FutureDate = (DateTime)info.PlannedDate;
-            }
-            else
-            {
-                if (LastDate != null && LastDate != DateTime.MinValue)
-                {
-                    if (!IsIntervalFixed)
-                    {
-                        //var ep = info.Episodes.MaxBy(x => x.Date);
-                        //int timeLength = (DateTime.Today - ep.Date).Days;
-                        //double worked = info.Passport.OperatingHours - ep.Hours;
-                        //double lasted = IntervalTime - worked;
-                        //double speedADay = worked / timeLength;
+            //if (info.PlannedDate != null && info.PlannedDate != DateTime.MinValue)
+            //{
+            //    FutureDate = (DateTime)info.PlannedDate;
+            //}
+            //else
+            //{
+            //    if (LastDate != null && LastDate != DateTime.MinValue)
+            //    {
+            //        if (!IsIntervalFixed)
+            //        {
+            //            //var ep = info.Episodes.MaxBy(x => x.Date);
+            //            //int timeLength = (DateTime.Today - ep.Date).Days;
+            //            //double worked = info.Passport.OperatingHours - ep.Hours;
+            //            //double lasted = IntervalTime - worked;
+            //            //double speedADay = worked / timeLength;
 
-                        //FutureDate = LastDate.AddDays(lasted / speedADay);
-                    }
-                    else
-                    {
-                        FutureDate = LastDate.AddDays(IntervalTime);
-                    }
-                }
-            }
+            //            //FutureDate = LastDate.AddDays(lasted / speedADay);
+            //        }
+            //        else
+            //        {
+            //            FutureDate = LastDate.AddDays(IntervalTime);
+            //        }
+            //    }
+            //}
             
         }
     }

@@ -273,15 +273,15 @@ namespace LogicLibrary
             return views;
         }
 
-        public List<PlannedView> GetPlannedView()
-        {
-            var additional = TechPassport.AdditionalWorks != null ? TechPassport.AdditionalWorks : new List<AdditionalWork>();
-            var maintenance = TechPassport.MaintenanceInfos != null ? TechPassport.MaintenanceInfos : new List<MaintenanceInfo>();
+        //public List<PlannedView> GetPlannedView()
+        //{
+        //    var additional = TechPassport.AdditionalWorks != null ? TechPassport.AdditionalWorks : new List<AdditionalWork>();
+        //    var maintenance = TechPassport.MaintenanceInfos != null ? TechPassport.MaintenanceInfos : new List<MaintenanceInfo>();
 
-            List<PlannedView> list = dataService.GetPlannedViewsByInfos(additional, maintenance);
-            var sorted = list.GroupBy(a => a.Date);
-            return dataService.GetPlannedViewsByInfos(additional, maintenance);
-        }
+        //    List<PlannedView> list = dataService.GetPlannedViewsByInfos(additional, maintenance);
+        //    var sorted = list.GroupBy(a => a.Date);
+        //    return dataService.GetPlannedViewsByInfos(additional, maintenance);
+        //}
 
         public List<MaterialView> GetMaterialViewsByMaintenance(int maintenanceId, bool isAdditional)
         {
@@ -616,16 +616,34 @@ namespace LogicLibrary
                                 {
 
                                     Data.Instance.EditMaintanance(this.TechPassport.Id, m.Id, m.Name, m.TypeId, m.IsFixed, interval, m.GetWorkingHours(), futureDate, m.IsInWork());
-                                    foreach (var ep in mEpisodes)
+                                    if (mEpisodes != null && mEpisodes.Count > 0)
                                     {
-                                        var oldEp = Data.Instance.GetMaintananceEpisode(ep.Id);
-                                        if (oldEp == null)
+                                        DateTime oldEpisodeDate = mEpisodes.Where(x=> !x.IsDone).Min(x => x.FutureDate);
+                                        TimeSpan delta = m.FutureDate - oldEpisodeDate;
+                                        foreach (var ep in mEpisodes)
                                         {
-                                            Data.Instance.AddMaintananceEpisode(id, ep.FutureDate, ep.WorkingHours, ep.OperatorIds, ep.IsDone);
-                                        }
-                                        else
-                                        {
-                                            Data.Instance.EditMaintananceEpisode(ep.Id, ep.FutureDate, ep.WorkingHours, ep.OperatorIds, ep.IsDone);
+                                            DateTime dateForChange = ep.FutureDate;
+                                            if (m.IsDateChanged())
+                                            {
+                                                if (ep.FutureDate == oldEpisodeDate)
+                                                {
+                                                    dateForChange = m.FutureDate;
+                                                }
+                                                else if (ep.FutureDate > oldEpisodeDate)
+                                                {
+                                                    dateForChange += delta;
+                                                }
+                                            }
+                                                
+                                            var oldEp = Data.Instance.GetMaintananceEpisode(ep.Id);
+                                            if (oldEp == null)
+                                            {
+                                                Data.Instance.AddMaintananceEpisode(id, dateForChange, ep.WorkingHours, ep.OperatorIds, ep.IsDone);
+                                            }
+                                            else
+                                            {
+                                                Data.Instance.EditMaintananceEpisode(ep.Id, dateForChange, ep.WorkingHours, ep.OperatorIds, ep.IsDone);
+                                            }
                                         }
                                     }
                                 }

@@ -270,7 +270,6 @@ namespace WpfView
                 }
             }
         }
-
         public void ChangeDate(object sender, RoutedEventArgs e)
         {
             int id = int.Parse(((Button)e.Source).Name.Split("_")[1]);
@@ -423,14 +422,12 @@ namespace WpfView
 
             DataContext = this;
         }
-
         private void HideIdColumn(object sender, DataGridAutoGeneratingColumnEventArgs e)
         {
             e.Column.HeaderStyle = new Style(typeof(DataGridColumnHeader));
             e.Column.HeaderStyle.Setters.Add(new Setter(HorizontalContentAlignmentProperty, HorizontalAlignment.Center));
             CommonClass.HideIdColumn(sender, e);
         }
-
         private void Button_Click(object sender, RoutedEventArgs e)
         {
             Save();

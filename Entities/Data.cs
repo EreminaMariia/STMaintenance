@@ -720,25 +720,25 @@ namespace Entities
             return Add<MaintenanceInfo>(context.MaintenanceInfos, maintenance, passportId);
         }
 
-        public void ErasePlannedDate(int id)
-        {
-            MaintenanceInfo maintenance = context.MaintenanceInfos.FirstOrDefault(x => x.Id == id);
-            if (maintenance != null)
-            {
-                maintenance.PlannedDate = null;
-            }
-            context.SaveChanges();
-        }
+        //public void ErasePlannedDate(int id)
+        //{
+        //    MaintenanceInfo maintenance = context.MaintenanceInfos.FirstOrDefault(x => x.Id == id);
+        //    if (maintenance != null)
+        //    {
+        //        maintenance.PlannedDate = null;
+        //    }
+        //    context.SaveChanges();
+        //}
 
-        public void ChangePlannedDate(int id, DateTime date)
-        {
-            MaintenanceInfo maintenance = context.MaintenanceInfos.FirstOrDefault(x => x.Id == id);
-            if (maintenance != null)
-            {
-                maintenance.PlannedDate = date;
-            }
-            context.SaveChanges();
-        }
+        //public void ChangePlannedDate(int id, DateTime date)
+        //{
+        //    MaintenanceInfo maintenance = context.MaintenanceInfos.FirstOrDefault(x => x.Id == id);
+        //    if (maintenance != null)
+        //    {
+        //        maintenance.PlannedDate = date;
+        //    }
+        //    context.SaveChanges();
+        //}
 
         public void ChangeAdditionalInfo(int id, DateTime date, List<Operator> operators)
         {
@@ -805,7 +805,7 @@ namespace Entities
             context.SaveChanges();
         }
 
-        public void AddUndoneEpisode(int maintenanceId, DateTime date, List<Operator> operators, DateTime oldDate)
+        public MaintenanceEpisode AddUndoneEpisode(int maintenanceId, DateTime date, List<Operator> operators, DateTime oldDate)
         {
             MaintenanceEpisode maintananceEpisode = new MaintenanceEpisode();
             MaintenanceInfo maintenanceInfo = context.MaintenanceInfos.FirstOrDefault(x => x.Id == maintenanceId);
@@ -836,6 +836,7 @@ namespace Entities
                 maintenanceInfo.Episodes.Add(maintananceEpisode);
                 context.SaveChanges();
             }
+            return maintananceEpisode;
         }
 
         public void SaveEmptyEpisode(int maintenanceId, DateTime date)
@@ -944,7 +945,7 @@ namespace Entities
             maintenance.IsIntervalFixed = isFixed;
             maintenance.IntervalTime = interval;
             maintenance.Hours = hours;
-            maintenance.PlannedDate = date;
+            //maintenance.PlannedDate = date;
             maintenance.IsInWork = isInWork;
 
             return maintenance;

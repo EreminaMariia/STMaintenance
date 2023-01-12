@@ -281,18 +281,40 @@ namespace WpfView
             var episodes = dataService.GetMaintenanceEpisodeViews().Where(
                     m => passports.FirstOrDefault(p => p.Id == m.MachineId) != null &&
                     maintenances.FirstOrDefault(a => a.Id == m.MaintenanceId) != null).ToList();
-            
+           
+            episodes.AddRange(GetNewEpisodes(end, episodes, maintenances));
+
+            MakePlanTab(start, end, adds, episodes);
+        }
+
+        private List<MaintenanceEpisodeView> GetNewEpisodes(DateTime end, List<MaintenanceEpisodeView> episodes, List<MaintenanceNewView> maintenances)
+        {
             List<MaintenanceEpisodeView> firstEpisodes = new List<MaintenanceEpisodeView>();
             foreach (var maintenance in maintenances)
             {
-                if (!episodes.Any(e => e.FutureDate.Date == maintenance.FutureDate.Date))
+                var m = episodes.Where(e => e.FutureDate.Date == maintenance.FutureDate.Date && e.MaintenanceId == maintenance.Id).ToList();
+                if (!episodes.Any(e => e.FutureDate.Date == maintenance.FutureDate.Date && e.MaintenanceId == maintenance.Id))
                 {
-                    dataService.AddUndoneEpisode(maintenance.Id, maintenance.FutureDate, new List<int>(), maintenance.FutureDate);
+                    //dataService.AddUndoneEpisode(maintenance.Id, maintenance.FutureDate, new List<int>(), maintenance.FutureDate);
+                    var eps = episodes.Where(e => e.MaintenanceId == maintenance.Id).ToList();
+                    DateTime first = DateTime.MinValue;
+                    if (eps.Count > 0)
+                    {
+                        first = eps.Min(d => d.FutureDate);
+                    }
+                    if (first < end)
+                    {
+                        var dates = maintenance.GetPlannedDates(first, end);
+                        foreach (var date in dates)
+                        {
+                            var newEp = dataService.AddUndoneEpisode(maintenance.Id, date, new List<int>(), date);
+                            firstEpisodes.Add(newEp);
+                        }
+                    }
+
                 }
             }
-            episodes.AddRange(firstEpisodes);
-
-            MakePlanTab(start, end, adds, episodes);
+            return firstEpisodes;
         }
 
         //private void OldMakePlanTab(DateTime start, DateTime end, List<MaintenanceNewView> maintenanceNewViews, List<AdditionalWorkView> additionalViews, List<MaintenanceEpisodeView> episodeViews)
@@ -458,7 +480,14 @@ namespace WpfView
                             {
                                 dateButton.Content += item.Type + "\n";
                             }
-                            dateButton.Background = Brushes.Coral;
+                            if (item.GetPlannedDatesForToday().Any(d => d.Date < i.Date))
+                            {
+                                dateButton.Background = Brushes.Coral;
+                            }
+                            else if (dateButton.Background != Brushes.Coral)
+                            {
+                                dateButton.Background = Brushes.Aquamarine;
+                            }
                         }
                         else if (item.GetPlannedDates(start, end).Any(d => d.Date == i.Date))
                         {
@@ -894,14 +923,8 @@ namespace WpfView
             var episodes = dataService.GetMaintenanceEpisodeViews().Where(
                     m => passports.FirstOrDefault(p => p.Id == m.MachineId) != null &&
                     maintenances.FirstOrDefault(a => a.Id == m.MaintenanceId) != null).ToList();
-            List<MaintenanceEpisodeView> firstEpisodes = new List<MaintenanceEpisodeView>();
-            foreach (var maintenance in maintenances)
-            {
-                if (!episodes.Any(e => e.FutureDate.Date == maintenance.FutureDate.Date))
-                {
-                    dataService.AddUndoneEpisode(maintenance.Id, maintenance.FutureDate, new List<int>(), maintenance.FutureDate);
-                }
-            }
+
+            episodes.AddRange(GetNewEpisodes(end, episodes, maintenances));
 
             if (string.IsNullOrEmpty(s))
             {
@@ -909,8 +932,7 @@ namespace WpfView
             }
             else
             {
-                MakePlanTab(start, end,
-                    adds.Where(x => x.Machine.ToLower().Contains(s.ToLower())).ToList(),
+                MakePlanTab(start, end, adds.Where(x => x.Machine.ToLower().Contains(s.ToLower())).ToList(),
                     episodes.Where(x => x.Machine.ToLower().Contains(s.ToLower())).ToList());
             }
         }

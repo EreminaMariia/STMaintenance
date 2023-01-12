@@ -527,30 +527,30 @@ namespace LogicLibrary
 
         
 
-        public List<PlannedView> GetPlannedViewsByInfos(ICollection<AdditionalWork> additional,ICollection<MaintenanceInfo> maintenance)
-        {
-            DateTime date = DateTime.Now;
-            List<PlannedView> views = new List<PlannedView>();
-            foreach (var ad in additional)
-            {
-                if ((ad.DateFact == null || ad.DateFact >= date) && (ad.PlannedDate != null && ad.PlannedDate >=date))
-                {
-                    views.Add(new PlannedView(ad));
-                }
-            }
-            foreach (var info in maintenance)
-            {
-                foreach (var ep in info.Episodes)
-                {
-                    if ((ep.Date == null || ep.Date >= date) && (info.PlannedDate != null && info.PlannedDate >= date))
-                    {
-                        views.Add(new PlannedView(ep));
-                    }
-                }
-            }
+        //public List<PlannedView> GetPlannedViewsByInfos(ICollection<AdditionalWork> additional,ICollection<MaintenanceInfo> maintenance)
+        //{
+        //    DateTime date = DateTime.Now;
+        //    List<PlannedView> views = new List<PlannedView>();
+        //    foreach (var ad in additional)
+        //    {
+        //        if ((ad.DateFact == null || ad.DateFact >= date) && (ad.PlannedDate != null && ad.PlannedDate >=date))
+        //        {
+        //            views.Add(new PlannedView(ad));
+        //        }
+        //    }
+        //    foreach (var info in maintenance)
+        //    {
+        //        foreach (var ep in info.Episodes)
+        //        {
+        //            if ((ep.Date == null || ep.Date >= date) && (info.PlannedDate != null && info.PlannedDate >= date))
+        //            {
+        //                views.Add(new PlannedView(ep));
+        //            }
+        //        }
+        //    }
 
-            return views;
-        }
+        //    return views;
+        //}
 
         //public List<ControledParametrView> GetControledParametrViewsByInfos(List<ControledParametr> infos)
         //{
@@ -578,10 +578,10 @@ namespace LogicLibrary
             Data.Instance.AddMaintananceEpisode(maintenanceId, date, hoursOnWork, operators);
         }
 
-        public void AddUndoneEpisode(int maintenanceId, DateTime date, List<int> workerIds, DateTime oldDate)
+        public MaintenanceEpisodeView AddUndoneEpisode(int maintenanceId, DateTime date, List<int> workerIds, DateTime oldDate)
         {
             List<Operator> operators = Data.Instance.GetOperators(workerIds);
-            Data.Instance.AddUndoneEpisode(maintenanceId, date, operators, oldDate);
+            return new MaintenanceEpisodeView(Data.Instance.AddUndoneEpisode(maintenanceId, date, operators, oldDate));
         }
 
         public void SaveEmptyEpisodes(int maintenanceId, DateTime date)
@@ -610,15 +610,15 @@ namespace LogicLibrary
             Data.Instance.ChangeEpisodeInfo(episodeId, date, operators);
         }
 
-        public void ErasePlannedDate(int id)
-        {
-            Data.Instance.ErasePlannedDate(id);
-        }
+        //public void ErasePlannedDate(int id)
+        //{
+        //    Data.Instance.ErasePlannedDate(id);
+        //}
 
-        public void ChangePlannedDate(int id, DateTime date)
-        {
-            Data.Instance.ChangePlannedDate(id, date);
-        }
+        //public void ChangePlannedDate(int id, DateTime date)
+        //{
+        //    Data.Instance.ChangePlannedDate(id, date);
+        //}
 
         public void ChangeAdditionalInfo(int id, DateTime date, List<int> workerIds)
         {
