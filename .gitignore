@@ -1,0 +1,62 @@
+
+#Ignore thumbnails created by Windows
+Thumbs.db
+#Ignore files built by Visual Studio
+*.obj
+*.exe
+*.pdb
+*.user
+*.aps
+*.pch
+*.vspscc
+*_i.c
+*_p.c
+*.ncb
+*.suo
+*.tlb
+*.tlh
+*.bak
+*.cache
+*.ilk
+*.log
+[Bb]in
+[Dd]ebug*/
+*.lib
+*.sbr
+obj/
+[Rr]elease*/
+_ReSharper*/
+[Tt]est[Rr]esult*
+.vs/
+#Nuget packages folder
+packages/
+
+# WebStorm IDE project files
+.idea/
+
+# node.js modules directory
+node_modules/
+
+/App/Florence.ClientApp/dist/*
+/App/Florence.WebApp/web.config
+/App/Florence.WebApp/wwwroot/img/*
+/App/Florence.Service.Host/web.config
+/App/.artifacts/*
+/App/Florence.WebApp/wwwroot/js/*
+/App/Florence.WebApp/wwwroot/css/*
+/App/Florence.WebApp/wwwroot/fonts/*
+/App/Florence.ClientApp/public/assets/*
+/App/.vscode/*
+/App/Florence.ClientApp/coverage/*
+/.vscode/*
+/App/Florence.ClientApp/public/*
+/App/Florence.ClientApp/public/scripts/*
+/App/Florence.ClientApp/public/scripts/*
+/App/Directory.Build.props
+/App/BuildWarningReport
+/App/LintWarningReport
+
+# local appsettings
+appSettings.*.json
+/App/.nuke/build.schema.json
+/App/Florence.ClientApp/cypress/screenshots/*
