@@ -164,7 +164,6 @@ namespace WpfView
             List<MaintenanceEpisodeView> firstEpisodes = new List<MaintenanceEpisodeView>();
             foreach (var maintenance in maintenances)
             {
-                var m = episodes.Where(e => e.FutureDate.Date == maintenance.FutureDate.Date && e.MaintenanceId == maintenance.Id).ToList();
                 if (!episodes.Any(e => e.FutureDate.Date == maintenance.FutureDate.Date && e.MaintenanceId == maintenance.Id))
                 {
                     var eps = episodes.Where(e => e.MaintenanceId == maintenance.Id).ToList();
@@ -182,7 +181,20 @@ namespace WpfView
                             firstEpisodes.Add(newEp);
                         }
                     }
-
+                }
+                else if(episodes.Any(e => e.MaintenanceId == maintenance.Id))
+                {
+                    var mEpisodes = episodes.Where(e => e.MaintenanceId == maintenance.Id).ToList();
+                    DateTime last = mEpisodes.Max(d => d.FutureDate);
+                    if (last < end)
+                    {
+                        var dates = maintenance.GetPlannedDates(last, end);
+                        foreach (var date in dates)
+                        {
+                            var newEp = dataService.AddUndoneEpisode(maintenance.Id, date, new List<int>(), date);
+                            firstEpisodes.Add(newEp);
+                        }
+                    }
                 }
             }
             return firstEpisodes;

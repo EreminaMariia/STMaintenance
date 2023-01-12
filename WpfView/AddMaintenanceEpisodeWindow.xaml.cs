@@ -126,7 +126,6 @@ namespace WpfView
                     if (Planed is MaintenanceEpisodeView)
                     {
                         dataService.MakeMaintananceEpisodeDone(id, date, hours, operatorsIds);
-                        dataService.SaveEmptyEpisodes(((MaintenanceEpisodeView)Planed).MaintenanceId, date);
                     }
                 }
 
@@ -182,7 +181,6 @@ namespace WpfView
                 if (Planed is MaintenanceEpisodeView)
                 {
                     dataService.ChangeEpisodeInfo(id, date, operatorsIds);
-                    dataService.SaveEmptyEpisodes(((MaintenanceEpisodeView)Planed).MaintenanceId, date);
                 }
             }
 
