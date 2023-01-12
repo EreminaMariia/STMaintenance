@@ -1,17 +1,8 @@
 ﻿using LogicLibrary;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 
 namespace WpfView
 {
@@ -25,19 +16,9 @@ namespace WpfView
         int id;
         bool IsInPassport;
         bool IsDoing = true;
-        //bool IsMaintenance = true;
-        //bool IsEpisode = false;
         IPlanedView Planed;
         DateTime oldDate;
 
-        //public AddMaintenanceEpisodeWindow(DataService dataService, int id, bool isInPassport)
-        //{
-        //    InitializeComponent();
-        //    Init(dataService, id, isInPassport);
-        //    MaintenanceNewView maintenance = dataService.GetMaintenanceNewById(id);
-        //    maintenanceTextBox.Text = maintenance.Name;
-        //    ChangeMode();
-        //}
         public AddMaintenanceEpisodeWindow(DateTime date, DataService dataService, IPlanedView planed)
         {
             InitializeComponent();
@@ -47,76 +28,8 @@ namespace WpfView
             ChangeMode();
         }
 
-        //public AddMaintenanceEpisodeWindow(DataService dataService, int id, bool isInPassport, bool isMaintenance)
-        //{
-        //    InitializeComponent();
-        //    Init(dataService, id, isInPassport);
-        //    if (isMaintenance)
-        //    {
-        //        MaintenanceEpisodeView episode = dataService.GetMaintenanceEpisodeViews().FirstOrDefault(ep => ep.Id == id);
-        //        if (episode != null)
-        //        {
-        //            maintenanceTextBox.Text = episode.Name;
-        //            dateDatePicker.SelectedDate = episode.FutureDate;
-        //            dateDatePicker.DisplayDate = episode.FutureDate;
-        //            IsEpisode = true;
-        //        }
-        //    }
-        //    else
-        //    {
-        //        AdditionalWorkView work = dataService.GetAdditionalWorkById(id);
-        //        maintenanceTextBox.Text = work.Name;
-        //        dateDatePicker.SelectedDate = work.FutureDate;
-        //        dateDatePicker.DisplayDate = work.FutureDate;
-        //    }
-        //    IsMaintenance = isMaintenance;
-        //    ChangeMode();
-        //}
-
-        //public AddMaintenanceEpisodeWindow(DataService dataService, int id, bool isInPassport, bool isMaintenance, DateTime date)
-        //{
-        //    InitializeComponent();
-        //    Init(dataService, id, isInPassport);
-        //    MaintenanceNewView maintenance = dataService.GetMaintenanceNewById(id);
-        //    maintenanceTextBox.Text = maintenance.Name;
-        //    dateDatePicker.SelectedDate = date;
-        //    dateDatePicker.DisplayDate = date;
-        //    IsMaintenance = isMaintenance;
-        //    ChangeMode();
-        //}
-
-        //public AddMaintenanceEpisodeWindow(PassportMaker passportMaker, DataService dataService, int id, bool isInPassport)
-        //{
-        //    InitializeComponent();
-        //    this.passportMaker = passportMaker;
-        //    Init(dataService, id, isInPassport);
-        //    MaintenanceNewView maintenance = passportMaker.Maintenances.FirstOrDefault(x => x.Id == id);
-        //    maintenanceTextBox.Text = maintenance.MaintenanceName;
-
-        //    IsDoing = true;
-        //    doRadioButton.Visibility = Visibility.Collapsed;
-        //    changeRadioButton.Visibility = Visibility.Collapsed;
-        //    ChangeMode();
-        //}
-
-        //public AddMaintenanceEpisodeWindow(PassportMaker passportMaker, DataService dataService, int id, bool isInPassport, bool isDoing, bool isMaintenance)
-        //{
-        //    InitializeComponent();
-        //    this.passportMaker = passportMaker;
-        //    Init(dataService, id, isInPassport);
-        //    MaintenanceNewView maintenance = passportMaker.Maintenances.FirstOrDefault(x => x.Id == id);
-        //    maintenanceTextBox.Text = maintenance.Name;
-
-        //    IsDoing = isDoing;
-        //    IsMaintenance = isMaintenance;
-        //    doRadioButton.Visibility = Visibility.Collapsed;
-        //    changeRadioButton.Visibility = Visibility.Collapsed;
-        //    ChangeMode();
-        //}
-
         public AddMaintenanceEpisodeWindow(DateTime date, PassportMaker passportMaker, DataService dataService, IPlanedView planed, bool isDoing)
         {
-            //IsInPassport = true;
             InitializeComponent();
             this.passportMaker = passportMaker;
             Init(dataService, planed, true);
@@ -137,7 +50,7 @@ namespace WpfView
             IsInPassport = isInPassport;
 
             workerListBox.ItemsSource = dataService.GetOperatorViews();
-            for ( int i = 0; i< workerListBox.Items.Count; i++)
+            for (int i = 0; i < workerListBox.Items.Count; i++)
             {
                 if (planed is MaintenanceEpisodeView)
                 {
@@ -147,7 +60,7 @@ namespace WpfView
                     if (episode.OperatorIds.Contains(view.Id))
                     {
                         workerListBox.SelectedItems.Add(view);
-                        
+
                     }
                 }
             }
@@ -313,53 +226,9 @@ namespace WpfView
             ChangeMode();
         }
 
-        //private void changeButton_Click(object sender, RoutedEventArgs e)
-        //{
-        //    DateTime date = dateDatePicker.SelectedDate != null ? (DateTime)dateDatePicker.SelectedDate : DateTime.Now;
-        //    if (IsMaintenance)
-        //    {
-        //        if (IsInPassport)
-        //        {
-        //            if (IsEpisode)
-        //            {
-
-        //            }
-        //            else
-        //            {
-        //                passportMaker.ChangePlannedDate(id, date);
-        //            }
-        //        }
-        //        else
-        //        {
-        //            if (IsEpisode)
-        //            {
-
-        //            }
-        //            else
-        //            {
-        //                dataService.ChangePlannedDate(id, date);
-        //            }
-        //        }
-        //    }
-        //    else
-        //    {
-        //        if (IsInPassport)
-        //        {
-        //            passportMaker.ChangeChangePlannedDateAdditional(id, date);
-        //        }
-        //        else
-        //        {
-        //            dataService.ChangePlannedDateAdditional(id, date);
-        //        }
-        //    }
-
-        //    DialogResult = true;
-        //    this.Close();
-        //}
         private void changeButton_Click(object sender, RoutedEventArgs e)
         {
             DateTime date = dateDatePicker.SelectedDate != null ? (DateTime)dateDatePicker.SelectedDate : DateTime.Now;
-
             var operators = workerListBox.SelectedItems;
             List<int> operatorsIds = new List<int>();
             foreach (var o in operators)
@@ -371,7 +240,6 @@ namespace WpfView
             {
                 if (Planed is MaintenanceNewView)
                 {
-                    //passportMaker.ChangePlannedDate(id, date);
                     passportMaker.AddUndoneEpisode( id, date, operatorsIds, oldDate);
                 }
                 if (Planed is AdditionalWorkView)
@@ -387,7 +255,6 @@ namespace WpfView
             {
                 if (Planed is MaintenanceNewView)
                 {
-                    //dataService.ChangePlannedDate(id, date);
                     dataService.AddUndoneEpisode(id, date, operatorsIds, oldDate);
                     dataService.SaveEmptyEpisodes(((MaintenanceNewView)Planed).Id, date);
                 }

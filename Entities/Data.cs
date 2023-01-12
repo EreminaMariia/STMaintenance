@@ -805,15 +805,15 @@ namespace Entities
             context.SaveChanges();
         }
 
-        public void AddUndoneEpisode(int maintenanceId, DateTime Date, List<Operator> Operators, DateTime oldDate)
+        public void AddUndoneEpisode(int maintenanceId, DateTime date, List<Operator> operators, DateTime oldDate)
         {
             MaintenanceEpisode maintananceEpisode = new MaintenanceEpisode();
             MaintenanceInfo maintenanceInfo = context.MaintenanceInfos.FirstOrDefault(x => x.Id == maintenanceId);
             if (maintenanceInfo != null)
             {
                 maintananceEpisode.Info = maintenanceInfo;
-                maintananceEpisode.Date = Date;
-                maintananceEpisode.Operators = Operators;
+                maintananceEpisode.Date = date;
+                maintananceEpisode.Operators = operators;
                 maintananceEpisode.IsDone = false;
                 context.MaintenanceEpisodes.Add(maintananceEpisode);
 
@@ -821,9 +821,7 @@ namespace Entities
                 {
                     maintenanceInfo.Episodes = new List<MaintenanceEpisode>();
                 }
-                maintenanceInfo.Episodes.Add(maintananceEpisode);
-
-                TimeSpan delta = oldDate - Date;
+                TimeSpan delta = date - oldDate;
                 if (delta != TimeSpan.Zero)
                 {
                     var eps = context.MaintenanceEpisodes.Where(a => a.Info.Id == maintananceEpisode.Info.Id && a.Date.Date > oldDate);
@@ -835,7 +833,7 @@ namespace Entities
                         }
                     }
                 }
-
+                maintenanceInfo.Episodes.Add(maintananceEpisode);
                 context.SaveChanges();
             }
         }
@@ -870,7 +868,6 @@ namespace Entities
 
         public void ChangeEpisodeInfo(int episodeId, DateTime date, List<Operator> operators)
         {
-
             MaintenanceEpisode maintenanceEpisode = context.MaintenanceEpisodes.FirstOrDefault(x => x.Id == episodeId);
             if (maintenanceEpisode != null)
             {
@@ -880,7 +877,7 @@ namespace Entities
                 maintenanceEpisode.Operators = operators;
                 maintenanceEpisode.IsDone = false;
 
-                TimeSpan delta = oldDate - date;
+                TimeSpan delta = date - oldDate;
                 if (delta != TimeSpan.Zero)
                 {
                     var eps = context.MaintenanceEpisodes.Where(a => a.Info.Id == maintenanceEpisode.Info.Id && a.Date.Date > oldDate);

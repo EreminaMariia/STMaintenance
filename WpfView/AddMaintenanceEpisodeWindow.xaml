@@ -19,6 +19,5 @@
         <RadioButton x:Name="changeRadioButton" Content="Запланировать" HorizontalAlignment="Left" Margin="394,22,0,0" VerticalAlignment="Top" Checked="changeRadioButton_Checked"/>
         <RadioButton x:Name="doRadioButton" Content="Выполнить" HorizontalAlignment="Left" Margin="259,22,0,0" VerticalAlignment="Top" Checked="doRadioButton_Checked"/>
         <Button x:Name="changeButton" Content="Планирование" HorizontalAlignment="Center" Margin="0,277,0,0" VerticalAlignment="Bottom" Height="30" Click="changeButton_Click"/>
-
     </Grid>
 </Window>
