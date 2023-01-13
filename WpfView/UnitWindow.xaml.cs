@@ -78,7 +78,7 @@ namespace WpfView
                     {
                         unitComboBox.Items.Filter += (item) =>
                         {
-                            if (((INameIdView)item).Name.Contains(textBox.Text))
+                            if (((INameIdView)item).Name.ToLower().Contains(textBox.Text.ToLower()))
                             {
                                 popup.IsOpen = true;
                                 return true;
