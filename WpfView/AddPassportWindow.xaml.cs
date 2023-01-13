@@ -936,6 +936,14 @@ namespace WpfView
                 {
                     RefreshOldMaintenanceGrid();
                 }
+                else if (errorsTab.IsSelected)
+                {
+
+                }
+                else if (additionalTab.IsSelected)
+                {
+
+                }
             }
         }
 
@@ -984,21 +992,36 @@ namespace WpfView
             var parent = box.Parent;
             if (parent != null && parent is Grid)
             {
-                Dictionary<string, string> properties = new Dictionary<string, string>();
                 var pg = (Grid)parent;
-                foreach (var child in pg.Children)
                 {
-                    if (child is TextBox)
+                    foreach (var p in pg.Children)
                     {
-                        var tb = (TextBox)child;
-                        var n = tb.Name.Split('_');
-                        if (n.Length > 2)
+                        if (p is TextBox)
                         {
-                            var propertyName = n[1];
-                            properties.Add(propertyName, tb.Text);
+                            var b = (TextBox)p;
+                            if (b != null && b.Name == box.Name)
+                            {
+                                b.Text = box.Text;
+                            }
                         }
                     }
                 }
+                Dictionary<string, string> properties = CommonClass.GetProperties(pg);
+                //Dictionary<string, string> properties = new Dictionary<string, string>();
+                //var pg = (Grid)parent;
+                //foreach (var child in pg.Children)
+                //{
+                //    if (child is TextBox)
+                //    {
+                //        var tb = (TextBox)child;
+                //        var n = tb.Name.Split('_');
+                //        if (n.Length > 2)
+                //        {
+                //            var propertyName = n[1];
+                //            properties.Add(propertyName, tb.Text);
+                //        }
+                //    }
+                //}
                 foreach (var child in pg.Children)
                 {
                     if (child is DataGrid && ((DataGrid)child).Name == gridName)

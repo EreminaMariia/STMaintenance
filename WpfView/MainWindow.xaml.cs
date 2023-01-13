@@ -480,8 +480,8 @@ namespace WpfView
             CommonClass.RefreshGrid(passports, Passports, machineDataGrid, passportTableService);
             CommonClass.RefreshGrid(oldPassports, OldPassports, oldMachineDataGrid, oldPassportTableService);
 
-            //CommonClass.FilterGridByOneField(Passports, passports, passportTableService, machineDataGrid, GetProperties(machineDataGrid));
-            //CommonClass.FilterGridByOneField(OldPassports, oldPassports, oldPassportTableService, oldMachineDataGrid, GetProperties(oldMachineDataGrid));
+            CommonClass.FilterGridByOneField(Passports, passports, passportTableService, machineDataGrid, GetProperties(machineDataGrid));
+            CommonClass.FilterGridByOneField(OldPassports, oldPassports, oldPassportTableService, oldMachineDataGrid, GetProperties(oldMachineDataGrid));
 
             MakeArchiveTab(DateTime.Today.AddDays(-30), DateTime.Today);
             MakePlanTab(DateTime.Today, DateTime.Today.AddDays(30));
@@ -746,7 +746,6 @@ namespace WpfView
                     }
                 }
                 Dictionary<string, string> properties = CommonClass.GetProperties(pg);
-                if (properties.ContainsKey(names[1]))
                 
 
                 foreach (var child in pg.Children)
@@ -817,117 +816,125 @@ namespace WpfView
 
         private void tabControl_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (PassportsItem.IsSelected)
+            if (e.Source is TabControl)
             {
-                if (passports == null || passports.Count == 0)
-                {
-                    passports = dataService.GetTechViews(false);
-                    CommonClass.RefreshGrid(passports, Passports, machineDataGrid, passportTableService);
-                    CommonClass.FilterGridByOneField(Passports, passports, passportTableService, machineDataGrid, GetProperties(machineDataGrid));
-                }
-                else
-                {
-                    CommonClass.FilterGridByOneField(Passports, passports, passportTableService, machineDataGrid, GetProperties(machineDataGrid));
-                }
-            }
-            else if (HandBookItem.IsSelected)
-            {
-
-            }
-            else if (ArchiveItem.IsSelected)
-            {
-                if (archive == null || archive.Count == 0)
-                {
-                    MakeArchiveTab(DateTime.Today.AddDays(-30), DateTime.Today);
-                }
-            }
-            else if (PlanItem.IsSelected)
-            {
-                if (plannedViews == null || plannedViews.Count == 0)
+                if (PassportsItem.IsSelected)
                 {
                     if (passports == null || passports.Count == 0)
                     {
                         passports = dataService.GetTechViews(false);
-                        CommonClass.RefreshGrid(passports, Passports, machineDataGrid, passportTableService);
                     }
-                    MakePlanTab(DateTime.Today, DateTime.Today.AddDays(30));
+                    CommonClass.RefreshGridWithoutFilter(passports, Passports, machineDataGrid, passportTableService);
                 }
-            }
-            else if (OldPassportsItem.IsSelected)
-            {
-                if (oldPassports == null || oldPassports.Count == 0)
+                else if (HandBookItem.IsSelected)
                 {
-                    oldPassports = dataService.GetTechViews(true);
-                    CommonClass.RefreshGrid(oldPassports, OldPassports, oldMachineDataGrid, oldPassportTableService);
+
+                }
+                else if (ArchiveItem.IsSelected)
+                {
+                    if (archive == null || archive.Count == 0)
+                    {
+                        MakeArchiveTab(DateTime.Today.AddDays(-30), DateTime.Today);
+                    }
+                }
+                else if (PlanItem.IsSelected)
+                {
+                    if (plannedViews == null || plannedViews.Count == 0)
+                    {
+                        if (passports == null || passports.Count == 0)
+                        {
+                            passports = dataService.GetTechViews(false);
+                            CommonClass.RefreshGrid(passports, Passports, machineDataGrid, passportTableService);
+                        }
+                        MakePlanTab(DateTime.Today, DateTime.Today.AddDays(30));
+                    }
+                }
+                else if (OldPassportsItem.IsSelected)
+                {
+                    if (oldPassports == null || oldPassports.Count == 0)
+                    {
+                        oldPassports = dataService.GetTechViews(true);
+                    }
+                    CommonClass.RefreshGridWithoutFilter(oldPassports, OldPassports, oldMachineDataGrid, oldPassportTableService);
                 }
             }
         }
 
         private void innerTabControl_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (OperatorsItem.IsSelected)
+            if (e.Source is TabControl)
             {
-                if (operators == null || operators.Count == 0)
+                if (OperatorsItem.IsSelected)
                 {
-                    operators = dataService.GetOperatorViews();
-                    CommonClass.FillGrid(Operators, operators, operatorTableService, operatorsDataGrid);
-                    CommonClass.FilterGridByOneField(Operators, operators, operatorTableService, operatorsDataGrid, GetProperties(operatorsDataGrid));
+                    if (operators == null || operators.Count == 0)
+                    {
+                        operators = dataService.GetOperatorViews();
+                    }
+                    //CommonClass.FillGrid(Operators, operators, operatorTableService, operatorsDataGrid);
+                    CommonClass.RefreshGridWithoutFilter( operators, Operators, operatorsDataGrid, operatorTableService);
                 }
-            }
-            else if (UnitsItem.IsSelected)
-            {
-                if (units == null || units.Count == 0)
+                else if (UnitsItem.IsSelected)
                 {
-                    units = dataService.GetUnitViews();
-                    CommonClass.FillGrid(Units, units, unitTableService, unitsDataGrid);
+                    if (units == null || units.Count == 0)
+                    {
+                        units = dataService.GetUnitViews();
+                    }
+                    //CommonClass.FillGrid(Units, units, unitTableService, unitsDataGrid);
+                    CommonClass.RefreshGridWithoutFilter( units, Units, unitsDataGrid, unitTableService);
                 }
-            }
-            else if (MaterialsItem.IsSelected)
-            {
-                if (materials == null || materials.Count == 0)
+                else if (MaterialsItem.IsSelected)
                 {
-                    materials = dataService.GetMaterialInfoViews();
-                    CommonClass.FillGrid(Materials, materials, materialTableService, materialsDataGrid);
+                    if (materials == null || materials.Count == 0)
+                    {
+                        materials = dataService.GetMaterialInfoViews();
+                    }
+                    //CommonClass.FillGrid(Materials, materials, materialTableService, materialsDataGrid);
+                    CommonClass.RefreshGridWithoutFilter( materials, Materials, materialsDataGrid, materialTableService);
                 }
-            }
-            else if (SuppliersItem.IsSelected)
-            {
-                if (suppliers == null || suppliers.Count == 0)
+                else if (SuppliersItem.IsSelected)
                 {
-                    suppliers = dataService.GetSupViews();
-                    CommonClass.FillGrid(Suppliers, suppliers, supplierTableService, suppliersDataGrid);
+                    if (suppliers == null || suppliers.Count == 0)
+                    {
+                        suppliers = dataService.GetSupViews();
+                    }
+                    //CommonClass.FillGrid(Suppliers, suppliers, supplierTableService, suppliersDataGrid);
+                    CommonClass.RefreshGridWithoutFilter( suppliers, Suppliers, suppliersDataGrid, supplierTableService);
                 }
-            }
-            else if (ETypesItem.IsSelected)
-            {
-                if (equipmentTypes == null || equipmentTypes.Count == 0)
+                else if (ETypesItem.IsSelected)
                 {
-                    equipmentTypes = dataService.GetEquipmentTypeViews();
-                    CommonClass.FillGrid(EquipmentTypes, equipmentTypes, equipmentTypeTableService, typesDataGrid);
+                    if (equipmentTypes == null || equipmentTypes.Count == 0)
+                    {
+                        equipmentTypes = dataService.GetEquipmentTypeViews();
+                    }
+                    //CommonClass.FillGrid(EquipmentTypes, equipmentTypes, equipmentTypeTableService, typesDataGrid);
+                    CommonClass.RefreshGridWithoutFilter(equipmentTypes, EquipmentTypes,  typesDataGrid, equipmentTypeTableService);
                 }
-            }
-            else if (MTypesItem.IsSelected)
-            {
-                if (maintenanceTypes == null || maintenanceTypes.Count == 0)
+                else if (MTypesItem.IsSelected)
                 {
-                    maintenanceTypes = dataService.GetMaintenanceTypeViews();
-                    CommonClass.FillGrid(MaintenanceTypes, maintenanceTypes, maintenanceTypeTableService, maintenanceTypesDataGrid);
+                    if (maintenanceTypes == null || maintenanceTypes.Count == 0)
+                    {
+                        maintenanceTypes = dataService.GetMaintenanceTypeViews();
+                    }
+                    //CommonClass.FillGrid(MaintenanceTypes, maintenanceTypes, maintenanceTypeTableService, maintenanceTypesDataGrid);
+                    CommonClass.RefreshGridWithoutFilter( maintenanceTypes, MaintenanceTypes, maintenanceTypesDataGrid, maintenanceTypeTableService);
                 }
-            }
-            else if (DepartmentsItem.IsSelected)
-            {
-                if (departments == null || departments.Count == 0)
+                else if (DepartmentsItem.IsSelected)
                 {
-                    departments = dataService.GetDepartmentViews();
-                    CommonClass.FillGrid(Departments, departments, departmentTableService, departmentsDataGrid);
+                    if (departments == null || departments.Count == 0)
+                    {
+                        departments = dataService.GetDepartmentViews();
+                    }
+                    //CommonClass.FillGrid(Departments, departments, departmentTableService, departmentsDataGrid);
+                    CommonClass.RefreshGridWithoutFilter( departments, Departments, departmentsDataGrid, departmentTableService);
                 }
-            }
-            else if (PointsItem.IsSelected)
-            {
-                if (points == null || points.Count == 0)
+                else if (PointsItem.IsSelected)
                 {
-                    points = dataService.GetPointViews();
-                    CommonClass.FillGrid(Points, points, pointTableService, pointsDataGrid);
+                    if (points == null || points.Count == 0)
+                    {
+                        points = dataService.GetPointViews();
+                    }
+                    //CommonClass.FillGrid(Points, points, pointTableService, pointsDataGrid);
+                    CommonClass.RefreshGridWithoutFilter( points, Points, pointsDataGrid, pointTableService);
                 }
             }
         }

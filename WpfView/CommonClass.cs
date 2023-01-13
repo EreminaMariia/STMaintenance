@@ -105,6 +105,21 @@ namespace WpfView
             }
         }
 
+        public static void RefreshGridWithoutFilter<T>(List<T> items, ObservableCollection<T> collection, DataGrid grid, TableService<T> service) where T : class, ITableView
+        {
+            var parent = grid.Parent;
+            if (parent != null && parent is Grid)
+            {
+                var pg = (Grid)parent;
+                Dictionary<string, string> properties = CommonClass.GetProperties(pg);
+                foreach (var property in properties)
+                {
+                    properties[property.Key] = "";
+                }
+                FilterGridByOneField(collection, items, service, grid, properties);
+            }
+        }
+
         //public void RefreshGrid<T>(List<T> items, ObservableCollection<T> collection, DataGrid grid, ITableViewService<T> service) where T : class, ITableView
         //{
         //    var parent = grid.Parent;
