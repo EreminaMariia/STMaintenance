@@ -84,6 +84,8 @@ namespace WpfView
         public TableService<DepartmentView> departmentTableService;
         public TableService<PointView> pointTableService;
 
+        private AddPassportWindow passportWindow;
+
         bool canDelete;
 
         public MainWindow()
@@ -311,10 +313,14 @@ namespace WpfView
 
         public void ShowPassport(object sender, RoutedEventArgs e)
         {
+            if (passportWindow != null)
+            {
+                passportWindow.Hide();
+            }
             int id = (int)((Button)sender).Tag;
             if (id != 0)
             {
-                AddPassportWindow passportWindow = new AddPassportWindow(id, new AddPassportWindow.AddHandler(RefreshPassportGrid));
+                passportWindow = new AddPassportWindow(id, new AddPassportWindow.AddHandler(RefreshPassportGrid));
                 passportWindow.Show();
             }
         }
@@ -372,9 +378,12 @@ namespace WpfView
 
         private void machineDataGrid_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
-            AddPassportWindow passportWindow;
-            if (((DataGrid)e.Source).SelectedItem != null && ((DataGrid)e.Source).SelectedItem is TechView)
+            if (passportWindow != null)
             {
+                passportWindow.Hide();
+            }
+            if (((DataGrid)e.Source).SelectedItem != null && ((DataGrid)e.Source).SelectedItem is TechView)
+            {               
                 int id = ((TechView)((DataGrid)e.Source).SelectedItem).Id;
                 if (id != 0)
                 {
@@ -675,7 +684,10 @@ namespace WpfView
 
         private void oldMachineDataGrid_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
-            AddPassportWindow passportWindow;
+            if (passportWindow != null)
+            {
+                passportWindow.Hide();
+            }
             if (((DataGrid)e.Source).SelectedItem != null && ((DataGrid)e.Source).SelectedItem is TechView)
             {
                 int id = ((TechView)((DataGrid)e.Source).SelectedItem).Id;
