@@ -480,36 +480,35 @@ namespace WpfView
             }
         }
 
-        public void RefreshMaintenanceGrid()
+        public void RefreshMaintenanceGrid(bool isFiltred = true)
         {
             var m = passportMaker.Maintenances.Where(p => p.IsInWork()).ToList();
             passportMaker.RefreshData();
-            //var parent = maintenanceGrid.Parent;
-            //if (parent != null && parent is Grid)
-            //{
-            //    var pg = (Grid)parent;
-            //    Dictionary<string, string> properties = CommonClass.GetProperties(pg);
-            //    CommonClass.FilterGridByOneField(Maintenances, m, new MaintenanceViewService(passportMaker), maintenanceGrid, properties);
-            //}
-            CommonClass.RefreshGrid(m, Maintenances, maintenanceGrid, maintenanceTableService);
+            if (isFiltred)
+            {
+                CommonClass.RefreshGrid(m, Maintenances, maintenanceGrid, maintenanceTableService);
+            }
+            else
+            {
+                CommonClass.RefreshGridWithoutFilter(m, Maintenances, maintenanceGrid, maintenanceTableService);
+            }
             MakePlannedGrid();
             MakeArchiveGrid();
         }
 
-        public void RefreshOldMaintenanceGrid()
+        public void RefreshOldMaintenanceGrid(bool isFiltred = true)
         {
             var m = passportMaker.Maintenances.Where(p => !p.IsInWork()).ToList();
             passportMaker.RefreshData();
-            //var parent = oldMaintenanceGrid.Parent;
-            //if (parent != null && parent is Grid)
-            //{
-            //    var pg = (Grid)parent;
-            //    Dictionary<string, string> properties = CommonClass.GetProperties(pg);
-            //    CommonClass.FilterGridByOneField(OldMaintenances, m, new MaintenanceViewService(passportMaker), oldMaintenanceGrid, properties);
-            //}
-            CommonClass.RefreshGrid(m, OldMaintenances, oldMaintenanceGrid, oldMaintenanceTableService);
-
-            MakePlannedGrid();
+            if (isFiltred)
+            {
+                CommonClass.RefreshGrid(m, OldMaintenances, oldMaintenanceGrid, oldMaintenanceTableService);
+            }
+            else
+            {
+                CommonClass.RefreshGridWithoutFilter(m, OldMaintenances, oldMaintenanceGrid, oldMaintenanceTableService);
+            }
+                MakePlannedGrid();
             MakeArchiveGrid();
         }
 
@@ -523,41 +522,33 @@ namespace WpfView
             }
         }
 
-        public void RefreshAdditionalGrid(int id)
+        public void RefreshAdditionalGrid(bool isFiltred = true)
         {
-            if (id > 0)
-            {
                 var a = passportMaker.Additionals;
                 passportMaker.RefreshData();
-                //var parent = additionalGrid.Parent;
-                //if (parent != null && parent is Grid)
-                //{
-                //    var pg = (Grid)parent;
-                //    Dictionary<string, string> properties = CommonClass.GetProperties(pg);
-                //    CommonClass.FilterGridByOneField(Additionals, a, new AdditionalWorkViewService(passportMaker), additionalGrid, properties);
-                //}
+            if (isFiltred)
+            {
                 CommonClass.RefreshGrid(a, Additionals, additionalGrid, additionalTableService);
-
-                MakePlannedGrid();
-                MakeArchiveGrid();
             }
+            else
+            {
+                CommonClass.RefreshGridWithoutFilter(a, Additionals, additionalGrid, additionalTableService);
+            }
+            MakePlannedGrid();
+                MakeArchiveGrid();
         }
 
-        public void RefreshErrorGrid(int id)
+        public void RefreshErrorGrid(bool isFiltred = true)
         {
-            if (id > 0)
-            {
                 var a = passportMaker.Errors;
                 passportMaker.RefreshData();
-                //var parent = errorsGrid.Parent;
-                //if (parent != null && parent is Grid)
-                //{
-                //    var pg = (Grid)parent;
-                //    Dictionary<string, string> properties = CommonClass.GetProperties(pg);
-                //    CommonClass.FilterGridByOneField(Errors, a, new ErrorViewService(passportMaker), errorsGrid, properties);
-                //}
+            if (isFiltred)
+            {
                 CommonClass.RefreshGrid(a, Errors, errorsGrid, errorTableService);
-
+            }
+            else
+            {
+                CommonClass.RefreshGridWithoutFilter(a, Errors, errorsGrid, errorTableService);
             }
         }
 
@@ -652,7 +643,7 @@ namespace WpfView
                     {
                         int maintenanceTypeId = uw.Id;
                         passportMaker.EditAdditionalByType(id, maintenanceTypeId);
-                        RefreshAdditionalGrid(id);
+                        RefreshAdditionalGrid();
                     }
                 }
                 else if (column.SortMemberPath == "Operators")
@@ -667,7 +658,7 @@ namespace WpfView
                     {
                         List<int> operatorIds = uw.Id;
                         passportMaker.EditAdditionalByOperators(id, operatorIds);
-                        RefreshAdditionalGrid(id);
+                        RefreshAdditionalGrid();
                     }
                 }
                 else if (column.SortMemberPath == "Materials")
@@ -682,7 +673,7 @@ namespace WpfView
                     {
                         List<int> materialsIds = uw.Id;
                         passportMaker.EditAdditionalByMaterials(id, materialsIds);
-                        RefreshAdditionalGrid(id);
+                        RefreshAdditionalGrid();
                     }
                 }
             }
@@ -752,7 +743,7 @@ namespace WpfView
                     bool isWorkingNow = uw.Result;
 
                     passportMaker.EditErrorWorking(id, isWorkingNow);
-                    RefreshErrorGrid(id);
+                    RefreshErrorGrid();
                 }
 
             }
@@ -930,19 +921,19 @@ namespace WpfView
             {
                 if (maintenanceTab.IsSelected)
                 {
-                    RefreshMaintenanceGrid();
+                    RefreshMaintenanceGrid(false);
                 }
                 else if (oldMaintenanceTab.IsSelected)
                 {
-                    RefreshOldMaintenanceGrid();
+                    RefreshOldMaintenanceGrid(false);
                 }
                 else if (errorsTab.IsSelected)
                 {
-
+                    RefreshErrorGrid(false);
                 }
                 else if (additionalTab.IsSelected)
                 {
-
+                    RefreshAdditionalGrid(false);
                 }
             }
         }
@@ -1007,21 +998,6 @@ namespace WpfView
                     }
                 }
                 Dictionary<string, string> properties = CommonClass.GetProperties(pg);
-                //Dictionary<string, string> properties = new Dictionary<string, string>();
-                //var pg = (Grid)parent;
-                //foreach (var child in pg.Children)
-                //{
-                //    if (child is TextBox)
-                //    {
-                //        var tb = (TextBox)child;
-                //        var n = tb.Name.Split('_');
-                //        if (n.Length > 2)
-                //        {
-                //            var propertyName = n[1];
-                //            properties.Add(propertyName, tb.Text);
-                //        }
-                //    }
-                //}
                 foreach (var child in pg.Children)
                 {
                     if (child is DataGrid && ((DataGrid)child).Name == gridName)

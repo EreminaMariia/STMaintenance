@@ -51,9 +51,7 @@ namespace WpfView
                 }
                 e.Column.Width = new DataGridLength(1, DataGridLengthUnitType.Star);
             }
-            PropertyDescriptor pd = DependencyPropertyDescriptor.FromProperty(DataGridColumn.ActualWidthProperty, typeof(DataGridColumn));
-            //pd.AddValueChanged(e.Column, new EventHandler(ColumnWidthPropertyChanged));
-            
+            PropertyDescriptor pd = DependencyPropertyDescriptor.FromProperty(DataGridColumn.ActualWidthProperty, typeof(DataGridColumn));           
         }
 
         public static ObservableCollection<T> AddItem<T>(ObservableCollection<T> collection, List<T> list, ITableViewService<T> service, DataGrid grid) where T : class, ITableView
@@ -105,6 +103,15 @@ namespace WpfView
             }
         }
 
+        public static void TabChangeProcess<T>(List<T> newItems, List<T> items, ObservableCollection<T> collection, DataGrid grid, TableService<T> service) where T : class, ITableView
+        {
+            if (items == null || items.Count == 0)
+            {
+                items = newItems;
+            }
+            RefreshGridWithoutFilter(items, collection, grid, service);
+        }
+
         public static void RefreshGridWithoutFilter<T>(List<T> items, ObservableCollection<T> collection, DataGrid grid, TableService<T> service) where T : class, ITableView
         {
             var parent = grid.Parent;
@@ -119,17 +126,6 @@ namespace WpfView
                 FilterGridByOneField(collection, items, service, grid, properties);
             }
         }
-
-        //public void RefreshGrid<T>(List<T> items, ObservableCollection<T> collection, DataGrid grid, ITableViewService<T> service) where T : class, ITableView
-        //{
-        //    var parent = grid.Parent;
-        //    if (parent != null && parent is Grid)
-        //    {
-        //        var pg = (Grid)parent;
-        //        Dictionary<string, string> properties = CommonClass.GetProperties(pg);
-        //        CommonClass.FilterGridByOneField(collection, items, service, grid, properties);
-        //    }
-        //}
 
         public static Dictionary<string, string> GetProperties(Grid pg)
         {
@@ -166,21 +162,6 @@ namespace WpfView
             return false;
         }
 
-        //public static ObservableCollection<T> FilterGrid<T>(string s, ObservableCollection<T> oCollection, List<T> collection, ITableViewService<T> service, DataGrid grid) where T : class, ITableView
-        //{
-        //    if (string.IsNullOrEmpty(s))
-        //    {
-        //        oCollection = AddItem(oCollection, collection, service, grid);
-        //        return oCollection;
-        //    }
-        //    else
-        //    {
-        //        var filtred = collection.Where(x => IsContained(x, s)).ToList();
-        //        oCollection = AddItem(oCollection, filtred, service, grid);
-        //        return oCollection;
-        //    }
-        //}
-
         public static void SizeChanged(object sender, SizeChangedEventArgs e)
         {
             var grid = (DataGrid)sender;
@@ -189,7 +170,6 @@ namespace WpfView
             if (parent != null && parent is Grid)
             {
                 var pg = (Grid)parent;
-                //double width = (grid.ActualWidth - searchPosition) / grid.Columns.Where(c => c.Visibility == Visibility.Visible).ToList().Count;
                 double scrollWidth = 0;
                 if (grid.Items.Count * GetRowsHeight(grid) > grid.ActualHeight)
                 {
@@ -210,23 +190,6 @@ namespace WpfView
                 }
             }
         }
-
-        //private static bool _columnWidthChanging;
-        //private static void ColumnWidthPropertyChanged(object sender, EventArgs e)
-        //{
-        //    _columnWidthChanging = true;
-        //    if (sender != null)
-        //    {
-        //        var column = (DataGridColumn)sender;
-        //        if (_columnWidthChanging)
-        //        {
-        //            _columnWidthChanging = false;
-
-        //            /// whatever you wanted to do here
-
-        //        }
-        //    }
-        //}
 
         public static double GetRowsHeight(DataGrid grid)
         {
@@ -295,43 +258,6 @@ namespace WpfView
                 oCollection = AddItem(oCollection, collection, service, grid);
                 return oCollection;
         }
-
-        //    public static ObservableCollection<T> FilterGridByOneField<T>(ObservableCollection<T> oCollection, List<T> collection, ITableViewService<T> service, DataGrid grid, Dictionary<string, string> properties) where T : class, ITableView
-        //{
-        //    if (properties.All(x => string.IsNullOrEmpty(x.Value)))
-        //    {
-        //        oCollection = AddItem(oCollection, collection, service, grid);
-        //        return oCollection;
-        //    }
-        //    else
-        //    {
-        //        var filtred = new List<T>();
-        //        foreach (var item in collection)
-        //        {
-        //            bool IsFiltred = true;
-        //            var type = item.GetType();
-        //            foreach (var kvp in properties)
-        //            {
-        //                var field = type.GetProperty(kvp.Key);
-        //                var value = field?.GetValue(item);
-        //                if (value != null && !string.IsNullOrEmpty(kvp.Value))
-        //                {
-        //                    if (!value.ToString().ToLower().Contains(kvp.Value.ToLower()))
-        //                    {
-        //                        IsFiltred = false;
-        //                    }
-        //                }
-        //            }
-
-        //            if (IsFiltred)
-        //            {
-        //                filtred.Add(item);
-        //            }
-        //        }
-        //        oCollection = AddItem(oCollection, filtred, service, grid);
-        //        return oCollection;
-        //    }
-        //}
 
         public static ObservableCollection<T> FilterGridByOneField<T>(ObservableCollection<T> oCollection, List<T> collection, TableService<T> service, DataGrid grid, Dictionary<string, string> properties) where T : class, ITableView
         {

@@ -820,16 +820,9 @@ namespace WpfView
             {
                 if (PassportsItem.IsSelected)
                 {
-                    if (passports == null || passports.Count == 0)
-                    {
-                        passports = dataService.GetTechViews(false);
-                    }
-                    CommonClass.RefreshGridWithoutFilter(passports, Passports, machineDataGrid, passportTableService);
+                    CommonClass.TabChangeProcess(dataService.GetTechViews(false),passports, Passports, machineDataGrid, passportTableService);
                 }
-                else if (HandBookItem.IsSelected)
-                {
-
-                }
+                else if (HandBookItem.IsSelected){}
                 else if (ArchiveItem.IsSelected)
                 {
                     if (archive == null || archive.Count == 0)
@@ -851,90 +844,47 @@ namespace WpfView
                 }
                 else if (OldPassportsItem.IsSelected)
                 {
-                    if (oldPassports == null || oldPassports.Count == 0)
-                    {
-                        oldPassports = dataService.GetTechViews(true);
-                    }
-                    CommonClass.RefreshGridWithoutFilter(oldPassports, OldPassports, oldMachineDataGrid, oldPassportTableService);
+                    CommonClass.TabChangeProcess(dataService.GetTechViews(true), oldPassports, OldPassports, oldMachineDataGrid, oldPassportTableService);
                 }
             }
         }
+
 
         private void innerTabControl_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (e.Source is TabControl)
             {
                 if (OperatorsItem.IsSelected)
-                {
-                    if (operators == null || operators.Count == 0)
-                    {
-                        operators = dataService.GetOperatorViews();
-                    }
-                    //CommonClass.FillGrid(Operators, operators, operatorTableService, operatorsDataGrid);
-                    CommonClass.RefreshGridWithoutFilter( operators, Operators, operatorsDataGrid, operatorTableService);
+                {                   
+                    CommonClass.TabChangeProcess(dataService.GetOperatorViews(), operators, Operators, operatorsDataGrid, operatorTableService);
                 }
                 else if (UnitsItem.IsSelected)
                 {
-                    if (units == null || units.Count == 0)
-                    {
-                        units = dataService.GetUnitViews();
-                    }
-                    //CommonClass.FillGrid(Units, units, unitTableService, unitsDataGrid);
-                    CommonClass.RefreshGridWithoutFilter( units, Units, unitsDataGrid, unitTableService);
+                    CommonClass.TabChangeProcess(dataService.GetUnitViews(), units, Units, unitsDataGrid, unitTableService);
                 }
                 else if (MaterialsItem.IsSelected)
                 {
-                    if (materials == null || materials.Count == 0)
-                    {
-                        materials = dataService.GetMaterialInfoViews();
-                    }
-                    //CommonClass.FillGrid(Materials, materials, materialTableService, materialsDataGrid);
-                    CommonClass.RefreshGridWithoutFilter( materials, Materials, materialsDataGrid, materialTableService);
+                    CommonClass.TabChangeProcess(dataService.GetMaterialInfoViews(), materials, Materials, materialsDataGrid, materialTableService);
                 }
                 else if (SuppliersItem.IsSelected)
                 {
-                    if (suppliers == null || suppliers.Count == 0)
-                    {
-                        suppliers = dataService.GetSupViews();
-                    }
-                    //CommonClass.FillGrid(Suppliers, suppliers, supplierTableService, suppliersDataGrid);
-                    CommonClass.RefreshGridWithoutFilter( suppliers, Suppliers, suppliersDataGrid, supplierTableService);
+                    CommonClass.TabChangeProcess(dataService.GetSupViews(), suppliers, Suppliers, suppliersDataGrid, supplierTableService);
                 }
                 else if (ETypesItem.IsSelected)
                 {
-                    if (equipmentTypes == null || equipmentTypes.Count == 0)
-                    {
-                        equipmentTypes = dataService.GetEquipmentTypeViews();
-                    }
-                    //CommonClass.FillGrid(EquipmentTypes, equipmentTypes, equipmentTypeTableService, typesDataGrid);
-                    CommonClass.RefreshGridWithoutFilter(equipmentTypes, EquipmentTypes,  typesDataGrid, equipmentTypeTableService);
+                    CommonClass.TabChangeProcess(dataService.GetEquipmentTypeViews(),equipmentTypes, EquipmentTypes,  typesDataGrid, equipmentTypeTableService);
                 }
                 else if (MTypesItem.IsSelected)
                 {
-                    if (maintenanceTypes == null || maintenanceTypes.Count == 0)
-                    {
-                        maintenanceTypes = dataService.GetMaintenanceTypeViews();
-                    }
-                    //CommonClass.FillGrid(MaintenanceTypes, maintenanceTypes, maintenanceTypeTableService, maintenanceTypesDataGrid);
-                    CommonClass.RefreshGridWithoutFilter( maintenanceTypes, MaintenanceTypes, maintenanceTypesDataGrid, maintenanceTypeTableService);
+                    CommonClass.TabChangeProcess(dataService.GetMaintenanceTypeViews(), maintenanceTypes, MaintenanceTypes, maintenanceTypesDataGrid, maintenanceTypeTableService);
                 }
                 else if (DepartmentsItem.IsSelected)
                 {
-                    if (departments == null || departments.Count == 0)
-                    {
-                        departments = dataService.GetDepartmentViews();
-                    }
-                    //CommonClass.FillGrid(Departments, departments, departmentTableService, departmentsDataGrid);
-                    CommonClass.RefreshGridWithoutFilter( departments, Departments, departmentsDataGrid, departmentTableService);
+                    CommonClass.TabChangeProcess(dataService.GetDepartmentViews(), departments, Departments, departmentsDataGrid, departmentTableService);
                 }
                 else if (PointsItem.IsSelected)
                 {
-                    if (points == null || points.Count == 0)
-                    {
-                        points = dataService.GetPointViews();
-                    }
-                    //CommonClass.FillGrid(Points, points, pointTableService, pointsDataGrid);
-                    CommonClass.RefreshGridWithoutFilter( points, Points, pointsDataGrid, pointTableService);
+                    CommonClass.TabChangeProcess(dataService.GetPointViews(), points, Points, pointsDataGrid, pointTableService);
                 }
             }
         }
