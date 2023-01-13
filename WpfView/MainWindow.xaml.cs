@@ -56,6 +56,8 @@ namespace WpfView
         private List<PointView> points { get; set; }
         public List<OuterArchiveView> archive { get; set; }
 
+        private int defaultDays = 10;
+
         public TableService<MaterialInfoView> materialTableService;
         public TableService<SupplierView> supplierTableService;
         public TableService<TechView> passportTableService;
@@ -318,7 +320,7 @@ namespace WpfView
             if (result != null && result.Value)
             {
                 DateTime start = DateTime.Today;
-                DateTime end = DateTime.Today.AddDays(30);
+                DateTime end = DateTime.Today.AddDays(defaultDays);
                 if (startPlanPicker.SelectedDate != null)
                 {
                     start = (DateTime)startPlanPicker.SelectedDate;
@@ -466,8 +468,8 @@ namespace WpfView
             CommonClass.FilterGridByOneField(Passports, passports, passportTableService, machineDataGrid, GetProperties(machineDataGrid));
             CommonClass.FilterGridByOneField(OldPassports, oldPassports, oldPassportTableService, oldMachineDataGrid, GetProperties(oldMachineDataGrid));
 
-            MakeArchiveTab(DateTime.Today.AddDays(-30), DateTime.Today);
-            MakePlanTab(DateTime.Today, DateTime.Today.AddDays(30));
+            //MakeArchiveTab(DateTime.Today.AddDays(-30), DateTime.Today);
+            //MakePlanTab(DateTime.Today, DateTime.Today.AddDays(30));
         }
 
         private void RefreshMaterialsGrid()
@@ -486,7 +488,7 @@ namespace WpfView
         {
             var start = (DatePicker)e.OriginalSource;
             var st = (DateTime)start.SelectedDate;
-            DateTime end = endPlanPicker.SelectedDate != null ? (DateTime)endPlanPicker.SelectedDate : DateTime.Today.AddDays(30);
+            DateTime end = endPlanPicker.SelectedDate != null ? (DateTime)endPlanPicker.SelectedDate : DateTime.Today.AddDays(defaultDays);
             startPlanPicker.SelectedDate = st;
             RefilterPlannedGrid(st, end, plannedTextBox.Text);
         }
@@ -509,7 +511,7 @@ namespace WpfView
         {
             var start = (DatePicker)e.OriginalSource;
             var st = (DateTime)start.SelectedDate;
-            DateTime end = endDatePicker.SelectedDate != null ? (DateTime)endDatePicker.SelectedDate : DateTime.Today.AddDays(30);
+            DateTime end = endDatePicker.SelectedDate != null ? (DateTime)endDatePicker.SelectedDate : DateTime.Today.AddDays(defaultDays);
 
             if (st > end)
             {
@@ -599,7 +601,7 @@ namespace WpfView
         private void plannedTextBox_TextChanged(object sender, TextChangedEventArgs e)
         {
             string s = ((TextBox)e.Source).Text;
-            DateTime end = endPlanPicker.SelectedDate != null ? (DateTime)endPlanPicker.SelectedDate : DateTime.Today.AddDays(30);
+            DateTime end = endPlanPicker.SelectedDate != null ? (DateTime)endPlanPicker.SelectedDate : DateTime.Today.AddDays(defaultDays);
             DateTime start = startPlanPicker.SelectedDate != null ? (DateTime)startPlanPicker.SelectedDate : DateTime.Today;
 
             RefilterPlannedGrid(start, end, s);
@@ -632,7 +634,7 @@ namespace WpfView
         {
             PrintFormsMaker maker = new PrintFormsMaker("CommonPlan");
             DateTime start = startPlanPicker.SelectedDate != null ? (DateTime)startPlanPicker.SelectedDate : DateTime.Today;
-            DateTime end = endPlanPicker.SelectedDate != null ? (DateTime)endPlanPicker.SelectedDate : DateTime.Today.AddDays(30);
+            DateTime end = endPlanPicker.SelectedDate != null ? (DateTime)endPlanPicker.SelectedDate : DateTime.Today.AddDays(defaultDays);
             maker.PrintCommonPlanForm(start, end, plannedViews);
         }
 
@@ -640,7 +642,7 @@ namespace WpfView
         {
             PrintFormsMaker maker = new PrintFormsMaker("Plan");
             DateTime start = startPlanPicker.SelectedDate != null ? (DateTime)startPlanPicker.SelectedDate : DateTime.Today;
-            DateTime end = endPlanPicker.SelectedDate != null ? (DateTime)endPlanPicker.SelectedDate : DateTime.Today.AddDays(30);
+            DateTime end = endPlanPicker.SelectedDate != null ? (DateTime)endPlanPicker.SelectedDate : DateTime.Today.AddDays(defaultDays);
             maker.PrintPlanForm(start, end, plannedViews);
         }
 
@@ -648,7 +650,7 @@ namespace WpfView
         {
             PrintFormsMaker maker = new PrintFormsMaker("WorkOrder");
             DateTime start = startPlanPicker.SelectedDate != null ? (DateTime)startPlanPicker.SelectedDate : DateTime.Today;
-            DateTime end = endPlanPicker.SelectedDate != null ? (DateTime)endPlanPicker.SelectedDate : DateTime.Today.AddDays(30);
+            DateTime end = endPlanPicker.SelectedDate != null ? (DateTime)endPlanPicker.SelectedDate : DateTime.Today.AddDays(defaultDays);
             if (start.Date == end.Date)
             {
                 maker.PrintWorkOrderForm(start, plannedViews);
@@ -822,7 +824,14 @@ namespace WpfView
                             passports = dataService.GetTechViews(false);
                             CommonClass.RefreshGrid(passports, Passports, machineDataGrid, passportTableService);
                         }
-                        MakePlanTab(DateTime.Today, DateTime.Today.AddDays(30));
+                        try
+                        {
+                            MakePlanTab(DateTime.Today, DateTime.Today.AddDays(defaultDays));
+                        }
+                        catch (Exception ex)
+                        {
+
+                        }
                     }
                 }
                 else if (OldPassportsItem.IsSelected)
