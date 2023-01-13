@@ -200,7 +200,7 @@ namespace LogicLibrary
                         episodeDates.Add(episode.Date);
                     }
                 }
-                var undoneEpisodes = info.Episodes.Where(e => e.IsDone.HasValue && !e.IsDone.Value).ToList();
+                var undoneEpisodes = info.Episodes.Where(e => e.IsDone.HasValue && !e.IsDone.Value || !e.IsDone.HasValue).ToList();
                 if(undoneEpisodes != null && undoneEpisodes.Count > 0)
                 {
                     FutureDate = undoneEpisodes.Min(e => e.Date);
