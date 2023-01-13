@@ -23,26 +23,9 @@ namespace WpfView
     //не пересчитывать даты эпизодов с запланированной датой, отличной от высчитываемой - и далее
     //показывать прикреплённых работников 
     //обновление таблиц после неполучившегося удаления
-    //проверить удаления -- проверить на их базе
     //ускорить 
     //разобраться с AddItem с не теми сервисами
-    //UnitGrid -- popup
-
-    //попробовать фильтровать гриды через Items.Filter
-    //    textBox.TextChanged += delegate
-    //                    {
-    //                        unitComboBox.Items.Filter += (item) =>
-    //                        {
-    //                            if (((INameIdView) item).Name.ToLower().Contains(textBox.Text.ToLower()))
-    //                            {
-    //                                return true;
-    //                            }
-    //                            else
-    //                            {
-    //                              return false;
-    //                            }
-    //                        };
-    //                    };
+    //перенос строк в экселе
 
     public partial class MainWindow : Window
     {
