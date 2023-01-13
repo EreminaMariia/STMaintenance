@@ -16,8 +16,8 @@
                         <Label Content="Дата окончания гарантии" HorizontalAlignment="Left" Margin="38,229,0,0" VerticalAlignment="Top" Height="31" Width="207"/>
                         <Label Content="Дата вывода из эксплуатации" HorizontalAlignment="Left" Margin="517,142,0,0" VerticalAlignment="Top" Height="31" Width="207"/>
                         <Label Content="Участок расположения оборудования" HorizontalAlignment="Left" Margin="38,419,0,0" VerticalAlignment="Top" Height="31" Width="348"/>
-                        <Label Content="Инвентарный номер оборудования" HorizontalAlignment="Left" Margin="610,91,0,0" VerticalAlignment="Top" Height="31" Width="277" RenderTransformOrigin="0.509,0.609"/>
-                        <Label Content="Серийный номер оборудование" HorizontalAlignment="Left" Margin="39,90,0,0" VerticalAlignment="Top" Height="32" Width="269"/>
+                        <Label Content="Инвентарный номер оборудования" HorizontalAlignment="Left" Margin="626,91,0,0" VerticalAlignment="Top" Height="31" Width="277" RenderTransformOrigin="0.509,0.609"/>
+                        <Label Content="Серийный номер оборудования" HorizontalAlignment="Left" Margin="39,90,0,0" VerticalAlignment="Top" Height="32" Width="248"/>
                         <Label Content="Год выпуска оборудования" HorizontalAlignment="Left" Margin="38,188,0,0" VerticalAlignment="Top" Height="31" Width="225"/>
                         <Label Content="Дата начала эксплуатации" HorizontalAlignment="Left" Margin="39,142,0,0" VerticalAlignment="Top" Height="32" Width="206"/>
                         <Label Content="Ответственный за эксплуатацию оборудования" HorizontalAlignment="Left" Margin="38,372,0,0" VerticalAlignment="Top" Height="31" Width="381"/>
@@ -51,9 +51,9 @@
                                 </DataTemplate>
                             </ComboBox.ItemTemplate>
                         </ComboBox>
-                        <TextBox x:Name="inventoryTextBox" HorizontalAlignment="Left" Margin="902,92,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="180" Height="28"/>
+                        <TextBox x:Name="inventoryTextBox" HorizontalAlignment="Left" Margin="902,92,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="206" Height="28"/>
                         <TextBox x:Name="nameTextBox" HorizontalAlignment="Left" Margin="287,10,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="337" Height="75"/>
-                        <TextBox x:Name="serialTextBox" HorizontalAlignment="Left" Margin="313,91,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="183" Height="30"/>
+                        <TextBox x:Name="serialTextBox" HorizontalAlignment="Left" Margin="287,91,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="328" Height="30"/>
                         <DatePicker x:Name="madeDatePicker" HorizontalAlignment="Left" Margin="300,188,0,0" VerticalAlignment="Top" Height="29" Width="144"/>
                         <DatePicker x:Name="decomissioningDatePicker" HorizontalAlignment="Left" Margin="748,145,0,0" VerticalAlignment="Top" Height="29" Width="144"/>
                         <DatePicker x:Name="expluatationDatePicker" HorizontalAlignment="Left" Margin="300,144,0,0" VerticalAlignment="Top" Height="28" Width="144"/>
