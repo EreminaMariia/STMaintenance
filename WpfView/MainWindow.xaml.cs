@@ -480,6 +480,9 @@ namespace WpfView
             CommonClass.RefreshGrid(passports, Passports, machineDataGrid, passportTableService);
             CommonClass.RefreshGrid(oldPassports, OldPassports, oldMachineDataGrid, oldPassportTableService);
 
+            //CommonClass.FilterGridByOneField(Passports, passports, passportTableService, machineDataGrid, GetProperties(machineDataGrid));
+            //CommonClass.FilterGridByOneField(OldPassports, oldPassports, oldPassportTableService, oldMachineDataGrid, GetProperties(oldMachineDataGrid));
+
             MakeArchiveTab(DateTime.Today.AddDays(-30), DateTime.Today);
             MakePlanTab(DateTime.Today, DateTime.Today.AddDays(30));
         }
@@ -487,11 +490,13 @@ namespace WpfView
         private void RefreshMaterialsGrid()
         {
             CommonClass.RefreshGrid(materials, Materials, materialsDataGrid, materialTableService);
+            CommonClass.FilterGridByOneField(Materials, materials, materialTableService, materialsDataGrid, GetProperties(materialsDataGrid));
         }
 
         private void RefreshDepartmentGrid()
         {
             CommonClass.RefreshGrid(departments, Departments, departmentsDataGrid, departmentTableService);
+            CommonClass.FilterGridByOneField(Departments, departments, departmentTableService, departmentsDataGrid, GetProperties(departmentsDataGrid));
         }
 
         private void startPlanPicker_SelectedDateChanged(object sender, SelectionChangedEventArgs e)
@@ -698,6 +703,26 @@ namespace WpfView
                 }
             }
         }
+
+        private Dictionary<string, string> GetProperties (FrameworkElement element)
+        {
+            Dictionary<string, string> properties = new Dictionary<string, string>();
+            var parent = element.Parent;
+            if (parent != null && parent is Grid)
+            {
+                var pg = (Grid)parent;
+                foreach (var child in pg.Children)
+                {
+                    if (child is TextBox)
+                    {
+                        var tb = (TextBox)child;
+                    }
+                }
+                        properties = CommonClass.GetProperties(pg);
+            }
+            return properties;
+        }
+
         private void TextBox_TextChanged(object sender, TextChangedEventArgs e)
         {
             var box = (TextBox)e.Source;
@@ -707,7 +732,22 @@ namespace WpfView
             if (parent != null && parent is Grid)
             {
                 var pg = (Grid)parent;
+                {
+                    foreach (var p in pg.Children)
+                    {
+                        if (p is TextBox)
+                        {
+                            var b = (TextBox)p;
+                            if (b != null && b.Name == box.Name)
+                            {
+                                b.Text = box.Text;
+                            }
+                        }
+                    }
+                }
                 Dictionary<string, string> properties = CommonClass.GetProperties(pg);
+                if (properties.ContainsKey(names[1]))
+                
 
                 foreach (var child in pg.Children)
                 {
@@ -783,8 +823,12 @@ namespace WpfView
                 {
                     passports = dataService.GetTechViews(false);
                     CommonClass.RefreshGrid(passports, Passports, machineDataGrid, passportTableService);
+                    CommonClass.FilterGridByOneField(Passports, passports, passportTableService, machineDataGrid, GetProperties(machineDataGrid));
                 }
-
+                else
+                {
+                    CommonClass.FilterGridByOneField(Passports, passports, passportTableService, machineDataGrid, GetProperties(machineDataGrid));
+                }
             }
             else if (HandBookItem.IsSelected)
             {
@@ -827,6 +871,7 @@ namespace WpfView
                 {
                     operators = dataService.GetOperatorViews();
                     CommonClass.FillGrid(Operators, operators, operatorTableService, operatorsDataGrid);
+                    CommonClass.FilterGridByOneField(Operators, operators, operatorTableService, operatorsDataGrid, GetProperties(operatorsDataGrid));
                 }
             }
             else if (UnitsItem.IsSelected)
