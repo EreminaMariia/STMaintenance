@@ -140,7 +140,7 @@ namespace WpfView
             var episodes = dataService.GetMaintenanceEpisodeViews().Where(
                     m => passports.FirstOrDefault(p => p.Id == m.MachineId) != null &&
                     maintenances.FirstOrDefault(a => a.Id == m.MaintenanceId) != null).ToList();
-           
+
             episodes.AddRange(GetNewEpisodes(end, episodes, maintenances));
 
             MakePlanTab(start, end, adds, episodes);
@@ -154,7 +154,7 @@ namespace WpfView
                 if (!episodes.Any(e => e.FutureDate.Date == maintenance.FutureDate.Date && e.MaintenanceId == maintenance.Id))
                 {
                     var eps = episodes.Where(e => e.MaintenanceId == maintenance.Id).ToList();
-                    DateTime first = DateTime.MinValue;
+                    DateTime first = maintenance.FutureDate.Date;
                     if (eps.Count > 0)
                     {
                         first = eps.Min(d => d.FutureDate);
@@ -169,7 +169,7 @@ namespace WpfView
                         }
                     }
                 }
-                else if(episodes.Any(e => e.MaintenanceId == maintenance.Id))
+                else if (episodes.Any(e => e.MaintenanceId == maintenance.Id))
                 {
                     var mEpisodes = episodes.Where(e => e.MaintenanceId == maintenance.Id).ToList();
                     DateTime last = mEpisodes.Max(d => d.FutureDate);
@@ -368,7 +368,7 @@ namespace WpfView
                 passportWindow.Hide();
             }
             if (((DataGrid)e.Source).SelectedItem != null && ((DataGrid)e.Source).SelectedItem is TechView)
-            {               
+            {
                 int id = ((TechView)((DataGrid)e.Source).SelectedItem).Id;
                 if (id != 0)
                 {
@@ -689,7 +689,7 @@ namespace WpfView
             }
         }
 
-        private Dictionary<string, string> GetProperties (FrameworkElement element)
+        private Dictionary<string, string> GetProperties(FrameworkElement element)
         {
             Dictionary<string, string> properties = new Dictionary<string, string>();
             var parent = element.Parent;
@@ -703,7 +703,7 @@ namespace WpfView
                         var tb = (TextBox)child;
                     }
                 }
-                        properties = CommonClass.GetProperties(pg);
+                properties = CommonClass.GetProperties(pg);
             }
             return properties;
         }
@@ -731,7 +731,7 @@ namespace WpfView
                     }
                 }
                 Dictionary<string, string> properties = CommonClass.GetProperties(pg);
-                
+
 
                 foreach (var child in pg.Children)
                 {
@@ -805,9 +805,9 @@ namespace WpfView
             {
                 if (PassportsItem.IsSelected)
                 {
-                    CommonClass.TabChangeProcess(dataService.GetTechViews(false),passports, Passports, machineDataGrid, passportTableService);
+                    CommonClass.TabChangeProcess(dataService.GetTechViews(false), passports, Passports, machineDataGrid, passportTableService);
                 }
-                else if (HandBookItem.IsSelected){}
+                else if (HandBookItem.IsSelected) { }
                 else if (ArchiveItem.IsSelected)
                 {
                     if (archive == null || archive.Count == 0)
@@ -847,7 +847,7 @@ namespace WpfView
             if (e.Source is TabControl)
             {
                 if (OperatorsItem.IsSelected)
-                {                   
+                {
                     CommonClass.TabChangeProcess(dataService.GetOperatorViews(), operators, Operators, operatorsDataGrid, operatorTableService);
                 }
                 else if (UnitsItem.IsSelected)
@@ -864,7 +864,7 @@ namespace WpfView
                 }
                 else if (ETypesItem.IsSelected)
                 {
-                    CommonClass.TabChangeProcess(dataService.GetEquipmentTypeViews(),equipmentTypes, EquipmentTypes,  typesDataGrid, equipmentTypeTableService);
+                    CommonClass.TabChangeProcess(dataService.GetEquipmentTypeViews(), equipmentTypes, EquipmentTypes, typesDataGrid, equipmentTypeTableService);
                 }
                 else if (MTypesItem.IsSelected)
                 {
