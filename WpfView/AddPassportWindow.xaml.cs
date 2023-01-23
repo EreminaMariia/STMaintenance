@@ -508,7 +508,7 @@ namespace WpfView
             {
                 CommonClass.RefreshGridWithoutFilter(m, OldMaintenances, oldMaintenanceGrid, oldMaintenanceTableService);
             }
-                MakePlannedGrid();
+            MakePlannedGrid();
             MakeArchiveGrid();
         }
 
@@ -524,8 +524,8 @@ namespace WpfView
 
         public void RefreshAdditionalGrid(bool isFiltred = true)
         {
-                var a = passportMaker.Additionals;
-                passportMaker.RefreshData();
+            var a = passportMaker.Additionals;
+            passportMaker.RefreshData();
             if (isFiltred)
             {
                 CommonClass.RefreshGrid(a, Additionals, additionalGrid, additionalTableService);
@@ -535,13 +535,13 @@ namespace WpfView
                 CommonClass.RefreshGridWithoutFilter(a, Additionals, additionalGrid, additionalTableService);
             }
             MakePlannedGrid();
-                MakeArchiveGrid();
+            MakeArchiveGrid();
         }
 
         public void RefreshErrorGrid(bool isFiltred = true)
         {
-                var a = passportMaker.Errors;
-                passportMaker.RefreshData();
+            var a = passportMaker.Errors;
+            passportMaker.RefreshData();
             if (isFiltred)
             {
                 CommonClass.RefreshGrid(a, Errors, errorsGrid, errorTableService);

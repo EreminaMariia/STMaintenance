@@ -172,10 +172,104 @@
                 <TabItem.Content>
                     <Grid>
                         <DataGrid x:Name="errorsGrid" AutoGeneratingColumn="HideIdColumn"
+                              AutoGenerateColumns="false"
                               CanUserAddRows="True" ItemsSource="{Binding Errors}" 
-                              CellEditEnding="сellEditEnding" 
+                              CellEditEnding="сellEditEnding"
+                              HorizontalAlignment="Stretch" 
+                              HorizontalContentAlignment="Stretch" 
+                              ColumnWidth="Auto"
                               MouseDoubleClick="errorsGrid_MouseDoubleClick" Margin="0,27,0,0"
-                              SizeChanged="SizeChanged" Loaded="Loaded"/>
+                              SizeChanged="SizeChanged" Loaded="Loaded">
+                            <DataGrid.Resources>
+                                <local:DateTimeConverter x:Key="DateTimeConverter"/>
+                            </DataGrid.Resources>
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Binding="{Binding Date, StringFormat=\{0:dd.MM.yy HH:mm:ss\}}">
+                                    <DataGridTextColumn.HeaderStyle>
+                                        <Style TargetType="DataGridColumnHeader">
+                                            <Setter Property="HorizontalContentAlignment" Value="Center" />
+                                        </Style>
+                                    </DataGridTextColumn.HeaderStyle>
+                                    <DataGridTextColumn.Header>
+                                        <GridViewColumnHeader HorizontalContentAlignment="Center">
+                                            <TextBlock HorizontalAlignment="Stretch" TextAlignment="Center" Text="Дата остановки оборудования" TextWrapping="Wrap" />
+                                        </GridViewColumnHeader>
+                                    </DataGridTextColumn.Header>
+                                </DataGridTextColumn>
+                                <DataGridTextColumn Binding="{Binding Code}">
+                                    <DataGridTextColumn.HeaderStyle>
+                                        <Style TargetType="DataGridColumnHeader">
+                                            <Setter Property="HorizontalContentAlignment" Value="Center" />
+                                        </Style>
+                                    </DataGridTextColumn.HeaderStyle>
+                                    <DataGridTextColumn.Header>
+                                        <GridViewColumnHeader>
+                                            <TextBlock HorizontalAlignment="Stretch" TextAlignment="Center" Text="Код ошибки" TextWrapping="Wrap" />
+                                        </GridViewColumnHeader>
+                                    </DataGridTextColumn.Header>
+                                </DataGridTextColumn>
+                                <DataGridTextColumn Binding="{Binding Name}">
+                                    <DataGridTextColumn.HeaderStyle>
+                                        <Style TargetType="DataGridColumnHeader">
+                                            <Setter Property="HorizontalContentAlignment" Value="Center" />
+                                        </Style>
+                                    </DataGridTextColumn.HeaderStyle>
+                                    <DataGridTextColumn.Header>
+                                        <GridViewColumnHeader HorizontalContentAlignment="Center">
+                                            <TextBlock HorizontalAlignment="Stretch" TextAlignment="Center" Text="Наименование ошибки" TextWrapping="Wrap" />
+                                        </GridViewColumnHeader>
+                                    </DataGridTextColumn.Header>
+                                </DataGridTextColumn>
+                                <DataGridTextColumn Binding="{Binding Description}">
+                                    <DataGridTextColumn.HeaderStyle>
+                                        <Style TargetType="DataGridColumnHeader">
+                                            <Setter Property="HorizontalContentAlignment" Value="Center" />
+                                        </Style>
+                                    </DataGridTextColumn.HeaderStyle>
+                                    <DataGridTextColumn.Header>
+                                        <GridViewColumnHeader HorizontalContentAlignment="Center">
+                                            <TextBlock HorizontalAlignment="Stretch" TextAlignment="Center" Text="Описание ошибки" TextWrapping="Wrap" />
+                                        </GridViewColumnHeader>
+                                    </DataGridTextColumn.Header>
+                                </DataGridTextColumn>
+                                <DataGridTextColumn Binding="{Binding IsWorking}">
+                                    <DataGridTextColumn.HeaderStyle>
+                                        <Style TargetType="DataGridColumnHeader">
+                                            <Setter Property="HorizontalContentAlignment" Value="Center" />
+                                        </Style>
+                                    </DataGridTextColumn.HeaderStyle>
+                                    <DataGridTextColumn.Header>
+                                        <GridViewColumnHeader HorizontalContentAlignment="Center">
+                                            <TextBlock HorizontalAlignment="Stretch" TextAlignment="Center" Text="Работоспособность оборудования да/нет" TextWrapping="Wrap" />
+                                        </GridViewColumnHeader>
+                                    </DataGridTextColumn.Header>
+                                </DataGridTextColumn>
+                                <DataGridTextColumn Binding="{Binding Comment}">
+                                    <DataGridTextColumn.HeaderStyle>
+                                        <Style TargetType="DataGridColumnHeader">
+                                            <Setter Property="HorizontalContentAlignment" Value="Center" />
+                                        </Style>
+                                    </DataGridTextColumn.HeaderStyle>
+                                    <DataGridTextColumn.Header>
+                                        <GridViewColumnHeader HorizontalContentAlignment="Center">
+                                            <TextBlock HorizontalAlignment="Stretch" TextAlignment="Center" Text="Комментарий" TextWrapping="Wrap" />
+                                        </GridViewColumnHeader>
+                                    </DataGridTextColumn.Header>
+                                </DataGridTextColumn>
+                                <DataGridTextColumn Binding="{Binding DateOfSolving, StringFormat=\{0:dd.MM.yy HH:mm:ss\}, Converter={StaticResource DateTimeConverter}}">
+                                    <DataGridTextColumn.HeaderStyle>
+                                        <Style TargetType="DataGridColumnHeader">
+                                            <Setter Property="HorizontalContentAlignment" Value="Center" />
+                                        </Style>
+                                    </DataGridTextColumn.HeaderStyle>
+                                    <DataGridTextColumn.Header>
+                                        <GridViewColumnHeader HorizontalContentAlignment="Center">
+                                            <TextBlock HorizontalAlignment="Stretch" TextAlignment="Center" Text="Дата устранения неполадки" TextWrapping="Wrap" />
+                                        </GridViewColumnHeader>
+                                    </DataGridTextColumn.Header>
+                                </DataGridTextColumn>
+                            </DataGrid.Columns>
+                        </DataGrid>
                         <!--<Label Content="Поиск" HorizontalAlignment="Left" Margin="2,-4,0,0" VerticalAlignment="Top"/>
                         <TextBox HorizontalAlignment="Left" Margin="62,0,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="381" Height="27" 
                                  TextChanged="Errors_TextBox_TextChanged"/>-->

@@ -227,7 +227,7 @@ namespace WpfView
                     double width = (grid.ActualWidth - scrollWidth - searchPosition) / grid.Columns.Where(c => c.Visibility == Visibility.Visible).ToList().Count;
                     foreach (var column in grid.Columns)
                     {
-                        if (column.Visibility == Visibility.Visible && !string.IsNullOrWhiteSpace(column.Header.ToString()))
+                        if (column.Visibility == Visibility.Visible && !string.IsNullOrWhiteSpace(column.Header?.ToString()))
                         {
                             var c = column.ClipboardContentBinding;
                             if (c is Binding)
