@@ -834,9 +834,48 @@ namespace Entities
                     }
                 }
                 maintenanceInfo.Episodes.Add(maintananceEpisode);
-                context.SaveChanges();
             }
+            context.SaveChanges();
             return maintananceEpisode;
+        }
+
+        public List<MaintenanceEpisode> AddUndoneEpisodes(int[] maintenanceId, DateTime[] date, List<Operator> operators, DateTime[] oldDate)
+        {
+            List<MaintenanceEpisode> maintananceEpisodes = new List<MaintenanceEpisode>();
+            for (int i = 0; i < maintenanceId.Length; i++)
+            {
+                MaintenanceInfo maintenanceInfo = context.MaintenanceInfos.FirstOrDefault(x => x.Id == maintenanceId[i]);
+                if (maintenanceInfo != null)
+                {
+                    MaintenanceEpisode maintananceEpisode = new MaintenanceEpisode();
+                    maintananceEpisode.Info = maintenanceInfo;
+                    maintananceEpisode.Date = date[i];
+                    maintananceEpisode.Operators = operators;
+                    maintananceEpisode.IsDone = false;
+                    context.MaintenanceEpisodes.Add(maintananceEpisode);
+
+                    if (maintenanceInfo.Episodes == null)
+                    {
+                        maintenanceInfo.Episodes = new List<MaintenanceEpisode>();
+                    }
+                    TimeSpan delta = date[i] - oldDate[i];
+                    if (delta != TimeSpan.Zero)
+                    {
+                        var eps = context.MaintenanceEpisodes.Where(a => a.Info.Id == maintananceEpisode.Info.Id && a.Date.Date > oldDate[i]);
+                        foreach (var e in eps)
+                        {
+                            if (e.IsDone == null || !(bool)e.IsDone)
+                            {
+                                e.Date += delta;
+                            }
+                        }
+                    }
+                    maintenanceInfo.Episodes.Add(maintananceEpisode);
+                    maintananceEpisodes.Add(maintananceEpisode);
+                }
+            }
+            context.SaveChanges();
+            return maintananceEpisodes;
         }
 
         public void SaveEmptyEpisode(int maintenanceId, DateTime date)

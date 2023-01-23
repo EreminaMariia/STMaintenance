@@ -584,6 +584,18 @@ namespace LogicLibrary
             return new MaintenanceEpisodeView(Data.Instance.AddUndoneEpisode(maintenanceId, date, operators, oldDate));
         }
 
+        public List<MaintenanceEpisodeView> AddUndoneEpisodes(int[] maintenanceId, DateTime[] date, List<int> workerIds, DateTime[] oldDate)
+        {
+            List<Operator> operators = Data.Instance.GetOperators(workerIds);
+            List<MaintenanceEpisodeView> result = new List<MaintenanceEpisodeView>();
+            var episodes = Data.Instance.AddUndoneEpisodes(maintenanceId, date, operators, oldDate);
+            foreach (var episode in episodes)
+            {
+                result.Add(new MaintenanceEpisodeView(episode));
+            }
+            return result;
+        }
+
         public void SaveEmptyEpisodes(int maintenanceId, DateTime date)
         {
             var m = Data.Instance.GetMaintenance().FirstOrDefault(x => x.Id ==  maintenanceId);
