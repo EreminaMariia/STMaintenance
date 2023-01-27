@@ -27,6 +27,7 @@ namespace Entities
         public ICollection<HoursInfo>? WorkingHours { get; set; }
         public ICollection<ControledParametr>? ControledParametrs { get; set; }
         public ICollection<Instruction>? Instructions { get; set; }
+        public ICollection<Instrument>? Instruments { get; set; }
         public ICollection<AdditionalWork>? AdditionalWorks { get; set; }
         public Operator? Operator { get; set; }
         public double? Power { get; set; }

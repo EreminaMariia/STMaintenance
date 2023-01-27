@@ -12,6 +12,7 @@ namespace LogicLibrary
         public List<AdditionalWorkView> Additionals { get; set; }
         public List<MaterialView> Materials { get; set; }
         public List<InstructionView> Instructions { get; set; }
+        public List<InstrumentView> Instruments { get; set; }
         public List<HourView> WorkingHours { get; set; }
         public List<ErrorNewView> Errors { get; set; }
         public List<MaintenanceEpisodeView> Episodes { get; set; }
@@ -23,6 +24,7 @@ namespace LogicLibrary
         public int AdditionalsId { get; set; }
         public int MaterialsId { get; set; }
         public int InstructionsId { get; set; }
+        public int InstrumentsId { get; set; }
         public int WorkingHoursId { get; set; }
         public int ErrorsId { get; set; }
         public int EpisodesId { get; set; }
@@ -36,6 +38,7 @@ namespace LogicLibrary
             Maintenances = new List<MaintenanceNewView>();
             Materials = dataService.GetMaterialViews();
             Instructions = new List<InstructionView>();
+            Instruments = new List<InstrumentView>();
             WorkingHours = new List<HourView>();
             Errors = new List<ErrorNewView>();
             Additionals = new List<AdditionalWorkView>();
@@ -55,7 +58,6 @@ namespace LogicLibrary
             TechPassport = dataService.GetPassportById(passportId);
             
             Characteristics = new List<CharacteristicView>();
-            //TechPassport.Characteristics = dataService.GetCharacteristicsByPassportId(passportId);
             var characteristics = TechPassport.Characteristics;
             if (characteristics != null)
             {
@@ -91,6 +93,13 @@ namespace LogicLibrary
             if (instructions != null)
             {
                 Instructions = dataService.GetInstructionViewsByInfos(instructions);
+            }
+
+            Instruments = new List<InstrumentView>();
+            var instruments = TechPassport.Instruments;
+            if (instruments != null)
+            {
+                Instruments = dataService.GetInstrumentViewsByInfos(instruments);
             }
 
             WorkingHours = new List<HourView>();
@@ -135,6 +144,7 @@ namespace LogicLibrary
             AdditionalsId = Data.Instance.GetAdditionalsId();
             MaterialsId = Data.Instance.GetMaterialsId();
             InstructionsId = Data.Instance.GetInstructionsId();
+            InstrumentsId = Data.Instance.GetInstrumentsId();
             WorkingHoursId = Data.Instance.GetWorkingHoursId();
             ErrorsId = Data.Instance.GetErrorsId();
             EpisodesId = Data.Instance.GetEpisodesId();
@@ -142,85 +152,13 @@ namespace LogicLibrary
             ControledParametrEpisodesId = Data.Instance.GetControledParametrEpisodesId();
         }
 
-        public void RefreshData()
-        {
-            //dataService = new DataService();
-        }
-
         public TechPassport GetPassport()
         {
             return TechPassport;
         }
-        //public int GetId()
-        //{
-        //    return TechPassport.Id;
-        //}
-
-        //public string GetName()
-        //{
-        //    return TechPassport.Name;
-        //}
-
-        //public string GetInventory()
-        //{
-        //    return TechPassport.InventoryNumber;
-        //}
-
-        //public string GetSerial()
-        //{
-        //    return TechPassport.SerialNumber;
-        //}
-
-        //public EquipmentType GetEquipmentType()
-        //{
-        //    return TechPassport.Type;
-        //}
-
-        //public Department GetDepartment()
-        //{
-        //    return TechPassport.Department;
-        //}
-
-        //public ElectroPoint GetPoint()
-        //{
-        //    return TechPassport.ElectroPoint;
-        //}
-
-        //public EquipmentSupplier GetSupplier()
-        //{
-        //    return TechPassport.Supplier;
-        //}
-
-        //public Operator GetOperator()
-        //{
-        //    return TechPassport.Operator;
-        //}
-
-        //public double? GetPower()
-        //{
-        //    return TechPassport.Power;
-        //}
-
-        //public DateTime? GetReleaseYear()
-        //{
-        //    return TechPassport.ReleaseYear;
-        //}
-
-        //public DateTime? GetDecommissioningDate()
-        //{
-        //    return TechPassport.DecommissioningDate;
-        //}
-
-        //public DateTime? GetCommissioningDate()
-        //{
-        //    return TechPassport.CommissioningDate;
-        //}
+        
         public List<InnerArchiveView> GetArchiveView()
         {
-            //var additional = TechPassport.AdditionalWorks ?? new List<AdditionalWork>();
-            //var errors = TechPassport.Errors ?? new List<MaintenanceError>();
-            //var maintenance = TechPassport.MaintenanceInfos ?? new List<MaintenanceInfo>();
-
             var additional = Additionals != null ? Additionals : new List<AdditionalWorkView>();
             var errors = Errors != null ? Errors: new List<ErrorNewView>();
             var maintenance = Maintenances != null? Maintenances: new List<MaintenanceNewView>();
@@ -272,17 +210,6 @@ namespace LogicLibrary
 
             return views;
         }
-
-        //public List<PlannedView> GetPlannedView()
-        //{
-        //    var additional = TechPassport.AdditionalWorks != null ? TechPassport.AdditionalWorks : new List<AdditionalWork>();
-        //    var maintenance = TechPassport.MaintenanceInfos != null ? TechPassport.MaintenanceInfos : new List<MaintenanceInfo>();
-
-        //    List<PlannedView> list = dataService.GetPlannedViewsByInfos(additional, maintenance);
-        //    var sorted = list.GroupBy(a => a.Date);
-        //    return dataService.GetPlannedViewsByInfos(additional, maintenance);
-        //}
-
         public List<MaterialView> GetMaterialViewsByMaintenance(int maintenanceId, bool isAdditional)
         {
             List<MaterialView> materials = new List<MaterialView>();
@@ -431,6 +358,8 @@ namespace LogicLibrary
 
             SaveInstructions();
 
+            SaveInstruments();
+
             SaveHours();
 
             SaveErrors();
@@ -510,6 +439,43 @@ namespace LogicLibrary
                                 cP.Id = id;
                             }
                             cP.MarkUnChanged();
+                        }
+                    }
+                }
+            }
+        }
+
+        private void SaveInstruments()
+        {
+            if (TechPassport != null)
+            {
+                var changedInstruments = Instruments.Where(c => c.IsChanged()).ToList();
+                if (changedInstruments != null)
+                {
+                    foreach (InstrumentView ins in changedInstruments)
+                    {
+                        if (ins != null)
+                        {
+                            if (TechPassport.Instruments != null)
+                            {
+                                var ch = TechPassport.Instruments.FirstOrDefault(x => x.Id == ins.Id);
+                                if (ch != null)
+                                {
+                                    Data.Instance.EditInstrument(TechPassport.Id, ins.Id, ins.Art, ins.Name, ins.GetCount(), ins.GetUnitId(),
+                                    ins.CreateDate, ins.RemoveDate, ins.RemoveReason, ins.Commentary);
+                                }
+                                else
+                                {
+                                    ins.Id = Data.Instance.AddInstrument(TechPassport.Id, ins.Art, ins.Name, ins.GetCount(), ins.GetUnitId(),
+                                    ins.CreateDate, ins.RemoveDate, ins.RemoveReason, ins.Commentary);
+                                }
+                            }
+                            else
+                            {
+                                ins.Id = Data.Instance.AddInstrument(TechPassport.Id, ins.Art, ins.Name, ins.GetCount(), ins.GetUnitId(),
+                                    ins.CreateDate, ins.RemoveDate, ins.RemoveReason, ins.Commentary);
+                            }
+                            ins.MarkUnChanged();
                         }
                     }
                 }
@@ -830,6 +796,7 @@ namespace LogicLibrary
             work.TypeId = maintenanceTypeId;
             work.EditType(type);
         }
+
         public void EditAdditionalByOperators(int id, List<int> operatorIds)
         {
             var work = Additionals.FirstOrDefault(x => x.Id == id);
@@ -914,6 +881,38 @@ namespace LogicLibrary
             return id;
         }
 
+        public void EditInstrument(int id, int unitId)
+        {
+            var ins = Instruments.FirstOrDefault(x => x.Id == id);
+            if (ins != null)
+            {
+                var u = dataService.GetUnitViews().FirstOrDefault(x => x.Id == unitId);
+                if (u != null)
+                {
+                    ins.EditUnit(u);
+                    ins.MarkChanged();
+                }
+            }
+        }
+
+        public int AddInstrument(int unitId, string name, string nominal)
+        {
+            var cP = new InstrumentView();
+            int id = InstrumentsId++;
+            var u = dataService.GetUnitViews().FirstOrDefault(c => c.Id == unitId);
+            if (u != null)
+            {
+                cP.EditUnit(u);
+            }
+            cP.Name = name;
+            cP.Count = nominal;
+            cP.Id = id;
+
+            Instruments.Add(cP);
+            cP.MarkChanged();
+            return id;
+        }
+
         public void EditControlParam(int id, int unitId)
         {
             var cPE = ControledParametrs.FirstOrDefault(x => x.Id == id);
@@ -988,8 +987,6 @@ namespace LogicLibrary
             if (maintenance != null)
             {
                 maintenance.FutureDate = DateTime.MinValue;
-                //maintenance.RecountDate();
-                //maintenance.MarkChanged();
                 RecountDate(maintenance);
             }
         }
@@ -1053,7 +1050,6 @@ namespace LogicLibrary
             var maintenance = Maintenances.FirstOrDefault(x => x.Id == maintenanceId);
             if (maintenance != null)
             {
-                //int id = Episodes.Any() ? Episodes.Max(x => x.Id) + 1 : 1;
                 int id = EpisodesId++;
                 Episodes.Add(new MaintenanceEpisodeView
                 {
@@ -1064,9 +1060,7 @@ namespace LogicLibrary
                     OperatorIds = workerIds,
                     IsDone = true
                 });
-                //maintenance.MarkChanged();
                 maintenance.AddEpisodeDate(date);
-                //maintenance.RecountDate();
                 RecountDate(maintenance);
             }
         }
@@ -1075,7 +1069,6 @@ namespace LogicLibrary
             var maintenance = Maintenances.FirstOrDefault(x => x.Id == maintenanceId);
             if (maintenance != null)
             {
-                //int id = Episodes.Any() ? Episodes.Max(x => x.Id) + 1 : 1;
                 int id = EpisodesId++;
                 Episodes.Add(new MaintenanceEpisodeView
                 {
@@ -1087,9 +1080,7 @@ namespace LogicLibrary
                     Name = maintenance.Name,
                     Type = maintenance.Type
                 });
-                //maintenance.MarkChanged();
                 maintenance.AddEpisodeDate(date);
-                //maintenance.RecountDate();
                 TimeSpan delta = oldDate - date;
                 if (delta != TimeSpan.Zero)
                 {
@@ -1165,7 +1156,6 @@ namespace LogicLibrary
             {
                 if (!m.IsDateChanged())
                 {
-                    //m.RecountDate();
                     RecountDateWithEpisodes(m);
                 }
             }

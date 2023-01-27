@@ -46,5 +46,6 @@ namespace Entities
         public DbSet<Unit> Units { get; set; }
         public DbSet<Department> Departments { get; set; }
         public DbSet<ElectroPoint> Points { get; set; }
+        public DbSet<Instrument> Instruments { get; set; }
     }
 }

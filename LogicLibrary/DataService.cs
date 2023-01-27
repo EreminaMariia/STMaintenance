@@ -448,6 +448,18 @@ namespace LogicLibrary
             return views;
         }
 
+        public List<InstrumentView> GetInstrumentViewsByInfos(ICollection<Instrument> infos)
+        {
+            List<InstrumentView> views = new List<InstrumentView>();
+            foreach (var info in infos)
+            {
+                views.Add(new InstrumentView(info));
+            }
+            return views;
+        }
+
+        
+
         public List<ErrorNewView> GetErrorViewsByInfos(ICollection<MaintenanceError> infos)
         {
             List<ErrorNewView> views = new List<ErrorNewView>();

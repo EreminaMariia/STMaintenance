@@ -31,6 +31,8 @@ namespace WpfView
         public ObservableCollection<MaintenanceNewView> OldMaintenances { get; set; }
         public ObservableCollection<CharacteristicView> Characteristics { get; set; }
         public ObservableCollection<InstructionView> Instructions { get; set; }
+        public ObservableCollection<InstrumentView> Instruments { get; set; }
+        public ObservableCollection<InstrumentView> OldInstruments { get; set; }
         public ObservableCollection<ErrorNewView> Errors { get; set; }
         public ObservableCollection<AdditionalWorkView> Additionals { get; set; }
         public ObservableCollection<HourView> Hours { get; set; }
@@ -42,6 +44,8 @@ namespace WpfView
         public List<MaintenanceNewView> oldMaintenances { get; set; }
         public List<CharacteristicView> characteristics { get; set; }
         public List<InstructionView> instructions { get; set; }
+        public List<InstrumentView> instruments { get; set; }
+        public List<InstrumentView> oldInstruments { get; set; }
         public List<ErrorNewView> errors { get; set; }
         public List<AdditionalWorkView> additionals { get; set; }
         public List<HourView> hours { get; set; }
@@ -58,6 +62,8 @@ namespace WpfView
         public TableService<AdditionalWorkView> additionalTableService;
         public TableService<HourView> hourTableService;
         public TableService<ControledParametrView> controlTableService;
+        public TableService<InstrumentView> instrumentTableService;
+        public TableService<InstrumentView> oldInstrumentTableService;
 
         public AddPassportWindow(AddHandler handler)
         {
@@ -308,7 +314,6 @@ namespace WpfView
             var result = episodeWindow.ShowDialog();
             if (result != null && result.Value)
             {
-                passportMaker.RefreshData();
                 Additionals = CommonClass.AddItem(Additionals, passportMaker.Additionals, new AdditionalWorkViewService(passportMaker), additionalGrid);
                 Maintenances = CommonClass.AddItem(Maintenances, passportMaker.Maintenances, new MaintenanceViewService(passportMaker), maintenanceGrid);
                 MakePlannedGrid();
@@ -369,6 +374,26 @@ namespace WpfView
                 item.PropertyChanged += instructionTableService.Item_PropertyChanged;
             }
             Instructions.CollectionChanged += instructionTableService.Entries_CollectionChanged;
+
+            instruments = passportMaker.Instruments.Where(i=>i.RemoveDate == null || i.RemoveDate == DateTime.MinValue).ToList();
+            Instruments = new ObservableCollection<InstrumentView>(instruments);
+            instrumentTableService = new TableService<InstrumentView>
+                (new InstrumentViewService(passportMaker), new TableService<InstrumentView>.DeleteHandler(ShowMessage));
+            foreach (var item in Instruments)
+            {
+                item.PropertyChanged += instrumentTableService.Item_PropertyChanged;
+            }
+            Instruments.CollectionChanged += instrumentTableService.Entries_CollectionChanged;
+
+            oldInstruments = passportMaker.Instruments.Where(i => i.RemoveDate != null || i.RemoveDate != DateTime.MinValue).ToList(); ;
+            OldInstruments = new ObservableCollection<InstrumentView>(oldInstruments);
+            oldInstrumentTableService = new TableService<InstrumentView>
+                (new InstrumentViewService(passportMaker), new TableService<InstrumentView>.DeleteHandler(ShowMessage));
+            foreach (var item in OldInstruments)
+            {
+                item.PropertyChanged += oldInstrumentTableService.Item_PropertyChanged;
+            }
+            OldInstruments.CollectionChanged += oldInstrumentTableService.Entries_CollectionChanged;
 
             errors = passportMaker.Errors;
             Errors = new ObservableCollection<ErrorNewView>(errors);
@@ -475,15 +500,25 @@ namespace WpfView
             if (id > 0)
             {
                 var c = passportMaker.Characteristics;
-                passportMaker.RefreshData();
                 Characteristics = CommonClass.AddItem(Characteristics, c, characteristicTableService, characteristicsGrid);
             }
+        }
+
+        public void RefreshInstrumentGrid()
+        {
+            var c = passportMaker.Instruments.Where(i => i.RemoveDate == null || i.RemoveDate == DateTime.MinValue).ToList(); ;
+            Instruments = CommonClass.AddItem(Instruments, c, instrumentTableService, instrumentGrid);
+        }
+
+        public void RefreshOldInstrumentGrid()
+        {
+            var c = passportMaker.Instruments.Where(i => i.RemoveDate != null || i.RemoveDate != DateTime.MinValue).ToList(); ;
+            OldInstruments = CommonClass.AddItem(OldInstruments, c, oldInstrumentTableService, oldInstrumentGrid);
         }
 
         public void RefreshMaintenanceGrid(bool isFiltred = true)
         {
             var m = passportMaker.Maintenances.Where(p => p.IsInWork()).ToList();
-            passportMaker.RefreshData();
             if (isFiltred)
             {
                 CommonClass.RefreshGrid(m, Maintenances, maintenanceGrid, maintenanceTableService);
@@ -499,7 +534,6 @@ namespace WpfView
         public void RefreshOldMaintenanceGrid(bool isFiltred = true)
         {
             var m = passportMaker.Maintenances.Where(p => !p.IsInWork()).ToList();
-            passportMaker.RefreshData();
             if (isFiltred)
             {
                 CommonClass.RefreshGrid(m, OldMaintenances, oldMaintenanceGrid, oldMaintenanceTableService);
@@ -517,7 +551,6 @@ namespace WpfView
             if (id > 0)
             {
                 var m = passportMaker.Instructions;
-                passportMaker.RefreshData();
                 Instructions = CommonClass.AddItem(Instructions, m, instructionTableService, documentsGrid);
             }
         }
@@ -525,7 +558,6 @@ namespace WpfView
         public void RefreshAdditionalGrid(bool isFiltred = true)
         {
                 var a = passportMaker.Additionals;
-                passportMaker.RefreshData();
             if (isFiltred)
             {
                 CommonClass.RefreshGrid(a, Additionals, additionalGrid, additionalTableService);
@@ -541,7 +573,6 @@ namespace WpfView
         public void RefreshErrorGrid(bool isFiltred = true)
         {
                 var a = passportMaker.Errors;
-                passportMaker.RefreshData();
             if (isFiltred)
             {
                 CommonClass.RefreshGrid(a, Errors, errorsGrid, errorTableService);
@@ -555,14 +586,12 @@ namespace WpfView
         public void RefreshControlGrid()
         {
             var a = passportMaker.ControledParametrs;
-            passportMaker.RefreshData();
             ControledParams = CommonClass.AddItem(ControledParams, a, controlTableService, controlGrid);
         }
 
         public void RefreshControlEpisodeGrid()
         {
             var a = passportMaker.ControledParametrEpisodes;
-            passportMaker.RefreshData();
             ControledParamEpisodes = CommonClass.AddItem(ControledParamEpisodes, a, controlEpisodeTableService, controlEpisodeGrid);
         }
 
@@ -799,6 +828,47 @@ namespace WpfView
                 }
             }
 
+        }
+
+        private void instrumentGrid_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            if (((DataGrid)e.Source).SelectedItem != null)
+            {
+                var column = ((DataGrid)e.Source).CurrentColumn;
+                if (column.SortMemberPath == "Unit")
+                {
+                    instrumentGrid.CancelEdit();
+                    instrumentGrid.Items.Refresh();
+
+                    int t = 0;
+                    int id = 0;
+                    string name = "";
+                    string nominal ="";
+                    if (((DataGrid)e.Source).SelectedItem is InstrumentView)
+                    {
+                        var item = (InstrumentView)((DataGrid)e.Source).SelectedItem;
+                        id = item.Id;
+                        nominal = item.Count;
+                        name = item.Name;
+                        t = item.GetUnitId();
+                    }
+
+                    UnitWindow uw = new UnitWindow(dataService.GetUnitViews().Select(x => (INameIdView)x).ToList(), t);
+                    uw.ShowDialog();
+                    int infoId = uw.Id;
+                    if (id > 0)
+                    {
+                        passportMaker.EditInstrument(id, infoId);
+                    }
+                    else
+                    {
+
+                        id = passportMaker.AddInstrument(infoId, name, nominal);
+                    }
+                    RefreshInstrumentGrid();
+                    RefreshOldInstrumentGrid();
+                }
+            }
         }
 
         private void controlGrid_MouseDoubleClick(object sender, MouseButtonEventArgs e)
