@@ -69,6 +69,10 @@ namespace Entities
         {
             return context.Instructions.Any() ? context.Instructions.Max(x => x.Id) + 1 : 1;
         }
+        public int GetInstrumentsId()
+        {
+            return context.Instruments.Any() ? context.Instruments.Max(x => x.Id) + 1 : 1;
+        }
         public int GetWorkingHoursId()
         {
             return context.WorkingHours.Any() ? context.WorkingHours.Max(x => x.Id) + 1 : 1;
@@ -1029,11 +1033,11 @@ namespace Entities
         public bool DeletePassport(int id)
         {
             try
-            {              
+            {
                 var passport = GetPassportById(id);
                 if (passport != null)
                 {
-                    if ((passport.MaintenanceInfos == null || passport.MaintenanceInfos.Count == 0)&&
+                    if ((passport.MaintenanceInfos == null || passport.MaintenanceInfos.Count == 0) &&
                         (passport.Errors == null || passport.Errors.Count == 0) &&
                         (passport.Characteristics == null || passport.Characteristics.Count == 0) &&
                         (passport.Instructions == null || passport.Instructions.Count == 0) &&
@@ -1596,6 +1600,52 @@ namespace Entities
                 error.Code = code;
 
                 AddPassport<MaintenanceError>(error, passportId);
+            }
+            context.SaveChanges();
+        }
+
+        public int AddInstrument(int passportId, string art, string name, double? count, int unitId,
+            DateTime? createDate, DateTime? removeDate, string removeReason, string commentary)
+        {
+            Instrument instrument = new Instrument();
+            instrument.Name = name;
+            instrument.Art = art;
+            instrument.CreateDate = createDate;
+            instrument.Count = count;
+            instrument.Commentary = commentary;
+            instrument.RemoveDate = removeDate;
+            instrument.RemoveReason = removeReason;
+
+            Unit unit = context.Units.FirstOrDefault(x => x.Id == unitId);
+            if (unit != null)
+            {
+                instrument.Unit = unit;
+            }
+            return Add<Instrument>(context.Instruments, instrument, passportId);
+        }
+
+        public void EditInstrument(int passportId, int id, string art, string name, double? count, int unitId,
+            DateTime? createDate, DateTime? removeDate, string removeReason, string commentary)
+        {
+            Instrument instrument = context.Instruments.FirstOrDefault(x => x.Id == id);
+            if (instrument != null)
+            {
+
+                instrument.Name = name;
+                instrument.Art = art;
+                instrument.CreateDate = createDate;
+                instrument.Count = count;
+                instrument.Commentary = commentary;
+                instrument.RemoveDate = removeDate;
+                instrument.RemoveReason = removeReason;
+
+                Unit unit = context.Units.FirstOrDefault(x => x.Id == unitId);
+                if (unit != null)
+                {
+                    instrument.Unit = unit;
+                }
+
+                AddPassport<Instrument>(instrument, passportId);
             }
             context.SaveChanges();
         }

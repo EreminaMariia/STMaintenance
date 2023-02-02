@@ -37,7 +37,7 @@ namespace LogicLibrary
         public string Unit
         {
             get { return unit; }
-            private set { unit = value; OnPropertyChanged(nameof(Name)); }
+            private set { unit = value; OnPropertyChanged(nameof(Unit)); }
         }
 
         public void EditInfo(MaterialInfoView info)

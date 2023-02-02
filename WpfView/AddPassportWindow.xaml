@@ -5,18 +5,18 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:WpfView"
         mc:Ignorable="d"
-        Title="Объект обслуживания и ремонта" Height="634" Width="1193" FontSize="16" Closed="Window_Closed">
+        Title="Объект обслуживания и ремонта" Height="705" Width="1404" FontSize="16" Closed="Window_Closed">
     <Grid>
-        <TabControl Margin="0,0,0,35" SelectionChanged="TabControl_SelectionChanged">
+        <TabControl Margin="0,0,0,57" SelectionChanged="TabControl_SelectionChanged">
             <TabItem x:Name="passTab" Header="Информация об оборудовании">
                 <TabItem.Content>
                     <Grid>
-                        <Label Content="Тип оборудования" HorizontalAlignment="Left" Margin="688,36,0,0" VerticalAlignment="Top" FontSize="16" Height="31" Width="148"/>
+                        <Label Content="Тип оборудования" HorizontalAlignment="Left" Margin="892,36,0,0" VerticalAlignment="Top" FontSize="16" Height="31" Width="148"/>
                         <Label Content="Наименование оборудования" HorizontalAlignment="Left" Margin="38,36,0,0" VerticalAlignment="Top" Height="32" Width="277"/>
                         <Label Content="Дата окончания гарантии" HorizontalAlignment="Left" Margin="38,229,0,0" VerticalAlignment="Top" Height="31" Width="207"/>
                         <Label Content="Дата вывода из эксплуатации" HorizontalAlignment="Left" Margin="517,142,0,0" VerticalAlignment="Top" Height="31" Width="207"/>
                         <Label Content="Участок расположения оборудования" HorizontalAlignment="Left" Margin="38,419,0,0" VerticalAlignment="Top" Height="31" Width="348"/>
-                        <Label Content="Инвентарный номер оборудования" HorizontalAlignment="Left" Margin="626,91,0,0" VerticalAlignment="Top" Height="31" Width="277" RenderTransformOrigin="0.509,0.609"/>
+                        <Label Content="Инвентарный номер оборудования" HorizontalAlignment="Left" Margin="830,91,0,0" VerticalAlignment="Top" Height="31" Width="277" RenderTransformOrigin="0.509,0.609"/>
                         <Label Content="Серийный номер оборудования" HorizontalAlignment="Left" Margin="39,90,0,0" VerticalAlignment="Top" Height="32" Width="248"/>
                         <Label Content="Год выпуска оборудования" HorizontalAlignment="Left" Margin="38,188,0,0" VerticalAlignment="Top" Height="31" Width="225"/>
                         <Label Content="Дата начала эксплуатации" HorizontalAlignment="Left" Margin="39,142,0,0" VerticalAlignment="Top" Height="32" Width="206"/>
@@ -24,7 +24,7 @@
                         <Label Content="Точка подключения оборудования" HorizontalAlignment="Left" Margin="38,278,0,0" VerticalAlignment="Top" Height="31" Width="269"/>
                         <Label Content="Потребляемая мощность оборудования, кВт" HorizontalAlignment="Left" Margin="610,279,0,0" VerticalAlignment="Top" Height="31" Width="347"/>
                         <Label Content="Поставщик оборудования" HorizontalAlignment="Left" Margin="38,327,0,0" VerticalAlignment="Top" Height="31" Width="212"/>
-                        <ComboBox x:Name="typeComboBox" HorizontalAlignment="Left" Margin="856,38,0,0" VerticalAlignment="Top" Width="254" FontSize="16" Height="27">
+                        <ComboBox x:Name="typeComboBox" HorizontalAlignment="Left" Margin="1060,38,0,0" VerticalAlignment="Top" Width="254" FontSize="16" Height="27">
                             <ComboBox.Background>
                                 <LinearGradientBrush EndPoint="0,1">
                                     <GradientStop Color="#FFF0F0F0"/>
@@ -51,9 +51,9 @@
                                 </DataTemplate>
                             </ComboBox.ItemTemplate>
                         </ComboBox>
-                        <TextBox x:Name="inventoryTextBox" HorizontalAlignment="Left" Margin="902,92,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="206" Height="28"/>
-                        <TextBox x:Name="nameTextBox" HorizontalAlignment="Left" Margin="287,10,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="337" Height="75"/>
-                        <TextBox x:Name="serialTextBox" HorizontalAlignment="Left" Margin="287,91,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="328" Height="30"/>
+                        <TextBox x:Name="inventoryTextBox" HorizontalAlignment="Left" Margin="1106,92,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="206" Height="28"/>
+                        <TextBox x:Name="nameTextBox" HorizontalAlignment="Left" Margin="287,10,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="533" Height="75"/>
+                        <TextBox x:Name="serialTextBox" HorizontalAlignment="Left" Margin="287,91,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="533" Height="30"/>
                         <DatePicker x:Name="madeDatePicker" HorizontalAlignment="Left" Margin="300,188,0,0" VerticalAlignment="Top" Height="29" Width="144"/>
                         <DatePicker x:Name="decomissioningDatePicker" HorizontalAlignment="Left" Margin="748,145,0,0" VerticalAlignment="Top" Height="29" Width="144"/>
                         <DatePicker x:Name="expluatationDatePicker" HorizontalAlignment="Left" Margin="300,144,0,0" VerticalAlignment="Top" Height="28" Width="144"/>
@@ -119,12 +119,39 @@
                             <Grid>
                                 <DataGrid x:Name="oldMaintenanceGrid" 
                               AutoGeneratingColumn="HideIdColumn"
-                              CanUserAddRows="False" 
+                              CanUserAddRows="False"             
                               ItemsSource="{Binding OldMaintenances}" Margin="0,27,0,0"
                               SizeChanged="SizeChanged" Loaded="Loaded"/>
                                 <!--<Label Content="Поиск" HorizontalAlignment="Left" Margin="2,-4,0,0" VerticalAlignment="Top"/>
                                 <TextBox HorizontalAlignment="Left" Margin="62,0,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="381" Height="27" 
                                          TextChanged="OldMaintenances_TextBox_TextChanged"/>-->
+                            </Grid>
+                        </TabItem.Content>
+                    </TabItem>
+                </TabControl>
+            </TabItem>
+            <TabItem x:Name="instrumentTab" Header="Инструменты/Оснастка">
+                <TabControl x:Name="toInstrumentTabControl">
+                    <TabItem x:Name="innerInstrumentTab" Header="Актуальные инструменты/оснастка">
+                        <TabItem.Content>
+                            <Grid>
+                                <DataGrid x:Name="instrumentGrid" 
+                              AutoGeneratingColumn="HideIdColumn"
+                              CanUserAddRows="True" ItemsSource="{Binding Instruments}" 
+                              MouseDoubleClick="instrumentGrid_MouseDoubleClick" 
+                              CellEditEnding="сellEditEnding" Margin="0,27,0,0"
+                              SizeChanged="SizeChanged" Loaded="Loaded"/>
+                            </Grid>
+                        </TabItem.Content>
+                    </TabItem>
+                    <TabItem x:Name="oldInstrumentTab" Header="Списанные инструменты/оснастка">
+                        <TabItem.Content>
+                            <Grid>
+                                <DataGrid x:Name="oldInstrumentGrid" 
+                              AutoGeneratingColumn="HideIdColumn"
+                              CanUserAddRows="False" 
+                              ItemsSource="{Binding OldInstruments}" Margin="0,27,0,0"
+                              SizeChanged="SizeChanged" Loaded="Loaded"/>
                             </Grid>
                         </TabItem.Content>
                     </TabItem>
@@ -306,6 +333,6 @@
         <!--<Button Content="Экспорт в Excel" HorizontalAlignment="Right" Margin="0,0,331,10" VerticalAlignment="Bottom" RenderTransformOrigin="17.061,4.13" Height="25" Width="116"/>-->
         <Button x:Name="printControlParamsButton" Content="Печать контролируемых параметров" HorizontalAlignment="Left" Margin="10,0,0,10" VerticalAlignment="Bottom" RenderTransformOrigin="17.061,4.13" Height="25" Width="296" Click="printControlParamsButton_Click"/>
         <Button Content="Печать карточки объекта обслуживания" HorizontalAlignment="Right" Margin="0,0,10,10" VerticalAlignment="Bottom" Height="25" Width="302" Click="Button_Click_1"/>
-        <Button x:Name="saveButton" Content="Сохранить" HorizontalAlignment="Center" Margin="0,0,0,10" VerticalAlignment="Bottom" Background="#FF9DFFA3" Click="Button_Click" Height="25" Width="80"/>
+        <Button x:Name="saveButton" Content="Сохранить" HorizontalAlignment="Center" Margin="0,637,0,0" VerticalAlignment="Top" Background="#FF9DFFA3" Click="Button_Click" Height="42" Width="144" FontSize="24"/>
     </Grid>
 </Window>
