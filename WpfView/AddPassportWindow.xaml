@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:WpfView"
         mc:Ignorable="d"
-        Title="Объект обслуживания и ремонта" Height="705" Width="1404" FontSize="16" Closed="Window_Closed">
+        Title="Объект обслуживания и ремонта" Height="717" Width="1404" FontSize="16" Closed="Window_Closed">
     <Grid>
         <TabControl Margin="0,0,0,57" SelectionChanged="TabControl_SelectionChanged">
             <TabItem x:Name="passTab" Header="Информация об оборудовании">
@@ -121,7 +121,7 @@
                               AutoGeneratingColumn="HideIdColumn"
                               CanUserAddRows="False"             
                               ItemsSource="{Binding OldMaintenances}" Margin="0,27,0,0"
-                              SizeChanged="SizeChanged" Loaded="Loaded"/>
+                              SizeChanged="SizeChanged" Loaded="Loaded" MouseDoubleClick="oldMaintenanceGrid_MouseDoubleClick"/>
                                 <!--<Label Content="Поиск" HorizontalAlignment="Left" Margin="2,-4,0,0" VerticalAlignment="Top"/>
                                 <TextBox HorizontalAlignment="Left" Margin="62,0,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="381" Height="27" 
                                          TextChanged="OldMaintenances_TextBox_TextChanged"/>-->
@@ -144,7 +144,7 @@
                             </Grid>
                         </TabItem.Content>
                     </TabItem>
-                    <TabItem x:Name="oldInstrumentTab" Header="Списанные инструменты/оснастка">
+                    <TabItem x:Name="oldInstrumentTab" Header="Списанные инструменты/оснастка" MouseDoubleClick="oldInstrumentTab_MouseDoubleClick">
                         <TabItem.Content>
                             <Grid>
                                 <DataGrid x:Name="oldInstrumentGrid" 
@@ -333,6 +333,6 @@
         <!--<Button Content="Экспорт в Excel" HorizontalAlignment="Right" Margin="0,0,331,10" VerticalAlignment="Bottom" RenderTransformOrigin="17.061,4.13" Height="25" Width="116"/>-->
         <Button x:Name="printControlParamsButton" Content="Печать контролируемых параметров" HorizontalAlignment="Left" Margin="10,0,0,10" VerticalAlignment="Bottom" RenderTransformOrigin="17.061,4.13" Height="25" Width="296" Click="printControlParamsButton_Click"/>
         <Button Content="Печать карточки объекта обслуживания" HorizontalAlignment="Right" Margin="0,0,10,10" VerticalAlignment="Bottom" Height="25" Width="302" Click="Button_Click_1"/>
-        <Button x:Name="saveButton" Content="Сохранить" HorizontalAlignment="Center" Margin="0,637,0,0" VerticalAlignment="Top" Background="#FF9DFFA3" Click="Button_Click" Height="42" Width="144" FontSize="24"/>
+        <Button x:Name="saveButton" Content="Сохранить" HorizontalAlignment="Center" Margin="0,0,10,0" VerticalAlignment="Bottom" Background="#FF9DFFA3" Click="Button_Click" Height="42" Width="144" FontSize="24" RenderTransformOrigin="0.446,0.689"/>
     </Grid>
 </Window>

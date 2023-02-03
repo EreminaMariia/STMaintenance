@@ -117,12 +117,12 @@ namespace LogicLibrary
         public void ChangeIfInWork()
         {
             if (removeDate != null && removeDate != DateTime.MinValue)
-            {
-                removeDate = DateTime.Now;
+            {               
+                removeDate = null;
             }
             else
             {
-                removeDate = null;
+                removeDate = DateTime.Now;
             }
         }
         public void EditUnit(UnitView unit)

@@ -385,7 +385,7 @@ namespace WpfView
             }
             Instruments.CollectionChanged += instrumentTableService.Entries_CollectionChanged;
 
-            oldInstruments = passportMaker.Instruments.Where(i => i.RemoveDate != null || i.RemoveDate != DateTime.MinValue).ToList(); ;
+            oldInstruments = passportMaker.Instruments.Where(i => i.RemoveDate != null && i.RemoveDate != DateTime.MinValue).ToList(); ;
             OldInstruments = new ObservableCollection<InstrumentView>(oldInstruments);
             oldInstrumentTableService = new TableService<InstrumentView>
                 (new InstrumentViewService(passportMaker), new TableService<InstrumentView>.DeleteHandler(ShowMessage));
@@ -512,7 +512,7 @@ namespace WpfView
 
         public void RefreshOldInstrumentGrid()
         {
-            var c = passportMaker.Instruments.Where(i => i.RemoveDate != null || i.RemoveDate != DateTime.MinValue).ToList(); ;
+            var c = passportMaker.Instruments.Where(i => i.RemoveDate != null && i.RemoveDate != DateTime.MinValue).ToList(); ;
             OldInstruments = CommonClass.AddItem(OldInstruments, c, oldInstrumentTableService, oldInstrumentGrid);
         }
 
@@ -641,6 +641,57 @@ namespace WpfView
                         List<int> materialsIds = uw.Id;
                         passportMaker.EditMaintenanceByMaterials(id, materialsIds);
                         RefreshMaintenanceGrid();
+                    }
+                }
+            }
+        }
+
+        private void oldMaintenanceGrid_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            if (oldMaintenanceGrid.SelectedItem == null) return;
+            var item = oldMaintenanceGrid.SelectedItem as MaintenanceNewView;
+            if (item == null) return;
+            var column = oldMaintenanceGrid.CurrentColumn;
+            int id = item.Id;
+
+            if (id != 0)
+            {
+                if (column.SortMemberPath == "Type")
+                {
+
+                    oldMaintenanceGrid.CancelEdit();
+                    oldMaintenanceGrid.Items.Refresh();
+
+                    string t = "";
+                    var maintenance = passportMaker.Maintenances.FirstOrDefault(x => x.Id == id);
+                    if (maintenance != null)
+                    {
+                        t = maintenance.Type;
+                    }
+                    UnitWindow uw = new UnitWindow(dataService.GetMaintenanceTypeViews().Select(x => (INameIdView)x).ToList(), t);
+                    var result = uw.ShowDialog();
+                    if (result != null && result.Value)
+                    {
+                        int maintenanceTypeId = uw.Id;
+
+                        passportMaker.EditMaintenanceByType(id, maintenanceTypeId);
+                        RefreshOldMaintenanceGrid();
+                    }
+
+                }
+                else if (column.SortMemberPath == "Materials")
+                {
+
+                    oldMaintenanceGrid.CancelEdit();
+                    oldMaintenanceGrid.Items.Refresh();
+
+                    GridWindow uw = new GridWindow(id, false, dataService, passportMaker);
+                    var result = uw.ShowDialog();
+                    if (result != null && result.Value)
+                    {
+                        List<int> materialsIds = uw.Id;
+                        passportMaker.EditMaintenanceByMaterials(id, materialsIds);
+                        RefreshOldMaintenanceGrid();
                     }
                 }
             }
@@ -871,6 +922,47 @@ namespace WpfView
             }
         }
 
+        private void oldInstrumentTab_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            if (((DataGrid)e.Source).SelectedItem != null)
+            {
+                var column = ((DataGrid)e.Source).CurrentColumn;
+                if (column.SortMemberPath == "Unit")
+                {
+                    oldInstrumentGrid.CancelEdit();
+                    oldInstrumentGrid.Items.Refresh();
+
+                    int t = 0;
+                    int id = 0;
+                    string name = "";
+                    string nominal = "";
+                    if (((DataGrid)e.Source).SelectedItem is InstrumentView)
+                    {
+                        var item = (InstrumentView)((DataGrid)e.Source).SelectedItem;
+                        id = item.Id;
+                        nominal = item.Count;
+                        name = item.Name;
+                        t = item.GetUnitId();
+                    }
+
+                    UnitWindow uw = new UnitWindow(dataService.GetUnitViews().Select(x => (INameIdView)x).ToList(), t);
+                    uw.ShowDialog();
+                    int infoId = uw.Id;
+                    if (id > 0)
+                    {
+                        passportMaker.EditInstrument(id, infoId);
+                    }
+                    else
+                    {
+
+                        id = passportMaker.AddInstrument(infoId, name, nominal);
+                    }
+                    RefreshInstrumentGrid();
+                    RefreshOldInstrumentGrid();
+                }
+            }
+        }
+
         private void controlGrid_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
             if (((DataGrid)e.Source).SelectedItem != null)
@@ -1005,6 +1097,14 @@ namespace WpfView
                 {
                     RefreshAdditionalGrid(false);
                 }
+                else if(innerInstrumentTab.IsSelected)
+                {
+                    RefreshInstrumentGrid();
+                }
+                else if (oldInstrumentTab.IsSelected)
+                {
+                    RefreshOldInstrumentGrid();
+                }
             }
         }
 
@@ -1085,6 +1185,12 @@ namespace WpfView
                                 break;
                             case "additionalGrid":
                                 CommonClass.FilterGridByOneField(Additionals, additionals, additionalTableService, additionalGrid, properties);
+                                break;
+                            case "instrumentGrid":
+                                CommonClass.FilterGridByOneField(Instruments, instruments, instrumentTableService, instrumentGrid, properties);
+                                break;
+                            case "oldInstrumentGrid":
+                                CommonClass.FilterGridByOneField(OldInstruments, oldInstruments, oldInstrumentTableService, oldInstrumentGrid, properties);
                                 break;
                         }
                     }

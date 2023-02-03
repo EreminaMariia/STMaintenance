@@ -141,6 +141,7 @@ namespace Entities
                 Include(s => s.Supplier).
                 Include(d => d.Department).
                 Include(t => t.Type).
+                Include(s => s.Instruments).ThenInclude(u => u.Unit).
                 FirstOrDefault(t => t.Id == id);
         }
 
