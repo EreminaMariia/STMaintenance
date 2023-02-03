@@ -204,7 +204,7 @@
                               CellEditEnding="сellEditEnding"
                               HorizontalAlignment="Stretch" 
                               HorizontalContentAlignment="Stretch" 
-                              ColumnWidth="Auto"
+                              ColumnWidth="*"
                               MouseDoubleClick="errorsGrid_MouseDoubleClick" Margin="0,27,0,0"
                               SizeChanged="SizeChanged" Loaded="Loaded">
                             <DataGrid.Resources>
