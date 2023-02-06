@@ -43,8 +43,34 @@ namespace LogicLibrary
         public void PrintAllFiltredErrorsForm(List<int> techIds)
         {
             var date = DateTime.Now.ToString("dd-MM-yy(hh-mm-ss)");
+
             string name = "Информация о простое оборудования" + "-" + date;
 
+            MakeErrorGrid(techIds, date);
+
+            FinalMaking(sheet, package, name);
+            StartProcess(name);
+        }
+
+        public void PrintAllFiltredErrorsEverydayForm(List<int> techIds)
+        {
+            var date = DateTime.Now.ToString("dd-MM-yy");
+            var timeDate = DateTime.Now.ToString("dd-MM-yy(hh-mm-ss)");
+
+            string outerPath = @"C:\Users\User\Downloads\";
+
+            //string outerPath = @"P:\Цех\ceh05\Главный механик\Отчет по состоянию оборудования\";
+            string name = outerPath + "Информация о простое оборудования" + "-" + date;
+
+            if (!File.Exists(name))
+            {
+                MakeErrorGrid(techIds, timeDate);
+                FinalMaking(sheet, package, name);
+            }
+        }
+
+        private void MakeErrorGrid(List<int> techIds, string date)
+        {
             List<TechPassport> techs = new List<TechPassport>();
             foreach (int techId in techIds)
             {
@@ -80,7 +106,7 @@ namespace LogicLibrary
                 {
                     var passport = techs[i];
 
-                    string type = passport.Type != null ? passport.Type.Type : "";                   
+                    string type = passport.Type != null ? passport.Type.Type : "";
                     string departmentNumber = passport.Department != null && passport.Department.Number != null ? passport.Department.Number : "";
                     string departmentName = passport.Department != null && passport.Department.Name != null ? passport.Department.Name : "";
                     string department = departmentNumber + " - " + departmentName;
@@ -90,11 +116,6 @@ namespace LogicLibrary
 
                     if (passport.Errors != null)
                     {
-                        //IsNotWorking = passport.Errors.Any
-                        //(x => (x.Date != null) &&
-                        //(x.DateOfSolving == null || x.DateOfSolving.Value.Date == DateTime.MinValue) &&
-                        //(x.IsWorking == null || !x.IsWorking.Value));
-
                         var errors = passport.Errors.Where
                         (x => (x.Date != null) &&
                         (x.DateOfSolving == null || x.DateOfSolving.Value.Date == DateTime.MinValue) &&
@@ -104,29 +125,24 @@ namespace LogicLibrary
 
                         if (IsNotWorking)
                         {
-                            comment = errors.FirstOrDefault().Comment != null? errors.FirstOrDefault().Comment: "";
+                            comment = errors.FirstOrDefault().Comment != null ? errors.FirstOrDefault().Comment : "";
                         }
-                    }                    
+                    }
                     string working = !IsNotWorking ? "да" : "нет";
                     Color color = !IsNotWorking ? Color.LightYellow : Color.Coral;
 
 
                     int endPoint = PrintHorizontalLine(headerY, headerX + 1,
-                    (i+1).ToString(), passport.Name, passport.SerialNumber, passport.InventoryNumber, type,
+                    (i + 1).ToString(), passport.Name, passport.SerialNumber, passport.InventoryNumber, type,
                     department, working, comment);
 
                     var style = sheet.Cells[headerY, headerX + 1, headerY, endPoint - 1].Style;
-                    //style.Border.BorderAround(ExcelBorderStyle.Thin);
-                    //style.Border.Right.Style = ExcelBorderStyle.Thin;
                     style.Fill.PatternType = ExcelFillStyle.Solid;
                     style.Fill.BackgroundColor.SetColor(color);
 
                     headerY++;
                 }
             }
-
-            FinalMaking(sheet, package, name);
-            StartProcess(name);
         }
         public void PrintInfoForm(TechPassport passport)
         {

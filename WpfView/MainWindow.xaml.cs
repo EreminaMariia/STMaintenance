@@ -34,7 +34,6 @@ namespace WpfView
     //форма удаления инструментов 
     //перенос текста в Excel
     //центрировать заголовки в Excel
-    //отправка информации на почту
 
     public partial class MainWindow : Window
     {
@@ -108,8 +107,8 @@ namespace WpfView
                 (new PointViewService(), new TableService<PointView>.DeleteHandler(ShowMessage));
             DataContext = this;
 
-            //MakeArchiveTab(DateTime.Today.AddDays(-30), DateTime.Today);
-            //MakePlanTab(DateTime.Today, DateTime.Today.AddDays(30));
+            RefreshPassportGrid();
+            PrintFiltredErrors(true);
         }
 
         public void ShowMessage()
@@ -796,6 +795,11 @@ namespace WpfView
 
         private void printFiltredErrorsButton_Click(object sender, RoutedEventArgs e)
         {
+            PrintFiltredErrors(false);
+        }
+
+        private void PrintFiltredErrors (bool isEveryDayForm)
+        {
             List<int> techIds = new List<int>();
             PrintFormsMaker maker = new PrintFormsMaker("ErrorInfo");
             foreach (var item in machineDataGrid.Items)
@@ -805,7 +809,14 @@ namespace WpfView
                     techIds.Add(((TechView)item).Id);
                 }
             }
-            maker.PrintAllFiltredErrorsForm(techIds);
+            if (isEveryDayForm)
+            {
+                maker.PrintAllFiltredErrorsEverydayForm(techIds);
+            }
+            else
+            {
+                maker.PrintAllFiltredErrorsForm(techIds);
+            }
         }
 
         private void tabControl_SelectionChanged(object sender, SelectionChangedEventArgs e)

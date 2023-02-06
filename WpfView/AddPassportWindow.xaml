@@ -136,7 +136,7 @@
                         <TabItem.Content>
                             <Grid>
                                 <DataGrid x:Name="instrumentGrid" 
-                              AutoGeneratingColumn="HideIdColumn"
+                              AutoGeneratingColumn="HideInstrumentColumn"
                               CanUserAddRows="True" ItemsSource="{Binding Instruments}" 
                               MouseDoubleClick="instrumentGrid_MouseDoubleClick" 
                               CellEditEnding="сellEditEnding" Margin="0,27,0,0"

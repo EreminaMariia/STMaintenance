@@ -23,7 +23,7 @@ namespace WpfView
             {
                 var column = (DataGridTextColumn)e.Column;
                 var binding = (Binding)column.Binding;
-                binding.StringFormat = "dd-MM-yyyy hh:mm:ss";
+                binding.StringFormat = "dd-MM-yyyy HH:mm:ss";
                 binding.ConverterCulture = System.Globalization.CultureInfo.GetCultureInfo(1053);
                 binding.ValidationRules.Clear();
             }

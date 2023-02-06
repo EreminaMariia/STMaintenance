@@ -453,6 +453,16 @@ namespace WpfView
             e.Column.HeaderStyle.Setters.Add(new Setter(HorizontalContentAlignmentProperty, HorizontalAlignment.Center));
             CommonClass.HideIdColumn(sender, e);
         }
+
+        private void HideInstrumentColumn(object sender, DataGridAutoGeneratingColumnEventArgs e)
+        {
+            HideIdColumn(sender, e);
+            if (e.Column.Header.ToString() == "Дата удаления" ||
+                e.Column.Header.ToString() == "Причина удаления")
+            {
+                e.Column.Visibility = Visibility.Collapsed;
+            }
+        }
         private void Button_Click(object sender, RoutedEventArgs e)
         {
             Save();
@@ -924,41 +934,44 @@ namespace WpfView
 
         private void oldInstrumentTab_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
-            if (((DataGrid)e.Source).SelectedItem != null)
+            if (e.Source is DataGrid)
             {
-                var column = ((DataGrid)e.Source).CurrentColumn;
-                if (column.SortMemberPath == "Unit")
+                if (((DataGrid)e.Source).SelectedItem != null)
                 {
-                    oldInstrumentGrid.CancelEdit();
-                    oldInstrumentGrid.Items.Refresh();
-
-                    int t = 0;
-                    int id = 0;
-                    string name = "";
-                    string nominal = "";
-                    if (((DataGrid)e.Source).SelectedItem is InstrumentView)
+                    var column = ((DataGrid)e.Source).CurrentColumn;
+                    if (column.SortMemberPath == "Unit")
                     {
-                        var item = (InstrumentView)((DataGrid)e.Source).SelectedItem;
-                        id = item.Id;
-                        nominal = item.Count;
-                        name = item.Name;
-                        t = item.GetUnitId();
-                    }
+                        oldInstrumentGrid.CancelEdit();
+                        oldInstrumentGrid.Items.Refresh();
 
-                    UnitWindow uw = new UnitWindow(dataService.GetUnitViews().Select(x => (INameIdView)x).ToList(), t);
-                    uw.ShowDialog();
-                    int infoId = uw.Id;
-                    if (id > 0)
-                    {
-                        passportMaker.EditInstrument(id, infoId);
-                    }
-                    else
-                    {
+                        int t = 0;
+                        int id = 0;
+                        string name = "";
+                        string nominal = "";
+                        if (((DataGrid)e.Source).SelectedItem is InstrumentView)
+                        {
+                            var item = (InstrumentView)((DataGrid)e.Source).SelectedItem;
+                            id = item.Id;
+                            nominal = item.Count;
+                            name = item.Name;
+                            t = item.GetUnitId();
+                        }
 
-                        id = passportMaker.AddInstrument(infoId, name, nominal);
+                        UnitWindow uw = new UnitWindow(dataService.GetUnitViews().Select(x => (INameIdView)x).ToList(), t);
+                        uw.ShowDialog();
+                        int infoId = uw.Id;
+                        if (id > 0)
+                        {
+                            passportMaker.EditInstrument(id, infoId);
+                        }
+                        else
+                        {
+
+                            id = passportMaker.AddInstrument(infoId, name, nominal);
+                        }
+                        RefreshInstrumentGrid();
+                        RefreshOldInstrumentGrid();
                     }
-                    RefreshInstrumentGrid();
-                    RefreshOldInstrumentGrid();
                 }
             }
         }
