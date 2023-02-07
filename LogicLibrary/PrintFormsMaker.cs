@@ -58,11 +58,10 @@ namespace LogicLibrary
             var timeDate = DateTime.Now.ToString("dd-MM-yy(hh-mm-ss)");
 
             string outerPath = @"C:\Users\User\Downloads\";
-
             //string outerPath = @"P:\Цех\ceh05\Главный механик\Отчет по состоянию оборудования\";
             string name = outerPath + "Информация о простое оборудования" + "-" + date;
 
-            if (!File.Exists(name))
+            if (!File.Exists(name+ ".xlsx"))
             {
                 MakeErrorGrid(techIds, timeDate);
                 FinalMaking(sheet, package, name);

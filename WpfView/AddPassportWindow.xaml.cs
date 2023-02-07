@@ -1132,6 +1132,13 @@ namespace WpfView
             PrintFormsMaker maker = new PrintFormsMaker("ControlledParametrsForm");
             maker.PrintControlParamsForm(passportMaker.TechPassport.Name, passportMaker.ControledParametrs, passportMaker.ControledParametrEpisodes);
         }
+
+        private void printInstrumentsButton_Click(object sender, RoutedEventArgs e)
+        {
+            //должны попадать все инструменты (и актуальные, и списанные)
+            //PrintFormsMaker maker = new PrintFormsMaker("InstrumentsForm");
+            //maker.PrintControlParamsForm(passportMaker.TechPassport.Name, passportMaker.ControledParametrs, passportMaker.ControledParametrEpisodes);
+        }
         private void Archive_TextBox_TextChanged(object sender, TextChangedEventArgs e)
         {
             string s = ((TextBox)e.Source).Text;
