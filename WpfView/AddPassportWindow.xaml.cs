@@ -1135,9 +1135,8 @@ namespace WpfView
 
         private void printInstrumentsButton_Click(object sender, RoutedEventArgs e)
         {
-            //должны попадать все инструменты (и актуальные, и списанные)
-            //PrintFormsMaker maker = new PrintFormsMaker("InstrumentsForm");
-            //maker.PrintControlParamsForm(passportMaker.TechPassport.Name, passportMaker.ControledParametrs, passportMaker.ControledParametrEpisodes);
+            PrintFormsMaker maker = new PrintFormsMaker("InstrumentsForm");
+            maker.PrintInstrumentsForm(passportMaker.TechPassport.Name, passportMaker.Instruments);
         }
         private void Archive_TextBox_TextChanged(object sender, TextChangedEventArgs e)
         {

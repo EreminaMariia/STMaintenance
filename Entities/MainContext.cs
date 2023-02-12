@@ -21,8 +21,8 @@ namespace Entities
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             //optionsBuilder.UseSqlServer("Data Source=localhost;Initial Catalog=MaintananceDB;Integrated Security=True;MultipleActiveResultSets=true");
-            //optionsBuilder.UseMySql("server=94.231.127.68;port=15100;database=pvtdata;uid=userpvtrans1;pwd=UserPV1", ServerVersion.Parse("5.5.23-mysql"));
-            optionsBuilder.UseMySql("server=192.168.1.252;port=3306;database=pvtdata;uid=userpvtrans1;pwd=UserPV1", Microsoft.EntityFrameworkCore.ServerVersion.Parse("5.5.23-mysql"));
+            optionsBuilder.UseMySql("server=94.231.127.68;port=15100;database=pvtdata;uid=userpvtrans1;pwd=UserPV1", ServerVersion.Parse("5.5.23-mysql"));
+            //optionsBuilder.UseMySql("server=192.168.1.252;port=3306;database=pvtdata;uid=userpvtrans1;pwd=UserPV1", Microsoft.EntityFrameworkCore.ServerVersion.Parse("5.5.23-mysql"));
         }
         public DbSet<EquipmentSupplier> EquipmentSuppliers { get; set; }
         public DbSet<EquipmentType> EquipmentTypes { get; set; }

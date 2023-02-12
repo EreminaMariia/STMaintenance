@@ -58,7 +58,7 @@ namespace LogicLibrary
             var timeDate = DateTime.Now.ToString("dd-MM-yy(hh-mm-ss)");
 
             string outerPath = @"C:\Users\User\Downloads\";
-            //string outerPath = @"P:\Цех\ceh05\Главный механик\Отчет по состоянию оборудования\";
+            //string outerPath = @"P:\Цех\Общая\Отчет по состоянию оборудования ПВ-транс\";
             string name = outerPath + "Информация о простое оборудования" + "-" + date;
 
             if (!File.Exists(name+ ".xlsx"))
@@ -408,7 +408,59 @@ namespace LogicLibrary
             FinalMaking(sheet, package, name);
             StartProcess(name);
         }
-        public void PrintControlParamsForm(string passportName, List<ControledParametrView> parametrs, List<ControledParametrEpisodeView> episodes)
+
+        public void PrintInstrumentsForm(string passportName, List<InstrumentView> instruments)
+        {
+            string name = "Инструменты" + "--" + DateTime.Now.ToString("dd-MM-yy(hh-mm-ss)");
+            sheet.DefaultColWidth = 6.5;
+
+            int headerY = 4;
+            int headerX = 1;
+            headerY = MakeHeader(headerY, headerX + 1, "Инструменты/оснастка оборудования: " + passportName,
+                "№", "Наименование", "Артикул", "Количество", "Ед. измерения",
+                "Дата добавления", "Комментарий");
+
+            var inWork = instruments.Where(n => n.RemoveDate == null || n.RemoveDate == DateTime.MinValue).ToList();
+            for (int i = 0; i < inWork.Count; i++)
+            {
+                if (inWork[i] != null &&
+                    (!string.IsNullOrEmpty(inWork[i].Name) || !string.IsNullOrEmpty(inWork[i].Art)))
+                {
+                    string date = inWork[i].CreateDate != null ? inWork[i].CreateDate.Value.ToShortDateString() : "";
+                    headerY = PrintHorizontalLine(headerY, headerX + 1, (i + 1).ToString(),
+                        inWork[i].Name, inWork[i].Art, inWork[i].Count, inWork[i].Unit, date, inWork[i].Commentary);
+                }
+            }
+
+            headerY += 4;
+
+            var notInWork = instruments.Where(n => n.RemoveDate != null && n.RemoveDate != DateTime.MinValue).ToList();
+
+            if (notInWork.Count > 0)
+            {
+                headerY = MakeHeader(headerY, headerX + 1, "Инструментя/оснастка оборудования: " + passportName,
+                    "№", "Наименование", "Артикул", "Количество", "Ед. измерения",
+                    "Дата добавления", "Комментарий", "Дата удаления", "Причина удаления");
+
+                for (int i = 0; i < notInWork.Count; i++)
+                {
+                    if (notInWork[i] != null &&
+                        (!string.IsNullOrEmpty(notInWork[i].Name) || !string.IsNullOrEmpty(notInWork[i].Art)))
+                    {
+                        string date = notInWork[i].CreateDate != null ? notInWork[i].CreateDate.Value.ToShortDateString() : "";
+                        string removeDate = notInWork[i].RemoveDate != null ? notInWork[i].RemoveDate.Value.ToShortDateString() : "";
+
+                        headerY = PrintHorizontalLine(headerY, headerX + 1, (i + 1).ToString(),
+                            notInWork[i].Name, notInWork[i].Art, notInWork[i].Count, notInWork[i].Unit,
+                            date, notInWork[i].Commentary, removeDate, notInWork[i].RemoveReason);
+                    }
+                }
+            }
+
+            FinalMaking(sheet, package, name);
+            StartProcess(name);
+        }
+            public void PrintControlParamsForm(string passportName, List<ControledParametrView> parametrs, List<ControledParametrEpisodeView> episodes)
         {
             string name = "Контролируемые параметры" + "--" + DateTime.Now.ToString("dd-MM-yy(hh-mm-ss)");
             sheet.DefaultColWidth = 6.5;
@@ -472,9 +524,15 @@ namespace LogicLibrary
         }
         private int PrintHorizontalLineItem(int Y, int X, string value)
         {
-            sheet.Cells[Y, X].Value = value;
-            sheet.Column(X).AutoFit();
-            sheet.Column(X).Width = sheet.Column(X).Width * 0.8;
+            double width = sheet.Column(X).Width;
+            sheet.Cells[Y, X].Value = value;                                   
+            sheet.Cells[Y, X].Style.WrapText = true;
+            //sheet.Column(X).AutoFit();
+            int letters = value.Length;
+            //double newWidth = sheet.Column(X).Width * 0.8;            
+            sheet.Column(X).Width = letters > width? letters: width;
+            sheet.Column(X).Width = sheet.Column(X).Width > 60 ? 60 : sheet.Column(X).Width;
+
             X++;
             return X;
         }
@@ -492,6 +550,7 @@ namespace LogicLibrary
             var report = package.GetAsByteArray();
             File.WriteAllBytes(name + ".xlsx", report);
         }
+
         private void StartProcess(string name)
         {
             var process = new Process();

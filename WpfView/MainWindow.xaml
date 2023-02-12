@@ -144,12 +144,22 @@
                     <DatePicker x:Name="startPlanPicker" HorizontalAlignment="Left" Margin="320,0,0,0" VerticalAlignment="Top" SelectedDateChanged="startPlanPicker_SelectedDateChanged"/>
                     <DatePicker x:Name="endPlanPicker" HorizontalAlignment="Left" VerticalAlignment="Top" SelectedDateChanged="endPlanPicker_SelectedDateChanged" Margin="447,0,0,0"/>
                     <!--<DataGrid x:Name="planDataGrid" Margin="0,29,0,0" AutoGenerateColumns="False" SelectionUnit="Cell">-->
+
+                    <ScrollViewer x:Name="nameSetScrollViewer" VerticalAlignment="Top" HorizontalAlignment="Left" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility ="Hidden" 
+                                  Margin="0,60,0,0" Width ="250" Height="60">
+                        <StackPanel x:Name="fixedNamePanel" HorizontalAlignment="Left" Margin="0,0,0,0" Width ="250" Opacity="1"></StackPanel>
+                    </ScrollViewer>
+                    <ScrollViewer x:Name="nameGetScrollViewer" VerticalAlignment="Top" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility ="Hidden" 
+                                  Margin="250,60,0,0" Height="60">
+                        <StackPanel x:Name="allNamePanel" Margin="0,0,0,0" Opacity="1"></StackPanel>
+                    </ScrollViewer>
+
                     <ScrollViewer x:Name="setScrollViewer" HorizontalAlignment="Left" HorizontalScrollBarVisibility="Visible" VerticalScrollBarVisibility ="Hidden" 
-                                  Margin="0,60,0,0" Width ="250" ScrollChanged="ScrollChanged">
+                                  Margin="0,120,0,0" Width ="250" ScrollChanged="ScrollChanged">
                         <StackPanel x:Name="fixedPanel" HorizontalAlignment="Left" Margin="0,0,0,0" Width ="250" Opacity="1"></StackPanel>
                     </ScrollViewer>
                     <ScrollViewer x:Name="getScrollViewer" HorizontalScrollBarVisibility="Visible" VerticalScrollBarVisibility ="Auto" 
-                                  Margin="250,60,0,0" ScrollChanged="ScrollChanged">
+                                  Margin="250,120,0,0" ScrollChanged="ScrollChanged">
                         <StackPanel x:Name="allPanel" Margin="0,0,0,0" Opacity="1"></StackPanel>
                     </ScrollViewer>
                     <!--<ScrollViewer VerticalScrollBarVisibility ="Auto" Margin="0,60,0,0">

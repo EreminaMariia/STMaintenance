@@ -195,11 +195,17 @@ namespace WpfView
             return firstEpisodes;
         }
 
+         double letterCount = 25;
+        int rowCount = 2;
+
         private void MakePlanTab(DateTime start, DateTime end, List<AdditionalWorkView> additionalViews, List<MaintenanceEpisodeView> episodeViews)
         {
             allPanel.Children.Clear();
             fixedPanel.Children.Clear();
-            int rowHeight = 60;
+            allNamePanel.Children.Clear();
+            fixedNamePanel.Children.Clear();
+
+            int defaultRowHeight = 60;
             int nameWidth = 250;
             int cellWidth = 60;
 
@@ -211,12 +217,12 @@ namespace WpfView
             filtred = plannedViews.GroupBy(t => t.MachineId);
             StackPanel headerPanel = new StackPanel();
             headerPanel.Orientation = Orientation.Horizontal;
-            headerPanel.Height = rowHeight;
+            headerPanel.Height = defaultRowHeight;
             Button headerButton = new Button();
             headerButton.Width = nameWidth;
-            headerButton.Height = rowHeight;
+            headerButton.Height = defaultRowHeight;
             headerButton.Content = "Наименование";
-            fixedPanel.Children.Add(headerButton);
+            fixedNamePanel.Children.Add(headerButton);
 
             for (DateTime i = start.Date; i <= end.Date; i = i.AddDays(1))
             {
@@ -225,10 +231,17 @@ namespace WpfView
                 dateButton.Content = new TextBlock() { Text = i.ToShortDateString(), TextWrapping = TextWrapping.Wrap };
                 headerPanel.Children.Add(dateButton);
             }
-            allPanel.Children.Add(headerPanel);
+            allNamePanel.Children.Add(headerPanel);
 
             foreach (var view in filtred)
             {
+                int rowHeight = defaultRowHeight;
+                if (dataService.GetPassportTechViewById(view.Key).Name.Length > letterCount*rowCount)
+                {
+                    int nameRowsCount = (int)Math.Ceiling(dataService.GetPassportTechViewById(view.Key).Name.Length / letterCount);
+                    rowHeight = (defaultRowHeight / rowCount) * nameRowsCount;
+                }
+
                 StackPanel viewPanel = new StackPanel();
                 viewPanel.Orientation = Orientation.Horizontal;
                 viewPanel.Height = rowHeight;
@@ -906,6 +919,7 @@ namespace WpfView
             if (sender == getScrollViewer)
             {
                 setScrollViewer.ScrollToVerticalOffset(e.VerticalOffset);
+                nameGetScrollViewer.ScrollToHorizontalOffset(e.HorizontalOffset);
             }
             else
             {
