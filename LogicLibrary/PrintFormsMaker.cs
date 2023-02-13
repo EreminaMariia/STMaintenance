@@ -414,11 +414,15 @@ namespace LogicLibrary
             string name = "Инструменты" + "--" + DateTime.Now.ToString("dd-MM-yy(hh-mm-ss)");
             sheet.DefaultColWidth = 6.5;
 
-            int headerY = 4;
+            int headerY = 3;
             int headerX = 1;
-            headerY = MakeHeader(headerY, headerX + 1, "Инструменты/оснастка оборудования: " + passportName,
+
+            sheet.Cells[headerY, 1].Value = "Отчёт сформирован на " + DateTime.Now.ToString("dd-MM-yy");
+
+            headerY = 4;
+            headerY = MakeHeader(headerY, headerX + 1, "Инструменты/оснастка оборудования в эксплуатации: " + passportName,
                 "№", "Наименование", "Артикул", "Количество", "Ед. измерения",
-                "Дата добавления", "Комментарий");
+                "Дата ввода в эксплуатацию", "Комментарий");
 
             var inWork = instruments.Where(n => n.RemoveDate == null || n.RemoveDate == DateTime.MinValue).ToList();
             for (int i = 0; i < inWork.Count; i++)
@@ -438,9 +442,9 @@ namespace LogicLibrary
 
             if (notInWork.Count > 0)
             {
-                headerY = MakeHeader(headerY, headerX + 1, "Инструментя/оснастка оборудования: " + passportName,
+                headerY = MakeHeader(headerY, headerX + 1, "Инструменты/оснастка оборудования списанные: " + passportName,
                     "№", "Наименование", "Артикул", "Количество", "Ед. измерения",
-                    "Дата добавления", "Комментарий", "Дата удаления", "Причина удаления");
+                    "Дата ввода в эксплуатацию", "Комментарий", "Дата списания", "Причина удаления");
 
                 for (int i = 0; i < notInWork.Count; i++)
                 {
@@ -530,7 +534,7 @@ namespace LogicLibrary
             //sheet.Column(X).AutoFit();
             int letters = value.Length;
             //double newWidth = sheet.Column(X).Width * 0.8;            
-            sheet.Column(X).Width = letters > width? letters: width;
+            sheet.Column(X).Width = letters > width? letters : width;
             sheet.Column(X).Width = sheet.Column(X).Width > 60 ? 60 : sheet.Column(X).Width;
 
             X++;

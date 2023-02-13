@@ -29,7 +29,13 @@ namespace Entities
             {
                 using (AdditionalContext db = new AdditionalContext())
                 {
-                    materials = db.MaterialsInfoFromOuterBase.FromSqlRaw(sqlExpression).ToList();
+                    string monthPrefix = DateTime.Today.Month < 10 ? "0" : "";
+                    string sqlParams = @"declare @DtBeg datetime='"
+                        + DateTime.Today.Year.ToString() + monthPrefix + (DateTime.Today.Month).ToString() +
+                        DateTime.Today.Day.ToString() +
+                        @"' declare @DtEnd datetime='" + DateTime.Today.Year.ToString() + monthPrefix + (DateTime.Today.Month).ToString() +
+                        DateTime.Today.Day.ToString() + @" 23:59:59' ";
+                    materials = db.MaterialsInfoFromOuterBase.FromSqlRaw(sqlParams + sqlExpression).ToList();
                 }
             }
             catch (Exception ex)
@@ -1725,14 +1731,7 @@ namespace Entities
         {
             return context.Points.ToList();
         }
-        string sqlExpression = @"declare @DtBeg datetime='20221101'
-
-declare @DtEnd datetime = '20221109 23:59:59'
-
-
-
-
-Select SKLN_Cd, max(SklN_Nm) SklN_Nm, sum(EndQt) EndQt, sum(QtRes) QtRes
+        string sqlExpression = @"Select SKLN_Cd, max(SklN_Nm) SklN_Nm, sum(EndQt) EndQt, sum(QtRes) QtRes
 
 From(
 
