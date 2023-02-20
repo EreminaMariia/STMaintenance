@@ -19,21 +19,18 @@ namespace WpfView
     /// </summary>
     /// 
 
-    //возможность добавлять пустые даты
-    //не пересчитывать даты эпизодов с запланированной датой, отличной от высчитываемой - и далее
-    //показывать прикреплённых работников 
-    //обновление таблиц после неполучившегося удаления
-    //ускорить 
-    //разобраться с AddItem с не теми сервисами
-    //перенос строк в экселе
-    //закрепить даты в планировщике
-    //формат дат
-    //проверить подтягивается ли дата последнего то
-    //в ТО сделать шифр обязательным
-    //кнопка отчета в инструментах
-    //форма удаления инструментов 
-    //перенос текста в Excel
-    //центрировать заголовки в Excel
+    //списание части инструментов + форма
+    //печать архива с фильтром по датам
+    //план работ(общий)
+    //остановить автоматическую выгрузку
+
+    //отчет-копия планировщика + справа расшифровка типов обслуживания + расшифровка цветов -- График работ по техническому обслуживанию машин и механизмов установленных на участке ЦЗМ
+    //поле Модель оборудования + из таблицы -- во всех отчётах и таблицах слепить
+    //новый отчет с ошибками на месяц
+    //ошибки висят до конца месяца
+    //форма с диалогом по ошибкам
+    //отчет за период 
+
 
     public partial class MainWindow : Window
     {
@@ -50,7 +47,7 @@ namespace WpfView
         public ObservableCollection<UnitView> Units { get; set; }
         public ObservableCollection<DepartmentView> Departments { get; set; }
         public ObservableCollection<PointView> Points { get; set; }
-        public List<OuterArchiveView> Archive { get; set; }
+        public ObservableCollection<OuterArchiveView> Archive { get; set; }
 
         private List<TechView> passports { get; set; }
         private List<TechView> oldPassports { get; set; }
@@ -63,6 +60,7 @@ namespace WpfView
         private List<DepartmentView> departments { get; set; }
         private List<PointView> points { get; set; }
         public List<OuterArchiveView> archive { get; set; }
+        public List<OuterArchiveView> filtred { get; set; }
 
         private int defaultDays = 10;
 
@@ -76,6 +74,7 @@ namespace WpfView
         public TableService<UnitView> unitTableService;
         public TableService<DepartmentView> departmentTableService;
         public TableService<PointView> pointTableService;
+        public TableService<OuterArchiveView> archiveTableService;
 
         private AddPassportWindow passportWindow;
 
@@ -105,6 +104,8 @@ namespace WpfView
                 (new DepartmentViewService(), new TableService<DepartmentView>.DeleteHandler(ShowMessage));
             pointTableService = new TableService<PointView>
                 (new PointViewService(), new TableService<PointView>.DeleteHandler(ShowMessage));
+            archiveTableService = new TableService<OuterArchiveView>
+                (new OuterArchiveViewService(), new TableService<OuterArchiveView>.DeleteHandler(ShowMessage));
             DataContext = this;
 
             RefreshPassportGrid();
@@ -122,23 +123,7 @@ namespace WpfView
 
             result = MessageBox.Show(messageBoxText, caption, button, icon, MessageBoxResult.OK);
         }
-        public void MakeArchiveTab(DateTime start, DateTime end)
-        {
-            archive = dataService.GetAllArchiveViews().Where(x => x.Date != null && x.Date >= start && x.Date <= end).ToList();
-            string s = archiveTextBox.Text;
-            if (string.IsNullOrEmpty(s))
-            {
-                Archive = archive;
-            }
-            else
-            {
-                var filtred = archive.Where(x => CommonClass.IsContained(x, s)).ToList();
-                Archive = filtred;
-            }
-            archiveDataGrid.ItemsSource = null;
-            archiveDataGrid.ItemsSource = Archive;
-        }
-
+       
         public void MakePlanTab(DateTime start, DateTime end)
         {
             var maintenances = dataService.GetMaintenanceNewViews().Where(
@@ -236,9 +221,11 @@ namespace WpfView
             foreach (var view in filtred)
             {
                 int rowHeight = defaultRowHeight;
-                if (dataService.GetPassportTechViewById(view.Key).Name.Length > letterCount*rowCount)
+                var machine = dataService.GetPassportTechViewById(view.Key);
+                string machineName = machine.Name + " " + machine.Version;
+                if (machineName.Length > letterCount*rowCount)
                 {
-                    int nameRowsCount = (int)Math.Ceiling(dataService.GetPassportTechViewById(view.Key).Name.Length / letterCount);
+                    int nameRowsCount = (int)Math.Ceiling(machineName.Length / letterCount);
                     rowHeight = (defaultRowHeight / rowCount) * nameRowsCount;
                 }
 
@@ -246,9 +233,7 @@ namespace WpfView
                 viewPanel.Orientation = Orientation.Horizontal;
                 viewPanel.Height = rowHeight;
                 Button nameButton = new Button();
-                nameButton.Width = nameWidth;
-                //проверка на null
-                string machineName = dataService.GetPassportTechViewById(view.Key).Name;
+                nameButton.Width = nameWidth;                
                 nameButton.Content = new TextBlock() { Text = machineName, TextWrapping = TextWrapping.Wrap };
                 nameButton.Tag = view.Key;
                 nameButton.Click += new RoutedEventHandler(ShowPassport);
@@ -351,7 +336,6 @@ namespace WpfView
                     end = (DateTime)endPlanPicker.SelectedDate;
                 }
                 RefilterPlannedGrid(start, end, plannedTextBox.Text);
-                MakeArchiveTab(DateTime.Today.AddDays(-30), DateTime.Today);
             }
         }
 
@@ -488,9 +472,6 @@ namespace WpfView
 
             CommonClass.FilterGridByOneField(Passports, passports, passportTableService, machineDataGrid, GetProperties(machineDataGrid));
             CommonClass.FilterGridByOneField(OldPassports, oldPassports, oldPassportTableService, oldMachineDataGrid, GetProperties(oldMachineDataGrid));
-
-            //MakeArchiveTab(DateTime.Today.AddDays(-30), DateTime.Today);
-            //MakePlanTab(DateTime.Today, DateTime.Today.AddDays(30));
         }
 
         private void RefreshMaterialsGrid()
@@ -532,7 +513,7 @@ namespace WpfView
         {
             var start = (DatePicker)e.OriginalSource;
             var st = (DateTime)start.SelectedDate;
-            DateTime end = endDatePicker.SelectedDate != null ? (DateTime)endDatePicker.SelectedDate : DateTime.Today.AddDays(defaultDays);
+            DateTime end = endDatePicker.SelectedDate != null ? (DateTime)endDatePicker.SelectedDate : DateTime.Today;
 
             if (st > end)
             {
@@ -540,7 +521,16 @@ namespace WpfView
             }
             startDatePicker.SelectedDate = st;
 
-            MakeArchiveTab(st, end);
+            Dictionary<string, string> properties = new Dictionary<string, string>();
+            var parent = archiveDataGrid.Parent;
+            if (parent != null && parent is Grid)
+            {
+                var pg = (Grid)parent;
+                properties = CommonClass.GetProperties(pg);
+            }
+
+            filtred = dataService.GetAllArchiveViews().Where(x => x.Date != null && x.Date >= st && x.Date <= end).ToList();
+            CommonClass.FilterGridByOneField(Archive, filtred, archiveTableService, archiveDataGrid, properties);
         }
 
         private void endDatePicker_SelectedDateChanged(object sender, SelectionChangedEventArgs e)
@@ -548,13 +538,23 @@ namespace WpfView
             DateTime start = startDatePicker.SelectedDate != null ? (DateTime)startDatePicker.SelectedDate : DateTime.Today;
             var end = (DatePicker)e.OriginalSource;
             var st = (DateTime)end.SelectedDate;
-            endDatePicker.SelectedDate = st;
-
+            
             if (st > DateTime.Today)
             {
                 st = DateTime.Today;
             }
-            MakeArchiveTab(start, st);
+            endDatePicker.SelectedDate = st;
+
+            Dictionary<string, string> properties = new Dictionary<string, string>();
+            var parent = archiveDataGrid.Parent;
+            if (parent != null && parent is Grid)
+            {
+                var pg = (Grid)parent;
+                properties = CommonClass.GetProperties(pg);
+            }            
+
+            filtred = dataService.GetAllArchiveViews().Where(x => x.Date != null && x.Date >= start && x.Date <= st).ToList();
+            CommonClass.FilterGridByOneField(Archive, filtred, archiveTableService, archiveDataGrid, properties);
         }
 
         private void departmentsDataGrid_MouseDoubleClick(object sender, MouseButtonEventArgs e)
@@ -601,23 +601,6 @@ namespace WpfView
                 isManualEditCommit = false;
             }
         }
-
-        private void Archive_TextBox_TextChanged(object sender, TextChangedEventArgs e)
-        {
-            string s = ((TextBox)e.Source).Text;
-            if (string.IsNullOrEmpty(s))
-            {
-                Archive = archive;
-            }
-            else
-            {
-                var filtred = archive.Where(x => CommonClass.IsContained(x, s)).ToList();
-                Archive = filtred;
-            }
-            archiveDataGrid.ItemsSource = null;
-            archiveDataGrid.ItemsSource = Archive;
-        }
-
 
         private void plannedTextBox_TextChanged(object sender, TextChangedEventArgs e)
         {
@@ -691,6 +674,21 @@ namespace WpfView
             }
 
             maker.PrintAllFiltredInfoForm(techIds);
+        }
+
+        private void outArchiveButton_Click(object sender, RoutedEventArgs e)
+        {
+            PrintFormsMaker maker = new PrintFormsMaker("ArchiveInfo");
+            DateTime start = startDatePicker.SelectedDate != null ? (DateTime)startDatePicker.SelectedDate : DateTime.MinValue;
+            DateTime end = endDatePicker.SelectedDate != null ? (DateTime)endDatePicker.SelectedDate : DateTime.Today;
+            if (filtred != null && filtred.Count > 0)
+            {
+                maker.PrintArchiveForm(start, end, filtred);
+            }
+            else
+            {
+                maker.PrintArchiveForm(archive);
+            }
         }
 
         private void oldMachineDataGrid_MouseDoubleClick(object sender, MouseButtonEventArgs e)
@@ -790,6 +788,14 @@ namespace WpfView
                             case "pointsDataGrid":
                                 CommonClass.FilterGridByOneField(Points, points, pointTableService, pointsDataGrid, properties);
                                 break;
+                            case "archiveDataGrid":
+                                DateTime start = startDatePicker.SelectedDate != null ? (DateTime)startDatePicker.SelectedDate : DateTime.MinValue;
+                                DateTime end = endDatePicker.SelectedDate != null ? (DateTime)endDatePicker.SelectedDate : DateTime.Today;
+                                archive = dataService.GetAllArchiveViews();
+                                filtred = dataService.GetAllArchiveViews().Where(x => x.Date != null && x.Date >= start && x.Date <= end).ToList();
+                                CommonClass.FilterGridByOneField(Archive, filtred, archiveTableService, archiveDataGrid, properties, out List<OuterArchiveView> f);
+                                filtred = f;
+                                break;
                         }
                     }
                 }
@@ -843,10 +849,10 @@ namespace WpfView
                 else if (HandBookItem.IsSelected) { }
                 else if (ArchiveItem.IsSelected)
                 {
-                    if (archive == null || archive.Count == 0)
-                    {
-                        MakeArchiveTab(DateTime.Today.AddDays(-30), DateTime.Today);
-                    }
+                    archive = dataService.GetAllArchiveViews().Where(x => x.Date != null &&
+                        x.Date >= DateTime.Today.AddDays(-30) && x.Date <= DateTime.Today).ToList();
+                    CommonClass.TabChangeProcess(archive, 
+                            archive, Archive, archiveDataGrid, archiveTableService);
                 }
                 else if (PlanItem.IsSelected)
                 {

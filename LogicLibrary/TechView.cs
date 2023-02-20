@@ -15,6 +15,7 @@ namespace LogicLibrary
         private string serialNumber = string.Empty;
         private string inventoryNumber = string.Empty;
         private string department = string.Empty;
+        private string version = string.Empty;
         public int Id { get; set; }
 
         //[System.ComponentModel.DisplayName(" ")]
@@ -25,6 +26,13 @@ namespace LogicLibrary
         {
             get { return name; }
             private set { name = value; OnPropertyChanged(nameof(Name)); }
+        }
+
+        [System.ComponentModel.DisplayName("Марка/модель/\nхарактеристики")]
+        public string Version
+        {
+            get { return version; }
+            private set { version = value; OnPropertyChanged(nameof(Version)); }
         }
 
         [System.ComponentModel.DisplayName("Серийный номер\nоборудования")]
@@ -57,6 +65,7 @@ namespace LogicLibrary
             {
                 Id = passport.Id;
                 Name = passport.Name;
+                Version = passport.Version;
                 SerialNumber = passport.SerialNumber;
                 InventoryNumber = passport.InventoryNumber;
                 Department = passport.Department != null ? passport.Department.Number + " - " + passport.Department.Name: "";

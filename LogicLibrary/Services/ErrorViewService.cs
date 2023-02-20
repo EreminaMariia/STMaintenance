@@ -33,7 +33,13 @@ namespace LogicLibrary.Services
 
         public bool Delete(int id)
         {
-            return false;
+            var error = techPassport.Errors.FirstOrDefault(m => m.Id == id);
+            if (error != null)
+            {
+                error.ChangeIfInWork();
+                error.MarkChanged();
+            }
+            return true;
         }
 
         public void Update(ITableView view)

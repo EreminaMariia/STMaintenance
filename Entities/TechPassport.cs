@@ -32,5 +32,7 @@ namespace Entities
         public Operator? Operator { get; set; }
         public double? Power { get; set; }
         public ElectroPoint? ElectroPoint { get; set; }
+        public string? Version { get; set; }
+        public ICollection<Downtime>? Downtimes { get; set; }
     }
 }

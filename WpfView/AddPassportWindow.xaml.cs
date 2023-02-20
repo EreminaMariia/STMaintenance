@@ -38,7 +38,7 @@ namespace WpfView
         public ObservableCollection<HourView> Hours { get; set; }
         public ObservableCollection<ControledParametrEpisodeView> ControledParamEpisodes { get; set; }
         public ObservableCollection<ControledParametrView> ControledParams { get; set; }
-        public List<InnerArchiveView> Archive { get; set; }
+        public ObservableCollection<InnerArchiveView> Archive { get; set; }
 
         public List<MaintenanceNewView> maintenances { get; set; }
         public List<MaintenanceNewView> oldMaintenances { get; set; }
@@ -64,6 +64,7 @@ namespace WpfView
         public TableService<ControledParametrView> controlTableService;
         public TableService<InstrumentView> instrumentTableService;
         public TableService<InstrumentView> oldInstrumentTableService;
+        public TableService<InnerArchiveView> archiveTableService;
 
         public AddPassportWindow(AddHandler handler)
         {
@@ -86,10 +87,11 @@ namespace WpfView
 
             var passport = passportMaker.GetPassport();
 
-            Title = Title + ": " + passport.Name;
+            Title = Title + ": " + passport.Name + " " + passport.Version;
 
             inventoryTextBox.Text = passport.InventoryNumber;
             nameTextBox.Text = passport.Name;
+            versionTextBox.Text = passport.Version;
             serialTextBox.Text = passport.SerialNumber;
 
             MakeSelectedItem(passport.Supplier != null ? passport.Supplier.Id : 0, supplierComboBox);
@@ -142,7 +144,14 @@ namespace WpfView
         public void MakeArchiveGrid()
         {
             archive = passportMaker.GetArchiveView();
-            Archive = archive;
+            Archive = new ObservableCollection<InnerArchiveView>(archive);
+            archiveTableService = new TableService<InnerArchiveView>
+                (new InnerArchiveViewService(passportMaker), new TableService<InnerArchiveView>.DeleteHandler(ShowMessage));
+            foreach (var item in Archive)
+            {
+                item.PropertyChanged += archiveTableService.Item_PropertyChanged;
+            }
+            Archive.CollectionChanged += archiveTableService.Entries_CollectionChanged;
         }
         public void MakePlannedGrid()
         {
@@ -375,7 +384,7 @@ namespace WpfView
             }
             Instructions.CollectionChanged += instructionTableService.Entries_CollectionChanged;
 
-            instruments = passportMaker.Instruments.Where(i=>i.RemoveDate == null || i.RemoveDate == DateTime.MinValue).ToList();
+            instruments = passportMaker.Instruments.Where(i => i.RemoveDate == null || i.RemoveDate == DateTime.MinValue).ToList();
             Instruments = new ObservableCollection<InstrumentView>(instruments);
             instrumentTableService = new TableService<InstrumentView>
                 (new InstrumentViewService(passportMaker), new TableService<InstrumentView>.DeleteHandler(ShowMessage));
@@ -475,6 +484,7 @@ namespace WpfView
                 !string.IsNullOrEmpty(serialTextBox.Text))
             {
                 string name = nameTextBox.Text;
+                string version = versionTextBox.Text;
                 string inventory = inventoryTextBox.Text;
                 string serial = serialTextBox.Text;
 
@@ -490,7 +500,7 @@ namespace WpfView
                 DateTime releaseYear = madeDatePicker.SelectedDate != null ? (DateTime)madeDatePicker.SelectedDate : DateTime.MinValue;
                 double.TryParse(powerTextBox.Text.Replace(',', '.'), out double power);
 
-                id = passportMaker.SavePassport(name, serial, inventory, releaseYear, commissioningDate, decommissioningDate, guaranteeDate, power,
+                id = passportMaker.SavePassport(name, version, serial, inventory, releaseYear, commissioningDate, decommissioningDate, guaranteeDate, power,
                     supplierId, typeId, departmentId, pointId, operatorId);
             }
         }
@@ -541,6 +551,12 @@ namespace WpfView
             MakeArchiveGrid();
         }
 
+        public void RefreshArchive()
+        {
+            var a = passportMaker.GetArchiveView();
+            CommonClass.RefreshGridWithoutFilter(a, Archive, archiveGrid, archiveTableService);
+        }       
+
         public void RefreshOldMaintenanceGrid(bool isFiltred = true)
         {
             var m = passportMaker.Maintenances.Where(p => !p.IsInWork()).ToList();
@@ -567,7 +583,7 @@ namespace WpfView
 
         public void RefreshAdditionalGrid(bool isFiltred = true)
         {
-                var a = passportMaker.Additionals;
+            var a = passportMaker.Additionals;
             if (isFiltred)
             {
                 CommonClass.RefreshGrid(a, Additionals, additionalGrid, additionalTableService);
@@ -582,7 +598,7 @@ namespace WpfView
 
         public void RefreshErrorGrid(bool isFiltred = true)
         {
-                var a = passportMaker.Errors;
+            var a = passportMaker.Errors;
             if (isFiltred)
             {
                 CommonClass.RefreshGrid(a, Errors, errorsGrid, errorTableService);
@@ -835,7 +851,20 @@ namespace WpfView
                     passportMaker.EditErrorWorking(id, isWorkingNow);
                     RefreshErrorGrid();
                 }
+            }
+            else if (column.SortMemberPath == "Repairings")
+            {
+                errorsGrid.CancelEdit();
+                errorsGrid.Items.Refresh();
 
+                RepairingGridWindow uw = new RepairingGridWindow(dataService, id, passportMaker);
+                var result = uw.ShowDialog();
+                if (result != null && result.Value)
+                {
+                    List<int> repairingIds = uw.Id;
+                    passportMaker.EditErrorRepairings(id, repairingIds);
+                    RefreshErrorGrid();
+                }
             }
         }
 
@@ -904,7 +933,7 @@ namespace WpfView
                     int t = 0;
                     int id = 0;
                     string name = "";
-                    string nominal ="";
+                    string nominal = "";
                     if (((DataGrid)e.Source).SelectedItem is InstrumentView)
                     {
                         var item = (InstrumentView)((DataGrid)e.Source).SelectedItem;
@@ -1110,13 +1139,17 @@ namespace WpfView
                 {
                     RefreshAdditionalGrid(false);
                 }
-                else if(innerInstrumentTab.IsSelected)
+                else if (innerInstrumentTab.IsSelected)
                 {
                     RefreshInstrumentGrid();
                 }
                 else if (oldInstrumentTab.IsSelected)
                 {
                     RefreshOldInstrumentGrid();
+                }
+                else if (archiveTab.IsSelected)
+                {
+                    RefreshArchive();
                 }
             }
         }
@@ -1138,21 +1171,28 @@ namespace WpfView
             PrintFormsMaker maker = new PrintFormsMaker("InstrumentsForm");
             maker.PrintInstrumentsForm(passportMaker.TechPassport.Name, passportMaker.Instruments);
         }
-        private void Archive_TextBox_TextChanged(object sender, TextChangedEventArgs e)
+
+        private void archiveButton_Click(object sender, RoutedEventArgs e)
         {
-            string s = ((TextBox)e.Source).Text;
-            if (string.IsNullOrEmpty(s))
-            {
-                Archive = archive;
-            }
-            else
-            {
-                var filtred = archive.Where(x => CommonClass.IsContained(x, s)).ToList();
-                Archive = filtred;
-            }
-            archiveGrid.ItemsSource = null;
-            archiveGrid.ItemsSource = Archive;
+            PrintFormsMaker maker = new PrintFormsMaker("ArchiveForm");
+            maker.PrintArchiveForm(passportMaker.TechPassport.Name, passportMaker.GetArchiveView());
         }
+
+        //private void Archive_TextBox_TextChanged(object sender, TextChangedEventArgs e)
+        //{
+        //    string s = ((TextBox)e.Source).Text;
+        //    if (string.IsNullOrEmpty(s))
+        //    {
+        //        Archive = archive;
+        //    }
+        //    else
+        //    {
+        //        var filtred = archive.Where(x => CommonClass.IsContained(x, s)).ToList();
+        //        Archive = filtred;
+        //    }
+        //    archiveGrid.ItemsSource = null;
+        //    archiveGrid.ItemsSource = Archive;
+        //}
 
         private void SizeChanged(object sender, SizeChangedEventArgs e)
         {
@@ -1210,6 +1250,9 @@ namespace WpfView
                                 break;
                             case "oldInstrumentGrid":
                                 CommonClass.FilterGridByOneField(OldInstruments, oldInstruments, oldInstrumentTableService, oldInstrumentGrid, properties);
+                                break;
+                            case "archiveGrid":
+                                CommonClass.FilterGridByOneField(Archive, archive, archiveTableService, archiveGrid, properties);
                                 break;
                         }
                     }

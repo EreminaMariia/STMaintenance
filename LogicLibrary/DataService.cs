@@ -79,6 +79,18 @@ namespace LogicLibrary
             return result;
         }
 
+        public List<RepairingView> GetRepairingViewsByError(int errorId)
+        {
+            var list = Data.Instance.GetRepairings().Where(x =>
+                x.Error.Id == errorId);
+            List<RepairingView> result = new List<RepairingView>();
+            foreach (var item in list)
+            {
+                result.Add(new RepairingView(item));
+            }
+            return result;
+        }
+
         public List<SupplierView> GetSupplierViews()
         {
             var list = Data.Instance.GetSuppliers();
@@ -97,6 +109,17 @@ namespace LogicLibrary
             foreach (var item in list)
             {
                 result.Add(new MaterialView(item));
+            }
+            return result;
+        }
+
+        public List<RepairingView> GetRepairingViews()
+        {
+            var list = Data.Instance.GetRepairings();
+            List<RepairingView> result = new List<RepairingView>();
+            foreach (var item in list)
+            {
+                result.Add(new RepairingView(item));
             }
             return result;
         }
@@ -465,7 +488,9 @@ namespace LogicLibrary
             List<ErrorNewView> views = new List<ErrorNewView>();
             foreach (var info in infos)
             {
-                views.Add(new ErrorNewView(info));
+                var repairings = Data.Instance.GetRepairings().Where(x =>
+                x.Error.Id == info.Id).ToList();
+                views.Add(new ErrorNewView(info, repairings));
             }
             return views;
         }
@@ -526,7 +551,8 @@ namespace LogicLibrary
                 {
                     foreach (var ep in info.Episodes)
                     {
-                        if (ep.Date != null && ep.Date <= date && ep.Date > DateTime.MinValue)
+                        if (ep.Date <= date && ep.Date > DateTime.MinValue 
+                            && ep.IsDone != null && ep.IsDone.Value)
                         {
                             views.Add(new OuterArchiveView(ep));
                         }
@@ -534,7 +560,7 @@ namespace LogicLibrary
                 }
             }
 
-            return views;
+            return views.OrderByDescending(x => x.Date).ToList();
         }
 
         

@@ -12,6 +12,7 @@ namespace LogicLibrary
     public class ErrorNewView : ITableView
     {
         private bool isChanged;
+        private bool isActive;
         public int Id { get; set; }
         public int MachineId { get; set; }
 
@@ -23,6 +24,8 @@ namespace LogicLibrary
         private bool isWorking = false;
         private string comment = string.Empty;
         private DateTime? dateOfSolving = DateTime.MinValue;
+        private string repairings = string.Empty;
+        public List<int> repairingIds = new List<int>();
 
         [System.ComponentModel.DisplayName("Дата остановки\nоборудования")]
         public DateTime Date
@@ -84,6 +87,13 @@ namespace LogicLibrary
             set { dateOfSolving = value; OnPropertyChanged(nameof(DateOfSolving)); }
         }
 
+        [System.ComponentModel.DisplayName("Проведённые работы")]
+        public string Repairings
+        {
+            get { return repairings; }
+            private set { repairings = value; OnPropertyChanged(nameof(Repairings)); }
+        }
+
         public bool GetWorking()
         {
             return isWorking;
@@ -98,6 +108,16 @@ namespace LogicLibrary
         public bool IsChanged()
         {
             return isChanged;
+        }
+
+        public void ChangeIfInWork()
+        {
+            isActive = !isActive;
+        }
+
+        public bool IsActive()
+        {
+            return isActive;
         }
 
         public void MarkChanged()
@@ -117,6 +137,17 @@ namespace LogicLibrary
         public ErrorNewView()
         {
             isChanged = true;
+            isActive = true;
+        }
+
+        public ErrorNewView(MaintenanceError error, List<Repairing> repairings): this(error)
+        {
+            Repairings = "";
+            foreach (var repairing in repairings)
+            {
+                Repairings += repairing.Date + "(" + repairing.Hours + ")" + " - " + repairing.Comment + "\n";
+                repairingIds.Add(repairing.Id);
+            }
         }
 
             public ErrorNewView(MaintenanceError error)
@@ -146,7 +177,44 @@ namespace LogicLibrary
             {
                 isWorking = (bool)error.IsWorking;
             }
-            
+
+            if (error.IsActive != null)
+            {
+                isActive = error.IsActive.Value;
+            }
+            else
+            {
+                isActive = true;
+            }
+
+            if (error.Repairings != null)
+            {
+                Repairings = "";
+                foreach (var repairing in error.Repairings)
+                {
+                    Repairings += repairing.Date + "(" + repairing.Hours + ")" + " - " + repairing.Comment + "\n";
+                    repairingIds.Add(repairing.Id);
+                }
+            }
+
+        }
+
+        public void EditRepairings(IEnumerable<RepairingView> repairingViews)
+        {
+            Repairings = "";
+            List<int> ids = new List<int>();
+            foreach (var r in repairingViews)
+            {
+                Repairings += r.Date + "(" + r.Hours + ")" + " - " + r.Name + "\n";
+                ids.Add(r.Id);
+            }
+            repairingIds = ids;
+            isChanged = true;
+        }
+        public void AddMaterial(RepairingView r)
+        {
+            repairingIds.Add(r.Id);
+            isChanged = true;
         }
 
         public event PropertyChangedEventHandler? PropertyChanged;

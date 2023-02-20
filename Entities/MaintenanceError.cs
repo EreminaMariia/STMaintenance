@@ -21,5 +21,6 @@ namespace Entities
         public string? Comment { get; set; }
         public DateTime? DateOfSolving { get; set; }
         public double? Hours { get; set; }
+        public bool? IsActive{ get; set; }
     }
 }

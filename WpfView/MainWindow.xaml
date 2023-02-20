@@ -3,7 +3,6 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:WpfView"
         mc:Ignorable="d"
         Title="Программа ТО" Height="575" Width="1049" FontSize="16">
     <Grid>
@@ -126,15 +125,20 @@
             </TabItem>
             <TabItem Name ="ArchiveItem" Header="Архив выполненных работ">
                 <Grid Background="#FFE5E5E5">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="309*"/>
-                        <ColumnDefinition Width="88*"/>
-                    </Grid.ColumnDefinitions>
-                    <Label Content="Поиск" HorizontalAlignment="Left" Margin="2,-4,0,0" VerticalAlignment="Top"/>
-                    <TextBox x:Name="archiveTextBox" HorizontalAlignment="Left" Margin="62,0,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="381" Height="27" TextChanged="Archive_TextBox_TextChanged"/>
-                    <DataGrid x:Name="archiveDataGrid" AutoGeneratingColumn="HideIdColumn" Margin="0,31,0,0" Grid.ColumnSpan="2"/>
-                    <DatePicker x:Name="startDatePicker" HorizontalAlignment="Left" Margin="480,-3,0,0" VerticalAlignment="Top" SelectedDateChanged="startDatePicker_SelectedDateChanged"/>
-                    <DatePicker x:Name="endDatePicker" HorizontalAlignment="Left" Margin="622,-3,0,0" VerticalAlignment="Top" SelectedDateChanged="endDatePicker_SelectedDateChanged"/>
+                    <Button x:Name="outArchiveButton" Content="Печать" HorizontalAlignment="Right" Margin="0,2,20,0" VerticalAlignment="Top" Height="27" Width="245" Click="outArchiveButton_Click"/>
+                    <!--<Label Content="Поиск" HorizontalAlignment="Left" Margin="2,-4,0,0" VerticalAlignment="Top"/>-->
+                    <!--<TextBox x:Name="archiveTextBox" HorizontalAlignment="Left" Margin="62,0,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="381" Height="27" TextChanged="Archive_TextBox_TextChanged"/>-->
+                    <DatePicker x:Name="startDatePicker" HorizontalAlignment="Left" Margin="236,3,0,0" VerticalAlignment="Top" SelectedDateChanged="startDatePicker_SelectedDateChanged" Width="202"/>
+                    <DatePicker x:Name="endDatePicker" HorizontalAlignment="Left" Margin="508,2,0,0" VerticalAlignment="Top" SelectedDateChanged="endDatePicker_SelectedDateChanged" Width="202"/>
+                    <Grid x:Name="archiveGrid" Margin="0,35,0,0">
+                        <DataGrid x:Name="archiveDataGrid" 
+                                  AutoGeneratingColumn="HideIdColumn" 
+                                  CanUserAddRows="False" ItemsSource="{Binding Archive}"
+                                  Margin="0,27,0,0" Grid.ColumnSpan="2"
+                                  SizeChanged="SizeChanged" Loaded="Loaded"/>
+                    </Grid>
+                    <Label Content="с" HorizontalAlignment="Left" Margin="214,0,0,0" VerticalAlignment="Top"/>
+                    <Label Content="по" HorizontalAlignment="Left" Margin="475,-1,0,0" VerticalAlignment="Top"/>
                 </Grid>
             </TabItem>
             <TabItem Name ="PlanItem" Header="Планировщик">

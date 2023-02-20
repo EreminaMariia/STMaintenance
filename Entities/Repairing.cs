@@ -15,5 +15,6 @@ namespace Entities
         public ICollection<Operator> Operators { get; set; }
         public MaintenanceError Error { get; set; }
         public string? Comment { get; set; }
+        public DateTime? Date { get; set; }
     }
 }

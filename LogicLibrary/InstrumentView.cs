@@ -69,7 +69,7 @@ namespace LogicLibrary
             set { comment = value; OnPropertyChanged(nameof(Commentary)); }
         }
 
-        [System.ComponentModel.DisplayName("Дата удаления")]
+        [System.ComponentModel.DisplayName("Дата списания")]
         public DateTime? RemoveDate
         {
             get { return removeDate; }
@@ -79,7 +79,7 @@ namespace LogicLibrary
             }
         }
 
-        [System.ComponentModel.DisplayName("Причина удаления")]
+        [System.ComponentModel.DisplayName("Причина списания")]
         public string RemoveReason
         {
             get { return removeReason; }

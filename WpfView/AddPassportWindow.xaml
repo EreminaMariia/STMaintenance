@@ -12,7 +12,8 @@
                 <TabItem.Content>
                     <Grid>
                         <Label Content="Тип оборудования" HorizontalAlignment="Left" Margin="892,36,0,0" VerticalAlignment="Top" FontSize="16" Height="31" Width="148"/>
-                        <Label Content="Наименование оборудования" HorizontalAlignment="Left" Margin="38,36,0,0" VerticalAlignment="Top" Height="32" Width="277"/>
+                        <Label Content="Наименование оборудования" HorizontalAlignment="Left" Margin="38,11,0,0" VerticalAlignment="Top" Height="32" Width="277"/>
+                        <Label Content="Марка/модель/характеристики" HorizontalAlignment="Left" Margin="38,50,0,0" VerticalAlignment="Top" Height="32" Width="277"/>
                         <Label Content="Дата окончания гарантии" HorizontalAlignment="Left" Margin="38,229,0,0" VerticalAlignment="Top" Height="31" Width="207"/>
                         <Label Content="Дата вывода из эксплуатации" HorizontalAlignment="Left" Margin="517,142,0,0" VerticalAlignment="Top" Height="31" Width="207"/>
                         <Label Content="Участок расположения оборудования" HorizontalAlignment="Left" Margin="38,419,0,0" VerticalAlignment="Top" Height="31" Width="348"/>
@@ -52,7 +53,8 @@
                             </ComboBox.ItemTemplate>
                         </ComboBox>
                         <TextBox x:Name="inventoryTextBox" HorizontalAlignment="Left" Margin="1106,92,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="206" Height="28"/>
-                        <TextBox x:Name="nameTextBox" HorizontalAlignment="Left" Margin="287,10,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="533" Height="75"/>
+                        <TextBox x:Name="nameTextBox" HorizontalAlignment="Left" Margin="287,10,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="533" Height="33"/>
+                        <TextBox x:Name="versionTextBox" HorizontalAlignment="Left" Margin="287,50,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="533" Height="33"/>
                         <TextBox x:Name="serialTextBox" HorizontalAlignment="Left" Margin="287,91,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="533" Height="30"/>
                         <DatePicker x:Name="madeDatePicker" HorizontalAlignment="Left" Margin="300,188,0,0" VerticalAlignment="Top" Height="29" Width="144"/>
                         <DatePicker x:Name="decomissioningDatePicker" HorizontalAlignment="Left" Margin="748,145,0,0" VerticalAlignment="Top" Height="29" Width="144"/>
@@ -228,10 +230,10 @@
                     <Grid>
                         <DataGrid x:Name="archiveGrid" AutoGeneratingColumn="HideIdColumn" 
                                   CanUserAddRows="False" CanUserDeleteRows="False"
-                                  ItemsSource="{Binding Archive}" Margin="0,27,0,0"/>
-                        <Label Content="Поиск" HorizontalAlignment="Left" Margin="2,-4,0,0" VerticalAlignment="Top"/>
+                                  ItemsSource="{Binding Archive}" Margin="0,27,0,0" Loaded="Loaded"/>
+                        <!--<Label Content="Поиск" HorizontalAlignment="Left" Margin="2,-4,0,0" VerticalAlignment="Top"/>
                         <TextBox HorizontalAlignment="Left" Margin="62,0,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="381" Height="27" 
-                                 TextChanged="Archive_TextBox_TextChanged"/>
+                                 TextChanged="Archive_TextBox_TextChanged"/>-->
                     </Grid>
                 </TabItem.Content>
             </TabItem>
@@ -239,7 +241,8 @@
         <!--<Button Content="Экспорт в Excel" HorizontalAlignment="Right" Margin="0,0,331,10" VerticalAlignment="Bottom" RenderTransformOrigin="17.061,4.13" Height="25" Width="116"/>-->
         <Button x:Name="printControlParamsButton" Content="Печать контролируемых параметров" HorizontalAlignment="Left" Margin="10,0,0,10" VerticalAlignment="Bottom" RenderTransformOrigin="17.061,4.13" Height="25" Width="296" Click="printControlParamsButton_Click"/>
         <Button x:Name="printInstrumentsButton" Content="Печать инструментов" HorizontalAlignment="Left" Margin="324,0,0,10" VerticalAlignment="Bottom" RenderTransformOrigin="17.061,4.13" Height="25" Width="178" Click="printInstrumentsButton_Click"/>
-        <Button Content="Печать карточки объекта обслуживания" HorizontalAlignment="Right" Margin="0,0,10,10" VerticalAlignment="Bottom" Height="25" Width="302" Click="Button_Click_1"/>
+        <Button x:Name="infoCardButton" Content="Печать карточки объекта обслуживания" HorizontalAlignment="Right" Margin="0,0,10,10" VerticalAlignment="Bottom" Height="25" Width="302" Click="Button_Click_1"/>
+        <Button x:Name="archiveButton" Content="Печать архива" HorizontalAlignment="Right" Margin="0,0,330,10" VerticalAlignment="Bottom" Height="25" Width="126" Click="archiveButton_Click"/>
         <Button x:Name="saveButton" Content="Сохранить" HorizontalAlignment="Center" Margin="0,0,10,0" VerticalAlignment="Bottom" Background="#FF9DFFA3" Click="Button_Click" Height="42" Width="144" FontSize="24" RenderTransformOrigin="0.446,0.689"/>
     </Grid>
 </Window>

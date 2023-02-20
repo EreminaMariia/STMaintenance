@@ -71,6 +71,10 @@ namespace Entities
         {
             return context.Materials.Any() ? context.Materials.Max(x => x.Id) + 1 : 1;
         }
+        public int GetRepairingsId()
+        {
+            return context.Repairings.Any() ? context.Repairings.Max(x => x.Id) + 1 : 1;
+        }
         public int GetInstructionsId()
         {
             return context.Instructions.Any() ? context.Instructions.Max(x => x.Id) + 1 : 1;
@@ -104,7 +108,7 @@ namespace Entities
 
         public List<MaintenanceError> GetErrors()
         {
-            return context.MaintenanceErrors.Include(s => s.Repairings).ToList();
+            return context.MaintenanceErrors.Include(s => s.Repairings).Where(x => x.IsActive == null || x.IsActive.Value).ToList();
         }
 
         public List<AdditionalWork> GetAdditionalWorks()
@@ -139,6 +143,7 @@ namespace Entities
             return context.TechPassports.
                 Include(m => m.MaintenanceInfos).
                 Include(e => e.Errors).
+                Include(w => w.Downtimes).
                 Include(c => c.Characteristics).ThenInclude(u => u.Unit).
                 Include(i => i.Instructions).
                 Include(h => h.WorkingHours).
@@ -198,7 +203,7 @@ namespace Entities
 
         public List<MaintenanceInfo> GetMaintenance()
         {
-            return context.MaintenanceInfos.Include(e => e.Episodes).Include(t => t.MaintenanceType).Include(p => p.TechPassport).ThenInclude(h => h.WorkingHours).ToList();
+            return context.MaintenanceInfos.Include(e => e.Episodes).ThenInclude(o=>o.Operators).Include(t => t.MaintenanceType).Include(p => p.TechPassport).ThenInclude(h => h.WorkingHours).ToList();
         }
 
         public void EditCharacteristicsByUnit(int id, int unitId)
@@ -375,6 +380,17 @@ namespace Entities
             }
             context.SaveChanges();
         }
+
+        public void EditErorByRepairings(int id, List<int> repairingIds)
+        {
+            if (repairingIds != null)
+            {
+                MaintenanceError error = context.MaintenanceErrors.FirstOrDefault(x => x.Id == id);
+                var reps = context.Repairings.Where(c => repairingIds.Contains(c.Id)).ToList();
+                error.Repairings = reps;
+            }
+            context.SaveChanges();
+        }
         public Characteristic GetCharacteristic(int id)
         {
             return context.Characteristics.Include(e => e.TechPassport).Include(u => u.Unit).FirstOrDefault(x => x.Id == id);
@@ -448,6 +464,7 @@ namespace Entities
         {
             TechPassport techPassport = new TechPassport();
             techPassport.Name = passport.Name;
+            techPassport.Version = passport.Version;
             techPassport.SerialNumber = passport.SerialNumber;
             techPassport.InventoryNumber = passport.InventoryNumber;
             techPassport.ReleaseYear = passport.ReleaseYear;
@@ -486,6 +503,7 @@ namespace Entities
             if (techPassport != null)
             {
                 techPassport.Name = passport.Name;
+                techPassport.Version = passport.Version;
                 techPassport.SerialNumber = passport.SerialNumber;
                 techPassport.InventoryNumber = passport.InventoryNumber;
                 techPassport.ReleaseYear = passport.ReleaseYear;
@@ -1011,6 +1029,11 @@ namespace Entities
             return context.Materials.Include(s => s.MaterialInfo).ToList();
         }
 
+        public List<Repairing> GetRepairings()
+        {
+            return context.Repairings.Include(s => s.Error).ToList();
+        }
+
         public int AddMaterialInfo(string name, string inner, string original, List<int> arts, string comment, int supId, int? unitId)
         {
             MaterialInfo materialInfo = new MaterialInfo();
@@ -1334,6 +1357,31 @@ namespace Entities
             context.SaveChanges();
         }
 
+        public int AddRepairing(int errorId, DateTime date, double hours, string comment)
+        {
+            MaintenanceError error = context.MaintenanceErrors.FirstOrDefault(x => x.Id == errorId);
+            Repairing repairing = new Repairing();
+            repairing.Date = date;
+            repairing.Hours = hours;
+            repairing.Comment = comment;            
+            context.Repairings.Add(repairing);
+            context.SaveChanges();
+
+            return repairing.Id;
+        }
+
+        public void EditRepairing(int id, DateTime date, double hours, string comment)
+        {
+            var repairing = context.Repairings.FirstOrDefault(x => x.Id == id);
+            if (repairing != null)
+            {
+                repairing.Date = date;
+                repairing.Hours = hours;
+                repairing.Comment = comment;
+            }
+            context.SaveChanges();
+        }
+
         public void EditArtBySupplier(int id, int supId)
         {
             var info = context.ArtInfos.FirstOrDefault(x => x.Id == id);
@@ -1579,7 +1627,7 @@ namespace Entities
         //    context.SaveChanges();
         //}
 
-        public int AddErrorNew(int passportId, DateTime date, string code, string name, bool isWorking, string description, string comment, DateTime? dateOfSolving)
+        public int AddErrorNew(int passportId, DateTime date, string code, string name, bool isWorking, string description, string comment, DateTime? dateOfSolving, bool? isActive)
         {
             MaintenanceError error = new MaintenanceError();
             error.Date = date;
@@ -1589,15 +1637,68 @@ namespace Entities
             error.Description = description;
             error.DateOfSolving = dateOfSolving;
             error.Code = code;
+            error.IsActive = isActive;
+
+            if (dateOfSolving.HasValue && dateOfSolving.Value != DateTime.MinValue)
+                error.IsWorking = true;
+
+            if (!error.IsWorking.Value && (!isActive.HasValue|| isActive.Value))
+            {
+                var downtime = context.Downtimes.Where(x => x.TechPassport.Id == passportId && x.End == null).FirstOrDefault();
+                if (downtime != null)
+                {
+                    downtime.Start = date;
+                    context.SaveChanges();
+                }
+                else
+                {
+                    Downtime d = new Downtime() { Start = date };
+                    Add<Downtime>(context.Downtimes, d, passportId);
+                }
+            }
 
             return Add<MaintenanceError>(context.MaintenanceErrors, error, passportId);
         }
 
-        public void EditErrorNew(int passportId, int id, DateTime date, string code, string name, bool isWorking, string description, string comment, DateTime? dateOfSolving)
+        public void EditErrorNew(int passportId, int id, DateTime date, string code, string name, bool isWorking, string description, string comment, DateTime? dateOfSolving, bool? isActive)
         {
             MaintenanceError error = context.MaintenanceErrors.FirstOrDefault(x => x.Id == id);
             if (error != null)
             {
+                if ((!isActive.HasValue || isActive.Value) && error.IsWorking != isWorking)
+                {
+                    if (!error.IsWorking.HasValue || (error.IsWorking.HasValue && error.IsWorking.Value))
+                    {
+                        var downtime = context.Downtimes.Where(x => x.TechPassport.Id == passportId && x.End == null).FirstOrDefault();
+                        if (downtime != null)
+                        {
+                            downtime.Start = date;
+                            context.SaveChanges();
+                        }
+                        else
+                        {
+                            Downtime d = new Downtime() { Start = date };
+                            Add<Downtime>(context.Downtimes, d, passportId);
+                        }
+                    }
+                    else
+                    {
+                        error.IsWorking = isWorking;
+                        context.SaveChanges();
+                        var downtime = context.Downtimes.Where(x => x.TechPassport.Id == passportId && x.End == null).FirstOrDefault();
+                        if (downtime != null)
+                        {
+                            var allWorking = !context.MaintenanceErrors.Any(x => x.TechPassport.Id == passportId && (!x.IsActive.HasValue || x.IsActive.Value) && (x.IsWorking.HasValue && !x.IsWorking.Value));
+                            if (allWorking)
+                            {
+                                downtime.End = (dateOfSolving != null && dateOfSolving.Value != DateTime.MinValue)?
+                                    dateOfSolving : DateTime.Now;
+                                context.SaveChanges();
+                            }
+                        }
+                    }
+                }
+
                 error.Date = date;
                 error.Name = name;
                 error.IsWorking = isWorking;
@@ -1605,6 +1706,7 @@ namespace Entities
                 error.Description = description;
                 error.DateOfSolving = dateOfSolving;
                 error.Code = code;
+                error.IsActive = isActive;
 
                 AddPassport<MaintenanceError>(error, passportId);
             }

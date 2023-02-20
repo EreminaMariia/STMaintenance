@@ -11,6 +11,7 @@ namespace LogicLibrary
         public List<MaintenanceNewView> Maintenances { get; set; }
         public List<AdditionalWorkView> Additionals { get; set; }
         public List<MaterialView> Materials { get; set; }
+        public List<RepairingView> Repairings { get; set; }        
         public List<InstructionView> Instructions { get; set; }
         public List<InstrumentView> Instruments { get; set; }
         public List<HourView> WorkingHours { get; set; }
@@ -23,6 +24,7 @@ namespace LogicLibrary
         public int MaintenancesId { get; set; }
         public int AdditionalsId { get; set; }
         public int MaterialsId { get; set; }
+        public int RepairingsId { get; set; }
         public int InstructionsId { get; set; }
         public int InstrumentsId { get; set; }
         public int WorkingHoursId { get; set; }
@@ -37,6 +39,7 @@ namespace LogicLibrary
             Characteristics = new List<CharacteristicView>();
             Maintenances = new List<MaintenanceNewView>();
             Materials = dataService.GetMaterialViews();
+            Repairings = dataService.GetRepairingViews();
             Instructions = new List<InstructionView>();
             Instruments = new List<InstrumentView>();
             WorkingHours = new List<HourView>();
@@ -110,10 +113,15 @@ namespace LogicLibrary
             }
 
             Errors = new List<ErrorNewView>();
-            var errors = TechPassport.Errors;
+            var errors = TechPassport.Errors.Where(x=>x.IsActive==null || x.IsActive.Value).ToList();
             if (errors != null)
             {
                 Errors = dataService.GetErrorViewsByInfos(errors);
+                Repairings = new List<RepairingView>();
+                foreach (var error in errors)
+                {
+                    Repairings.AddRange(dataService.GetRepairingViewsByError(error.Id).ToList());
+                }
             }
 
             ControledParametrs = new List<ControledParametrView>();
@@ -143,6 +151,7 @@ namespace LogicLibrary
             MaintenancesId = Data.Instance.GetMaintenancesId();
             AdditionalsId = Data.Instance.GetAdditionalsId();
             MaterialsId = Data.Instance.GetMaterialsId();
+            RepairingsId = Data.Instance.GetRepairingsId();
             InstructionsId = Data.Instance.GetInstructionsId();
             InstrumentsId = Data.Instance.GetInstrumentsId();
             WorkingHoursId = Data.Instance.GetWorkingHoursId();
@@ -208,7 +217,24 @@ namespace LogicLibrary
                 }
             }
 
-            return views;
+            return views.OrderByDescending(x => x.Date).ToList();
+        }
+
+        public List<RepairingView> GetRepairingViewsByError(int errorId )
+        {
+            List<RepairingView> repairings = new List<RepairingView>();
+            if (Repairings != null)
+            {
+                    if (Errors != null)
+                    {
+                        var error = Errors.FirstOrDefault(x => x.Id == errorId);
+                        if (error != null && error.repairingIds != null)
+                        {
+                            repairings = Repairings.Where(x => error.repairingIds.Contains(x.Id)).ToList();
+                        }
+                    }
+            }
+            return repairings;
         }
         public List<MaterialView> GetMaterialViewsByMaintenance(int maintenanceId, bool isAdditional)
         {
@@ -241,14 +267,18 @@ namespace LogicLibrary
             return materials;
         }
 
-        public int SavePassport(string name, string serialNumber, string inventoryNumber,
+        public int SavePassport(string name, string version, string serialNumber, string inventoryNumber,
             DateTime releaseYear, DateTime commissioningDate, DateTime decommissioningDate, DateTime guaranteeEndDate, double power,
             int supplierId, int typeId, int departmentId, int pointId, int operatorId)
         {
-
             if (TechPassport.Name != name)
             {
                 TechPassport.Name = name;
+                isPassportInfoChanged = true;
+            }
+            if (TechPassport.Version != version)
+            {
+                TechPassport.Version = version;
                 isPassportInfoChanged = true;
             }
             if (TechPassport.SerialNumber != serialNumber)
@@ -494,22 +524,26 @@ namespace LogicLibrary
                     {
                         if (er != null)
                         {
+                            int id = er.Id;
                             if (TechPassport.Errors != null)
                             {
                                 var ch = TechPassport.Errors.FirstOrDefault(x => x.Id == er.Id);
                                 if (ch != null)
                                 {
-                                    Data.Instance.EditErrorNew(this.TechPassport.Id, er.Id, er.Date, er.Code, er.Name, er.GetWorking(), er.Description, er.Comment, er.DateOfSolving);
+                                    Data.Instance.EditErrorNew(this.TechPassport.Id, er.Id, er.Date, er.Code, er.Name, er.GetWorking(), er.Description, er.Comment, er.DateOfSolving, er.IsActive());
                                 }
                                 else
                                 {
-                                    er.Id = Data.Instance.AddErrorNew(this.TechPassport.Id, er.Date, er.Code, er.Name, er.GetWorking(), er.Description, er.Comment, er.DateOfSolving);
+                                    id = Data.Instance.AddErrorNew(this.TechPassport.Id, er.Date, er.Code, er.Name, er.GetWorking(), er.Description, er.Comment, er.DateOfSolving, er.IsActive());
                                 }
                             }
                             else
                             {
-                                er.Id = Data.Instance.AddErrorNew(this.TechPassport.Id, er.Date, er.Code, er.Name, er.GetWorking(), er.Description, er.Comment, er.DateOfSolving);
-                            }
+                                id = Data.Instance.AddErrorNew(this.TechPassport.Id, er.Date, er.Code, er.Name, er.GetWorking(), er.Description, er.Comment, er.DateOfSolving, er.IsActive());
+                            }                            
+                            List<int> repairingIds = SaveRepairings(er.repairingIds, id);
+                            Data.Instance.EditErorByRepairings(id, repairingIds);
+                            er.Id = id;
                             er.MarkUnChanged();
                         }
                     }
@@ -676,6 +710,33 @@ namespace LogicLibrary
             }
             return result;
         }
+
+        private List<int> SaveRepairings(List<int> ids, int errorId)
+        {
+            List<int> result = new List<int>();
+            foreach (int mId in ids)
+            {
+                var r = Repairings.FirstOrDefault(x => x.Id == mId);
+                if (r != null)
+                {
+                    var oldR = Data.Instance.GetRepairings().FirstOrDefault(i => i.Id == mId);
+                    if (oldR != null)
+                    {
+                        Data.Instance.EditRepairing(r.Id, r.Date, r.GetHours(), r.Name);
+                        result.Add(r.Id);
+                    }                   
+                    else
+                    {
+                        int id = Data.Instance.AddRepairing(errorId, r.Date, r.GetHours(), r.Name);
+                        if (id > 0)
+                        {
+                            result.Add(id);
+                        }
+                    }
+                }               
+            }                         
+            return result;
+        }
         private void SaveCharacteristics()
         {
             //var TechPassport = Data.Instance.GetPassportById(this.TechPassport.Id);
@@ -831,6 +892,20 @@ namespace LogicLibrary
                     work.materialIds.Add(op.Id);
                 }
                 work.EditMaterials(ops);
+            }
+        }
+
+        public void EditErrorRepairings(int id, List<int> repairingIds)
+        {
+            var error = Errors.FirstOrDefault(x => x.Id == id);
+            var reps = Repairings.Where(n => repairingIds.Contains(n.Id));
+            if (error != null)
+            {
+                foreach (var rep in reps)
+                {
+                    error.repairingIds.Add(rep.Id);
+                }
+                error.EditRepairings(reps);
             }
         }
         public void EditErrorWorking(int id, bool isWorking)

@@ -1,7 +1,9 @@
 ﻿using Entities;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -134,7 +136,7 @@ namespace LogicLibrary
         {
             if (episode.Info != null && episode.Info.TechPassport != null && episode.Info.TechPassport.Name != null)
             {
-                MachineName = episode.Info.TechPassport.Name;
+                MachineName = episode.Info.TechPassport.Name + " " + episode.Info.TechPassport.Version;
             }
         }
 
@@ -142,7 +144,7 @@ namespace LogicLibrary
         {
             if (work.TechPassport != null && work.TechPassport.Name != null)
             {
-                MachineName = work.TechPassport.Name;
+                MachineName = work.TechPassport.Name + " " + work.TechPassport.Version;
             }
         }
 
@@ -150,7 +152,7 @@ namespace LogicLibrary
         {
             if (repairing.Error != null && repairing.Error.TechPassport != null && repairing.Error.TechPassport.Name != null)
             {
-                MachineName = repairing.Error.TechPassport.Name;
+                MachineName = repairing.Error.TechPassport.Name + " " + repairing.Error.TechPassport.Version;
             }
         }
 
@@ -161,7 +163,7 @@ namespace LogicLibrary
     }
 
 
-    public class BaseArchiveView
+    public class BaseArchiveView: ITableView
     {
         private double working = 0;
         private double factWorking = 0;
@@ -289,10 +291,20 @@ namespace LogicLibrary
             {
                 foreach (var op in ops)
                 {
-                    Operators += (op.Name + "\n");
+                    result += (op.Name + "\n");
                 }
             }
+            result = result.Length > 0 ? result.Trim(new char[] { '\n' }) : result;
             return result;
         }
+
+        public event PropertyChangedEventHandler? PropertyChanged;
+        public void OnPropertyChanged([CallerMemberName] string prop = "")
+        {
+            if (PropertyChanged != null)
+                PropertyChanged(this, new PropertyChangedEventArgs(prop));
+        }
+
+        public event ITableView.DeleteHandler DeletingEvent;
     }
 }
