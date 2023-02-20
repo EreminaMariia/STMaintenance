@@ -57,8 +57,8 @@ namespace LogicLibrary
             var date = DateTime.Now.ToString("dd-MM-yy");
             var timeDate = DateTime.Now.ToString("dd-MM-yy(hh-mm-ss)");
 
-            string outerPath = @"C:\Users\User\Downloads\";
-            //string outerPath = @"P:\Цех\Общая\Отчет по состоянию оборудования ПВ-транс\";
+            //string outerPath = @"C:\Users\User\Downloads\";
+            string outerPath = @"P:\Цех\Общая\Отчет по состоянию оборудования ПВ-транс\";
             string name = outerPath + "Информация о простое оборудования" + "-" + date;
 
             if (!File.Exists(name+ ".xlsx"))
