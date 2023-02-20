@@ -4,6 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Globalization;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -24,7 +25,7 @@ namespace WpfView
                 var column = (DataGridTextColumn)e.Column;
                 var binding = (Binding)column.Binding;
                 binding.StringFormat = "dd-MM-yyyy HH:mm:ss";
-                binding.ConverterCulture = System.Globalization.CultureInfo.GetCultureInfo(1053);
+                binding.ConverterCulture = new CultureInfo("ru-Ru");
                 binding.ValidationRules.Clear();
             }
 
