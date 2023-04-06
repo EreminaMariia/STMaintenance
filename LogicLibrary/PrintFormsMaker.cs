@@ -1,14 +1,9 @@
-﻿using Entities;
+﻿using Entities.Entities;
 using OfficeOpenXml;
 using OfficeOpenXml.Style;
-using System;
-using System.Collections.Generic;
+using QRCoder;
 using System.Diagnostics;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using QRCoder;
 
 namespace LogicLibrary
 {
@@ -71,19 +66,7 @@ namespace LogicLibrary
         {
             try
             {
-                //List<TechPassport> techs = new List<TechPassport>();
                 List<TechPassport> stopedTechs = new List<TechPassport>();
-                foreach (int techId in techIds)
-                {
-                    //var t = Data.Instance.GetPassportById(techId);
-                    //if (t != null)
-                    //{
-                    //    techs.Add(t);
-                    //}
-                }
-
-                //techs = techs.OrderBy(x => x.Department?.Number).ToList();
-
                 PrintHorizontalLineItem(1, 2, "Расшифровка:");
                 PrintHorizontalLineItem(2, 2, "работает");
                 PrintHorizontalLineItem(3, 2, "не работает");
@@ -193,11 +176,10 @@ namespace LogicLibrary
                         }
                         else
                         {
-                            for (DateTime d = new DateTime(DateTime.Today.Year, DateTime.Today.Month, 1); d < new DateTime(DateTime.Today.Year, DateTime.Today.Month + 1, 1); d = d.AddDays(1))
+                            for (DateTime d = new DateTime(DateTime.Today.Year, DateTime.Today.Month, 1); d <= new DateTime(DateTime.Today.Year, DateTime.Today.Month + 1, 1); d = d.AddDays(1))
                             {
                                 passportInfo.Add("");
                             }
-                            passportInfo.Add("");
                         }
 
 

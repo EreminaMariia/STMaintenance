@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Entities
+namespace Entities.Entities
 {
     [Table("to_maintenance_episodes")]
     public class MaintenanceEpisode
@@ -15,7 +15,7 @@ namespace Entities
         public DateTime Date { get; set; }
         public double Hours { get; set; }
         public string? Comment { get; set; }
-        public bool? IsDone { get; set; }    
-        public ICollection<Operator> Operators { get; set; } 
+        public bool? IsDone { get; set; }
+        public ICollection<Operator> Operators { get; set; }
     }
 }

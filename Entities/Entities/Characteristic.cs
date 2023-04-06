@@ -5,10 +5,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Entities
+namespace Entities.Entities
 {
     [Table("to_characteristics")]
-    public class Characteristic: IPasportable
+    public class Characteristic : IPasportable
     {
         public int Id { get; set; }
         public string? Name { get; set; }

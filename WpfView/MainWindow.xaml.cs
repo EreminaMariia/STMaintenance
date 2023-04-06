@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
@@ -82,34 +83,44 @@ namespace WpfView
 
         public MainWindow()
         {
-            InitializeComponent();
-            dataService = new DataService();
-            materialTableService = new TableService<MaterialInfoView>
-                (new MaterialInfoViewService(), new TableService<MaterialInfoView>.DeleteHandler(ShowMessage));
-            supplierTableService = new TableService<SupplierView>
-                (new SupplierViewService(), new TableService<SupplierView>.DeleteHandler(ShowMessage));
-            passportTableService = new TableService<TechView>
-                (new TechViewService(), new TableService<TechView>.DeleteHandler(ShowMessage));
-            oldPassportTableService = new TableService<TechView>
-                (new TechViewService(), new TableService<TechView>.DeleteHandler(ShowMessage));
-            operatorTableService = new TableService<OperatorView>
-                (new OperatorViewService(), new TableService<OperatorView>.DeleteHandler(ShowMessage));
-            equipmentTypeTableService = new TableService<EquipmentTypeView>
-                (new EquipmentTypeViewService(), new TableService<EquipmentTypeView>.DeleteHandler(ShowMessage));
-            maintenanceTypeTableService = new TableService<MaintenanceTypeView>
-                (new MaintenanceTypeViewService(), new TableService<MaintenanceTypeView>.DeleteHandler(ShowMessage));
-            unitTableService = new TableService<UnitView>
-                (new UnitViewService(), new TableService<UnitView>.DeleteHandler(ShowMessage));
-            departmentTableService = new TableService<DepartmentView>
-                (new DepartmentViewService(), new TableService<DepartmentView>.DeleteHandler(ShowMessage));
-            pointTableService = new TableService<PointView>
-                (new PointViewService(), new TableService<PointView>.DeleteHandler(ShowMessage));
-            archiveTableService = new TableService<OuterArchiveView>
-                (new OuterArchiveViewService(), new TableService<OuterArchiveView>.DeleteHandler(ShowMessage));
-            DataContext = this;
+            try
+            {
+                InitializeComponent();
+                dataService = new DataService();
+                materialTableService = new TableService<MaterialInfoView>
+                    (new MaterialInfoViewService(), new TableService<MaterialInfoView>.DeleteHandler(ShowMessage));
+                supplierTableService = new TableService<SupplierView>
+                    (new SupplierViewService(), new TableService<SupplierView>.DeleteHandler(ShowMessage));
+                passportTableService = new TableService<TechView>
+                    (new TechViewService(), new TableService<TechView>.DeleteHandler(ShowMessage));
+                oldPassportTableService = new TableService<TechView>
+                    (new TechViewService(), new TableService<TechView>.DeleteHandler(ShowMessage));
+                operatorTableService = new TableService<OperatorView>
+                    (new OperatorViewService(), new TableService<OperatorView>.DeleteHandler(ShowMessage));
+                equipmentTypeTableService = new TableService<EquipmentTypeView>
+                    (new EquipmentTypeViewService(), new TableService<EquipmentTypeView>.DeleteHandler(ShowMessage));
+                maintenanceTypeTableService = new TableService<MaintenanceTypeView>
+                    (new MaintenanceTypeViewService(), new TableService<MaintenanceTypeView>.DeleteHandler(ShowMessage));
+                unitTableService = new TableService<UnitView>
+                    (new UnitViewService(), new TableService<UnitView>.DeleteHandler(ShowMessage));
+                departmentTableService = new TableService<DepartmentView>
+                    (new DepartmentViewService(), new TableService<DepartmentView>.DeleteHandler(ShowMessage));
+                pointTableService = new TableService<PointView>
+                    (new PointViewService(), new TableService<PointView>.DeleteHandler(ShowMessage));
+                archiveTableService = new TableService<OuterArchiveView>
+                    (new OuterArchiveViewService(), new TableService<OuterArchiveView>.DeleteHandler(ShowMessage));
+                DataContext = this;
 
-            RefreshPassportGrid();
-            PrintFiltredErrors(true);
+                RefreshPassportGrid();
+                Task.Run(async () =>
+                {
+                    await PrintFilteredErrors(true);
+                });
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
         }
 
         public void ShowMessage()
@@ -123,7 +134,7 @@ namespace WpfView
 
             result = MessageBox.Show(messageBoxText, caption, button, icon, MessageBoxResult.OK);
         }
-       
+
         public void MakePlanTab(DateTime start, DateTime end)
         {
             var maintenances = dataService.GetMaintenanceNewViews().Where(
@@ -180,7 +191,7 @@ namespace WpfView
             return firstEpisodes;
         }
 
-         double letterCount = 25;
+        double letterCount = 25;
         int rowCount = 2;
 
         private void MakePlanTab(DateTime start, DateTime end, List<AdditionalWorkView> additionalViews, List<MaintenanceEpisodeView> episodeViews)
@@ -223,7 +234,7 @@ namespace WpfView
                 int rowHeight = defaultRowHeight;
                 var machine = dataService.GetPassportTechViewById(view.Key);
                 string machineName = machine.Name + " " + machine.Version;
-                if (machineName.Length > letterCount*rowCount)
+                if (machineName.Length > letterCount * rowCount)
                 {
                     int nameRowsCount = (int)Math.Ceiling(machineName.Length / letterCount);
                     rowHeight = (defaultRowHeight / rowCount) * nameRowsCount;
@@ -233,7 +244,7 @@ namespace WpfView
                 viewPanel.Orientation = Orientation.Horizontal;
                 viewPanel.Height = rowHeight;
                 Button nameButton = new Button();
-                nameButton.Width = nameWidth;                
+                nameButton.Width = nameWidth;
                 nameButton.Content = new TextBlock() { Text = machineName, TextWrapping = TextWrapping.Wrap };
                 nameButton.Tag = view.Key;
                 nameButton.Click += new RoutedEventHandler(ShowPassport);
@@ -538,7 +549,7 @@ namespace WpfView
             DateTime start = startDatePicker.SelectedDate != null ? (DateTime)startDatePicker.SelectedDate : DateTime.Today;
             var end = (DatePicker)e.OriginalSource;
             var st = (DateTime)end.SelectedDate;
-            
+
             if (st > DateTime.Today)
             {
                 st = DateTime.Today;
@@ -551,7 +562,7 @@ namespace WpfView
             {
                 var pg = (Grid)parent;
                 properties = CommonClass.GetProperties(pg);
-            }            
+            }
 
             filtred = dataService.GetAllArchiveViews().Where(x => x.Date != null && x.Date >= start && x.Date <= st).ToList();
             CommonClass.FilterGridByOneField(Archive, filtred, archiveTableService, archiveDataGrid, properties);
@@ -814,10 +825,10 @@ namespace WpfView
 
         private void printFiltredErrorsButton_Click(object sender, RoutedEventArgs e)
         {
-            PrintFiltredErrors(false);
+            PrintFilteredErrors(false);
         }
 
-        private void PrintFiltredErrors (bool isEveryDayForm)
+        private Task PrintFilteredErrors(bool isEveryDayForm)
         {
             List<int> techIds = new List<int>();
             PrintFormsMaker maker = new PrintFormsMaker("ErrorInfo");
@@ -836,6 +847,8 @@ namespace WpfView
             {
                 maker.PrintAllFiltredErrorsForm(techIds);
             }
+
+            return Task.CompletedTask;
         }
 
         private void tabControl_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -851,7 +864,7 @@ namespace WpfView
                 {
                     archive = dataService.GetAllArchiveViews().Where(x => x.Date != null &&
                         x.Date >= DateTime.Today.AddDays(-30) && x.Date <= DateTime.Today).ToList();
-                    CommonClass.TabChangeProcess(archive, 
+                    CommonClass.TabChangeProcess(archive,
                             archive, Archive, archiveDataGrid, archiveTableService);
                 }
                 else if (PlanItem.IsSelected)

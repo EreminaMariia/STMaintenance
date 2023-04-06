@@ -5,10 +5,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Entities
+namespace Entities.Entities
 {
     [Table("to_addworks")]
-    public class AdditionalWork: IPasportable
+    public class AdditionalWork : IPasportable
     {
         public int Id { get; set; }
         public TechPassport TechPassport { get; set; }
