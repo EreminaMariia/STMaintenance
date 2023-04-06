@@ -1,4 +1,4 @@
-﻿using Entities;
+﻿using Entities.Entities;
 
 namespace LogicLibrary
 {
@@ -722,12 +722,12 @@ namespace LogicLibrary
                     var oldR = Data.Instance.GetRepairings().FirstOrDefault(i => i.Id == mId);
                     if (oldR != null)
                     {
-                        Data.Instance.EditRepairing(r.Id, r.Date, r.GetHours(), r.Name);
+                        Data.Instance.EditRepairing(r.Id, r.Date, r.Name);
                         result.Add(r.Id);
                     }                   
                     else
                     {
-                        int id = Data.Instance.AddRepairing(errorId, r.Date, r.GetHours(), r.Name);
+                        int id = Data.Instance.AddRepairing(errorId, r.Date, r.Name);
                         if (id > 0)
                         {
                             result.Add(id);

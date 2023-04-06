@@ -5,15 +5,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Entities
+namespace Entities.Entities
 {
-    [Table("to_units")]
-    public class Unit
+    [Table("to_departments")]
+    public class Department
     {
         public int Id { get; set; }
+        public string? Number { get; set; }
         public string? Name { get; set; }
-        public string? FullName { get; set; }
-        //public ICollection<MaterialInfo> Materials { get; set; }
-        //public ICollection<Characteristic> Characteristics { get; set; }
+        public Operator? Operator { get; set; }
     }
 }

@@ -1,4 +1,4 @@
-﻿using Entities;
+﻿using Entities.Entities;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -205,7 +205,7 @@ namespace LogicLibrary
             List<int> ids = new List<int>();
             foreach (var r in repairingViews)
             {
-                Repairings += r.Date + "(" + r.Hours + ")" + " - " + r.Name + "\n";
+                Repairings += r.Date + " - " + r.Name + "\n";
                 ids.Add(r.Id);
             }
             repairingIds = ids;

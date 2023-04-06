@@ -174,7 +174,7 @@
                             </ScrollViewer>
                         </Grid>
                     </ScrollViewer>-->
-                    <Button x:Name="commonPlanButton" Content="План работ(общий)" HorizontalAlignment="Left" Margin="578,0,0,0" VerticalAlignment="Top" Height="30" Width="150" Click="commonPlanButton_Click"/>
+                    <Button x:Name="commonPlanButton" Content="Экспорт" HorizontalAlignment="Left" Margin="578,0,0,0" VerticalAlignment="Top" Height="30" Width="150" Click="commonPlanButton_Click"/>
                     <Button x:Name="planButton" Content="План работ" HorizontalAlignment="Left" Margin="734,0,0,0" VerticalAlignment="Top" Height="30" Width="150" Click="planButton_Click"/>
                     <Button x:Name="workOrderButton" Content="Наряд" HorizontalAlignment="Left" Margin="891,0,0,0" VerticalAlignment="Top" Height="30" Width="150" Click="workOrderButton_Click"/>
                     <Button Content=" " Background="Aquamarine" Height="25" Width="25" HorizontalAlignment="Left" Margin="10,31,0,0" VerticalAlignment="Top"/>

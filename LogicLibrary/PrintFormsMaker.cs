@@ -1,14 +1,9 @@
-﻿using Entities;
+﻿using Entities.Entities;
 using OfficeOpenXml;
 using OfficeOpenXml.Style;
-using System;
-using System.Collections.Generic;
+using QRCoder;
 using System.Diagnostics;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using QRCoder;
 
 namespace LogicLibrary
 {
@@ -23,10 +18,6 @@ namespace LogicLibrary
             sheet = package.Workbook.Worksheets.Add(name);
         }
 
-        //public void PrintAllInfoForm()
-        //{
-        //    PrintInfoForm("Список оборудования в эксплуатации", "Список оборудования в эксплуатации в ООО \"ПВ - Транс\"", Data.Instance.GetFullTechPassports().ToArray());
-        //}
         public void PrintAllFiltredInfoForm(List<int> techIds)
         {
             List<TechPassport> techs = new List<TechPassport>();
@@ -57,9 +48,9 @@ namespace LogicLibrary
             var date = (DateTime.Now.Month) + "-" + DateTime.Now.Year;
             var timeDate = DateTime.Now.ToString("dd-MM-yy(hh-mm-ss)");
 
-            //string outerPath = @"C:\Users\User\Downloads\";
+            string outerPath = @"C:\Users\User\Downloads\";
             //string outerPath = @"P:\Цех\Общая\Отчет по состоянию оборудования ПВ-транс\";
-            string outerPath = @"\\192.168.1.252\Share\Update\Программа ТО\";
+            //string outerPath = @"\\192.168.1.252\Share\Update\Программа ТО\";
             //string outerPath = "";
             string name = outerPath + "Информация о простое оборудования" + "-" + date;
 
@@ -67,23 +58,21 @@ namespace LogicLibrary
             FinalMaking(sheet, package, name);
         }
 
+        public void PrintErrorOneMachineForm(TechPassport tech, DateTime start, DateTime end)
+        {
+            var date = (DateTime.Now.Month) + "-" + DateTime.Now.Year;
+
+            string name = "Информация о простое оборудования" + tech.Name + "-" + date;
+            PrintOneMachineErrorCard(tech, 1, 1, start, end);
+            FinalMaking(sheet, package, name);
+            StartProcess(name);
+        }
+
         private void MakeFullErrorGrid(List<int> techIds, string date)
         {
             try
             {
-                //List<TechPassport> techs = new List<TechPassport>();
                 List<TechPassport> stopedTechs = new List<TechPassport>();
-                foreach (int techId in techIds)
-                {
-                    //var t = Data.Instance.GetPassportById(techId);
-                    //if (t != null)
-                    //{
-                    //    techs.Add(t);
-                    //}
-                }
-
-                //techs = techs.OrderBy(x => x.Department?.Number).ToList();
-
                 PrintHorizontalLineItem(1, 2, "Расшифровка:");
                 PrintHorizontalLineItem(2, 2, "работает");
                 PrintHorizontalLineItem(3, 2, "не работает");
@@ -111,9 +100,10 @@ namespace LogicLibrary
                 int headerX = 1;
                 headerY = MakeHeader(headerY, headerX + 1, "Информация о простое оборудования на " + date, 4, infos.ToArray());
 
-                for (int i = 0; i < techIds.Count; i++)
+                var techs = Data.Instance.GetPassportByIds(techIds).OrderBy(d => d.Department.Number);
+
+                foreach (var tech in techs)
                 {
-                    var tech = Data.Instance.GetPassportById(techIds[i]);
                     if (tech != null &&
                         (!string.IsNullOrEmpty(tech.Name) || !string.IsNullOrEmpty(tech.SerialNumber) || !string.IsNullOrEmpty(tech.InventoryNumber)))
                     {
@@ -136,12 +126,11 @@ namespace LogicLibrary
                             (x.IsWorking == null || !x.IsWorking.Value)).OrderByDescending(d => d.Date).ToList();
 
                             IsNotWorking = errors.Count > 0;
-
-                            //if (IsNotWorking)
-                            //{
-                            //    comment = errors.FirstOrDefault().Comment != null ? errors.FirstOrDefault().Comment : "";
-                            //}
                         }
+
+                        if (IsNotWorking)
+                            stopedTechs.Add(passport);
+
                         string working = !IsNotWorking ? "да" : "нет";
                         Color color = !IsNotWorking ? Color.LightYellow : Color.Coral;
 
@@ -153,32 +142,35 @@ namespace LogicLibrary
                         var allDowntimes = passport.Downtimes.Where(x => x.End == null || x.End.Value == DateTime.MinValue || x.End.Value >= new DateTime(DateTime.Today.Year, DateTime.Today.Month, 1)).ToList();
                         if (allDowntimes != null && allDowntimes.Count>0)
                         {
+                            color = Color.Coral; 
+
+                            if (!stopedTechs.Contains(passport))
                             stopedTechs.Add(passport);
+
                             color = Color.Coral;
                             double hours = 0;
                             for (DateTime d = new DateTime(DateTime.Today.Year, DateTime.Today.Month, 1); d < new DateTime(DateTime.Today.Year, DateTime.Today.Month + 1, 1); d = d.AddDays(1))
                             {
-                                var downtimes = passport.Downtimes.Where(x => x.Start.Day <= d.Day && (x.End == null || x.End.Value == DateTime.MinValue || x.End.Value.Day >= d.Day)).ToList();
-                                if (downtimes.Count > 0)
+                                var downtimes = passport.Downtimes.Where(x => x.Start <= d && (x.End == null || x.End.Value == DateTime.MinValue || x.End.Value >= d)).ToList();
+                                if (downtimes.Count > 0 && d <= DateTime.Now)
                                 {
-                                    if (downtimes.Any(x => x.Start.Day < d.Day && (x.End == null || x.End.Value == DateTime.MinValue || x.End.Value.Day > d.Day)))
+                                    if (downtimes.Any(x => x.Start.Date < d.Date && (x.End == null || x.End.Value == DateTime.MinValue || x.End.Value.Date > d.Date)))
                                     {
                                         passportInfo.Add("24");
                                         hours += 24;
                                     }
-                                    else if (downtimes.Any(x => x.Start.Day == d.Day))
+                                    else if (downtimes.Any(x => x.Start.Date == d.Date))
                                     {
-                                        var startTime = downtimes.Where(x => x.Start.Day == d.Day).Min(d => d.Start);
+                                        var startTime = downtimes.Where(x => x.Start.Date == d.Date).Min(d => d.Start);
                                         passportInfo.Add((24 - startTime.Hour).ToString());
                                         hours += (24 - startTime.Hour);
                                     }
-                                    else if (downtimes.Any(x => x.End != null && x.End.Value.Day == d.Day))
+                                    else if (downtimes.Any(x => x.End != null && x.End.Value.Date == d.Date))
                                     {
-                                        var endTime = downtimes.Where(x => x.End != null && x.End.Value.Day == d.Day).Max(d => d.End.Value);
+                                        var endTime = downtimes.Where(x => x.End != null && x.End.Value.Date == d.Date).Max(d => d.End.Value);
                                         passportInfo.Add(endTime.Hour.ToString());
                                         hours += endTime.Hour;
                                     }
-
                                     else
                                     {
                                         passportInfo.Add("");
@@ -193,11 +185,10 @@ namespace LogicLibrary
                         }
                         else
                         {
-                            for (DateTime d = new DateTime(DateTime.Today.Year, DateTime.Today.Month, 1); d < new DateTime(DateTime.Today.Year, DateTime.Today.Month + 1, 1); d = d.AddDays(1))
+                            for (DateTime d = new DateTime(DateTime.Today.Year, DateTime.Today.Month, 1); d <= new DateTime(DateTime.Today.Year, DateTime.Today.Month + 1, 1); d = d.AddDays(1))
                             {
                                 passportInfo.Add("");
                             }
-                            passportInfo.Add("");
                         }
 
 
@@ -211,21 +202,6 @@ namespace LogicLibrary
                     }
                 }
 
-                //techs = techs.Where(x => x.Errors != null && 
-                //x.Errors.Any(e => e.IsActive == null || e.IsActive.Value ||
-                //e.IsWorking == null || !e.IsWorking.Value ||
-                //e.DateOfSolving == null || 
-                //e.DateOfSolving == DateTime.MinValue || 
-                //(e.DateOfSolving >= new DateTime(DateTime.Today.Year, DateTime.Today.Month, 1) && e.DateOfSolving < new DateTime(DateTime.Today.Year, DateTime.Today.Month + 1, 1)))).ToList();
-
-                //поменять проверку
-                //techs = techs.Where(e => e.Errors != null &&
-                //            e.Errors.Any(x => (x.Date != null) &&
-                //            (x.DateOfSolving == null || x.DateOfSolving.Value.Date == DateTime.MinValue) &&
-                //            (x.IsActive == null || x.IsActive.Value) &&
-                //            (x.IsWorking == null || !x.IsWorking.Value))).ToList();
-                //techs = techs.Where(e => (e.Downtimes.Where(x => x.End == null || x.End.Value == DateTime.MinValue || x.End.Value >= new DateTime(DateTime.Today.Year, DateTime.Today.Month, 1)).ToList()).Count >0).ToList();
-
                 headerY++;
                 if (stopedTechs.Count > 0)
                 {
@@ -233,101 +209,8 @@ namespace LogicLibrary
 
                     for (int i = 0; i < stopedTechs.Count; i++)
                     {
-                        if (stopedTechs[i] != null &&
-                            (!string.IsNullOrEmpty(stopedTechs[i].Name) || !string.IsNullOrEmpty(stopedTechs[i].SerialNumber) || !string.IsNullOrEmpty(stopedTechs[i].InventoryNumber)))
-                        {
-                            headerY = MakeHeader(headerY, headerX + 1, "", 1,
-                            "Наименование оборудования", "Дата", "Проблема", "Дата", "Ответ/ результат");
-
-                            var passport = stopedTechs[i];
-
-                            var errors = passport.Errors.Where
-                            (x => (x.Date != null) &&
-                            (x.DateOfSolving == null || x.DateOfSolving.Value.Date == DateTime.MinValue || x.DateOfSolving.Value.Date > new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1)) &&
-                            (x.IsActive == null || x.IsActive.Value)
-                            //&& (x.IsWorking == null || !x.IsWorking.Value)
-                            ).OrderByDescending(d => d.Date).ToList();
-
-                            if (errors.Count > 0)
-                            {
-                                int start = headerY;
-                                for (int e = 0; e < errors.Count; e++)
-                                {
-                                    string name = e > 0 ? "" : (passport.Name != null ? passport.Name : "") + " " + (passport.Version != null ? passport.Version : "");
-                                    var repairings = Data.Instance.GetRepairings().Where(x => x.Error.Id == errors[e].Id).ToList();
-                                    if (repairings != null && repairings.Count > 0)
-                                    {
-                                        int eStart = headerY;
-                                        for (int r = 0; r < repairings.Count; r++)
-                                        {
-                                            var eName = r > 0 ? "" : (errors[e].Name != null ? errors[e].Name : "");
-                                            var eDate = r > 0 ? "" : (errors[e].Date != null ? errors[e].Date.ToString() : "");
-                                            name = r > 0 ? "" : (passport.Name != null ? passport.Name : "") + " " + (passport.Version != null ? passport.Version : "");
-                                            int endPoint = PrintHorizontalLine(headerY, headerX + 1,
-                                            name, eDate, eName, repairings[r].Date.ToString(), repairings[r].Comment);
-                                            headerY++;
-                                        }
-                                        int eEnd = headerY;
-                                        sheet.Cells[eStart, 3, eEnd - 1, 3].Merge = true;
-                                        sheet.Cells[eStart, 4, eEnd - 1, 4].Merge = true;
-                                    }
-                                    else
-                                    {
-                                        int endPoint = PrintHorizontalLine(headerY, headerX + 1,
-                                        name, errors[e].Date.ToString(), errors[e].Name, "", "");
-                                        headerY++;
-                                    }
-                                }
-                                int end = headerY;
-                                sheet.Cells[start, 2, end - 1, 2].Merge = true;
-
-                                var downtimes = passport.Downtimes.Where(x => x.End == null || x.End.Value >= new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1)).ToList();
-                                if (downtimes != null && downtimes.Count > 0)
-                                {
-                                    var lastStartDate = downtimes.Max(x => x.Start);
-                                    var lastDownTime = downtimes.Where(x => x.Start == lastStartDate).FirstOrDefault();
-                                    double downtimeHours = 0;
-                                    foreach (var d in downtimes)
-                                    {
-                                        if (d.Start >= new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1))
-                                        {
-                                            if (d.End != null && d.End.Value != DateTime.MinValue)
-                                            {
-                                                downtimeHours += (d.End - d.Start).Value.TotalHours;
-                                            }
-                                            else
-                                            {
-                                                downtimeHours += (DateTime.Now - d.Start).TotalHours;
-                                            }
-                                        }
-                                        else
-                                        {
-                                            var firstDay = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
-                                            if (d.End != null && d.End.Value != DateTime.MinValue)
-                                            {
-                                                downtimeHours += (d.End - firstDay).Value.TotalHours;
-                                            }
-                                            else
-                                            {
-                                                downtimeHours += (DateTime.Now - firstDay).TotalHours;
-                                            }
-                                        }
-                                    }
-                                    PrintHorizontalLineItem(headerY, 2, "Дата начала простоя");
-                                    PrintHorizontalLineItem(headerY++, 3, lastDownTime.Start.ToLongDateString() + " " + lastDownTime.Start.ToLongTimeString());
-                                    PrintHorizontalLineItem(headerY, 2, "Дата окончания простоя");
-                                    PrintHorizontalLineItem(headerY++, 3, (lastDownTime.End != null && lastDownTime.End.Value != DateTime.MinValue) ? (lastDownTime.End.Value.ToLongDateString() + " " + lastDownTime.End.Value.ToLongTimeString()) : "");
-                                    PrintHorizontalLineItem(headerY, 2, "Общее количество часов простоя");
-                                    PrintHorizontalLineItem(headerY++, 3, downtimeHours.ToString("N2"));
-                                }
-                                else
-                                {
-                                    PrintHorizontalLineItem(headerY++, 2, "Дата начала простоя");
-                                    PrintHorizontalLineItem(headerY++, 2, "Дата окончания простоя");
-                                    PrintHorizontalLineItem(headerY++, 2, "Общее количество часов простоя");
-                                }
-                            }
-                        }
+                        headerY = PrintOneMachineErrorCard(stopedTechs[i], headerY, headerX, null, null);
+                        //headerY = PrintOneMachineErrorCard(stopedTechs[i], headerY, headerX, new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1), new DateTime(DateTime.Now.Year, DateTime.Now.Month+1, 1));
                     }
                 }
             }
@@ -335,6 +218,112 @@ namespace LogicLibrary
             {
 
             }
+        }
+
+        private int PrintOneMachineErrorCard(TechPassport tech, int headerY, int headerX, DateTime? startDate, DateTime? endDate)
+        {
+            if (tech != null &&
+                            (!string.IsNullOrEmpty(tech.Name) || !string.IsNullOrEmpty(tech.SerialNumber) || !string.IsNullOrEmpty(tech.InventoryNumber)))
+            {
+                headerY = MakeHeader(headerY, headerX + 1, "", 1,
+                "Наименование оборудования", "Дата", "Проблема", "Дата", "Ответ/ результат");
+
+                var passport = tech;
+
+                var errors = passport.Errors.Where
+                (x => x.Date != null &&                
+                (x.IsActive == null || x.IsActive.Value)
+                && (x.IsWorking == null || !x.IsWorking.Value)
+                && (startDate == null || x.DateOfSolving == null || x.DateOfSolving == DateTime.MinValue || x.DateOfSolving >= startDate) && (endDate == null || startDate <= endDate)).OrderBy(d => d.Date).ToList();
+
+                if (errors.Count > 0)
+                {
+                    int start = headerY;
+                    for (int e = 0; e < errors.Count; e++)
+                    {                        
+                        string name = e > 0 ? "" : (passport.Name != null ? passport.Name : "") + " " + (passport.Version != null ? passport.Version : "");
+                        var repairings = Data.Instance.GetRepairings().Where(x => x.Error.Id == errors[e].Id).OrderBy(d => d.Date).ToList();
+                        if (repairings != null && repairings.Count > 0)
+                        {
+                            int eStart = headerY;
+                            for (int r = 0; r < repairings.Count; r++)
+                            {
+                                var eName = r > 0 ? "" : (errors[e].Name != null ? errors[e].Name : "");
+                                var eDate = r > 0 ? "" : (errors[e].Date != null ? errors[e].Date.ToString() : "");
+                                name = r > 0 ? "" : (passport.Name != null ? passport.Name : "") + " " + (passport.Version != null ? passport.Version : "");
+                                int endPoint = PrintHorizontalLine(headerY, headerX + 1,
+                                name, eDate, eName, repairings[r].Date.ToString(), repairings[r].Comment);
+                                headerY++;
+                            }
+                            int eEnd = headerY;
+                            sheet.Cells[eStart, 3, eEnd - 1, 3].Merge = true;
+                            sheet.Cells[eStart, 4, eEnd - 1, 4].Merge = true;
+                        }
+                        else
+                        {
+                            int endPoint = PrintHorizontalLine(headerY, headerX + 1,
+                            name, errors[e].Date.ToString(), errors[e].Name, "", "");
+                            headerY++;
+                        }
+                    }
+                    int end = headerY;
+                    sheet.Cells[start, 2, end - 1, 2].Merge = true;
+
+                    var downtimes = passport.Downtimes.Where(x => x.End == null || x.End.Value >= new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1)).ToList();
+                    if (downtimes != null && downtimes.Count > 0)
+                    {
+                        var lastStartDate = downtimes.Max(x => x.Start);
+                        var lastDownTime = downtimes.Where(x => x.Start == lastStartDate).FirstOrDefault();
+                        double downtimeHours = 0;
+
+                        var st = startDate != null? startDate.Value: new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
+                        var en = endDate != null ? endDate.Value : DateTime.Now;
+                        foreach (var d in downtimes)
+                        {
+                            if (d.Start >= st)
+                            {
+                                if (d.End != null && d.End.Value != DateTime.MinValue && (endDate == null || d.End.Value <= endDate.Value))
+                                {
+                                    downtimeHours += (d.End - d.Start).Value.TotalHours;
+                                }
+                                else
+                                {
+                                    downtimeHours += (en - d.Start).TotalHours;
+                                }
+                            }
+                            else
+                            {
+                                var firstDay = st;
+                                if (d.End != null && d.End.Value != DateTime.MinValue && (endDate == null || d.End.Value <= endDate.Value))
+                                {
+                                    downtimeHours += (d.End - firstDay).Value.TotalHours;
+                                }
+                                else
+                                {
+                                    downtimeHours += (en - firstDay).TotalHours;
+                                }
+                            }
+                        }
+
+                        DateTime s = (startDate != null && lastDownTime.Start < startDate.Value) ? startDate.Value : lastDownTime.Start;
+                        DateTime? e = (endDate != null && (lastDownTime.End == null || lastDownTime.End.Value > endDate.Value)) ? endDate.Value : lastDownTime.End;
+
+                        PrintHorizontalLineItem(headerY, 2, "Дата начала простоя");
+                        PrintHorizontalLineItem(headerY++, 3, s.ToLongDateString() + " " + s.ToLongTimeString());
+                        PrintHorizontalLineItem(headerY, 2, "Дата окончания простоя");
+                        PrintHorizontalLineItem(headerY++, 3, (e != null && e.Value != DateTime.MinValue) ? (e.Value.ToLongDateString() + " " + e.Value.ToLongTimeString()) : "");
+                        PrintHorizontalLineItem(headerY, 2, "Общее количество часов простоя");
+                        PrintHorizontalLineItem(headerY++, 3, downtimeHours.ToString("N2"));
+                    }
+                    else
+                    {
+                        PrintHorizontalLineItem(headerY++, 2, "Дата начала простоя");
+                        PrintHorizontalLineItem(headerY++, 2, "Дата окончания простоя");
+                        PrintHorizontalLineItem(headerY++, 2, "Общее количество часов простоя");
+                    }
+                }
+            }
+            return headerY;
         }
 
         private void MakeErrorGrid(List<int> techIds, string date)
@@ -563,6 +552,63 @@ namespace LogicLibrary
                         headerY++;
                     }
                 }
+            }
+
+            FinalMaking(sheet, package, name);
+            StartProcess(name);
+        }
+
+        public void ExportPlanForm(DateTime start, DateTime end, List<List<KeyValuePair<System.Drawing.Color, string>>> planLocal)
+        {
+            string name = "План работ_" + start.ToShortDateString() + "_" + end.ToShortDateString() + "--" + DateTime.Now.ToString("dd-MM-yy(hh-mm-ss)");
+            sheet.DefaultColWidth = 6.5;
+            int headerY = 1;
+            int headerX = 1;
+
+            PrintHorizontalLineItem(1, 1, "Расшифровка:");
+            PrintHorizontalLineItem(2, 1, "Есть запланированные");
+            PrintHorizontalLineItem(3, 1, "Есть просроченные");
+            PrintHorizontalLineItem(4, 1, "Есть архивные");
+
+            var green = sheet.Cells[2, 1, 2, 1].Style;
+            green.Fill.PatternType = ExcelFillStyle.Solid;
+            green.Fill.BackgroundColor.SetColor(Color.Aquamarine);
+            green.Border.BorderAround(ExcelBorderStyle.Thin);
+            var red = sheet.Cells[3, 1, 3, 1].Style;
+            red.Fill.PatternType = ExcelFillStyle.Solid;
+            red.Fill.BackgroundColor.SetColor(Color.Coral);
+            red.Border.BorderAround(ExcelBorderStyle.Thin);
+            var beige = sheet.Cells[4, 1, 4, 1].Style;
+            beige.Fill.PatternType = ExcelFillStyle.Solid;
+            beige.Fill.BackgroundColor.SetColor(Color.Beige);
+            beige.Border.BorderAround(ExcelBorderStyle.Thin);
+
+            var types = Data.Instance.GetMaintenanceTypes();
+            foreach (var type in types)
+            {
+                PrintHorizontalLineItem(headerY, 4, type.Type, true);
+                PrintHorizontalLineItem(headerY, 5, type.Description, true);
+                sheet.Cells[headerY, 5].Style.WrapText = false;
+                headerY++;
+            }
+            headerY++;
+
+            foreach (var line in planLocal)
+            {
+                foreach (var cell in line)
+                {
+                    if (cell.Value == line.FirstOrDefault().Value)
+                        PrintHorizontalLineItem(headerY, headerX, cell.Value);
+                    else
+                        PrintHorizontalLineItem(headerY, headerX, cell.Value, true);
+                    var style = sheet.Cells[headerY, headerX, headerY, headerX].Style;
+                    style.Fill.PatternType = ExcelFillStyle.Solid;
+                    style.Fill.BackgroundColor.SetColor(cell.Key);
+                    style.Border.BorderAround(ExcelBorderStyle.Thin);
+                    headerX++;
+                }
+                headerY++;
+                headerX = 1;
             }
 
             FinalMaking(sheet, package, name);
@@ -863,20 +909,25 @@ namespace LogicLibrary
             sheet.Cells[Y, X, Y, result - 1].Style.Border.Right.Style = ExcelBorderStyle.Thin;
             return result;
         }
-        private int PrintHorizontalLineItem(int Y, int X, string value)
+        private int PrintHorizontalLineItem(int Y, int X, string value, bool isCalendar = false)
         {
             double width = sheet.Column(X).Width;
             sheet.Cells[Y, X].Value = value;
             sheet.Cells[Y, X].Style.WrapText = true;
-            //sheet.Column(X).AutoFit();
             int letters = 0;
             if (value != null)
             {
                 letters = value.Length;
             }
-            //double newWidth = sheet.Column(X).Width * 0.8;            
-            sheet.Column(X).Width = letters > width ? letters : width;
-            sheet.Column(X).Width = sheet.Column(X).Width > 60 ? 60 : sheet.Column(X).Width;
+            if (isCalendar)
+            {
+                sheet.Column(X).Width = 12;
+            }
+            else
+            {
+                sheet.Column(X).Width = letters > width ? letters : width;
+                sheet.Column(X).Width = sheet.Column(X).Width > 60 ? 60 : sheet.Column(X).Width;
+            }
 
             X++;
             return X;

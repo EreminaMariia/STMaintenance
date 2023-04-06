@@ -1,4 +1,4 @@
-﻿using Entities;
+﻿using Entities.Entities;
 using System.Text.Json;
 
 namespace LogicLibrary

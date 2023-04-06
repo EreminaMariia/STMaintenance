@@ -1,7 +1,7 @@
 ﻿using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 
-namespace Entities
+namespace Entities.Entities
 {
     public class Data
     {
@@ -31,9 +31,9 @@ namespace Entities
                 {
                     string monthPrefix = DateTime.Today.Month < 10 ? "0" : "";
                     string sqlParams = @"declare @DtBeg datetime='"
-                        + DateTime.Today.Year.ToString() + monthPrefix + (DateTime.Today.Month).ToString() +
+                        + DateTime.Today.Year.ToString() + monthPrefix + DateTime.Today.Month.ToString() +
                         DateTime.Today.Day.ToString() +
-                        @"' declare @DtEnd datetime='" + DateTime.Today.Year.ToString() + monthPrefix + (DateTime.Today.Month).ToString() +
+                        @"' declare @DtEnd datetime='" + DateTime.Today.Year.ToString() + monthPrefix + DateTime.Today.Month.ToString() +
                         DateTime.Today.Day.ToString() + @" 23:59:59' ";
                     materials = db.MaterialsInfoFromOuterBase.FromSqlRaw(sqlParams + sqlExpression).ToList();
                 }
@@ -149,11 +149,30 @@ namespace Entities
                 Include(h => h.WorkingHours).
                 Include(p => p.ControledParametrs).
                 Include(a => a.AdditionalWorks).ThenInclude(o => o.Operators).
+                Include(a => a.AdditionalWorks).ThenInclude(o => o.MaintenanceType).
                 Include(s => s.Supplier).
                 Include(d => d.Department).
                 Include(t => t.Type).
                 Include(s => s.Instruments).ThenInclude(u => u.Unit).
                 FirstOrDefault(t => t.Id == id);
+        }
+
+        public IQueryable<TechPassport> GetPassportByIds(List<int> ids)
+        {
+            return context.TechPassports.
+                Include(m => m.MaintenanceInfos).
+                Include(e => e.Errors).
+                Include(w => w.Downtimes).
+                Include(c => c.Characteristics).ThenInclude(u => u.Unit).
+                Include(i => i.Instructions).
+                Include(h => h.WorkingHours).
+                Include(p => p.ControledParametrs).
+                Include(a => a.AdditionalWorks).ThenInclude(o => o.Operators).
+                Include(s => s.Supplier).
+                Include(d => d.Department).
+                Include(t => t.Type).
+                Include(s => s.Instruments).ThenInclude(u => u.Unit).
+                Where(t => ids.Contains(t.Id));
         }
 
 
@@ -203,7 +222,7 @@ namespace Entities
 
         public List<MaintenanceInfo> GetMaintenance()
         {
-            return context.MaintenanceInfos.Include(e => e.Episodes).ThenInclude(o=>o.Operators).Include(t => t.MaintenanceType).Include(p => p.TechPassport).ThenInclude(h => h.WorkingHours).ToList();
+            return context.MaintenanceInfos.Include(e => e.Episodes).ThenInclude(o => o.Operators).Include(t => t.MaintenanceType).Include(p => p.TechPassport).ThenInclude(h => h.WorkingHours).ToList();
         }
 
         public void EditCharacteristicsByUnit(int id, int unitId)
@@ -746,7 +765,7 @@ namespace Entities
             MaintenanceInfo maintenance = new MaintenanceInfo();
             maintenance = MakeMaintanance(maintenance, name, type, isFixed, interval, hours, date, isInWork);
 
-            return Add<MaintenanceInfo>(context.MaintenanceInfos, maintenance, passportId);
+            return Add(context.MaintenanceInfos, maintenance, passportId);
         }
 
         //public void ErasePlannedDate(int id)
@@ -796,7 +815,7 @@ namespace Entities
             if (maintenance != null)
             {
                 maintenance = MakeMaintanance(maintenance, name, type, isFixed, interval, hours, date, isInWork);
-                AddPassport<MaintenanceInfo>(maintenance, passportId);
+                AddPassport(maintenance, passportId);
             }
             context.SaveChanges();
             return 0;
@@ -1074,8 +1093,8 @@ namespace Entities
                         (passport.WorkingHours == null || passport.WorkingHours.Count == 0) &&
                         (passport.ControledParametrs == null || passport.ControledParametrs.Count == 0) &&
                         (passport.AdditionalWorks == null || passport.AdditionalWorks.Count == 0) &&
-                        (passport.Supplier == null) &&
-                        (passport.Type == null))
+                        passport.Supplier == null &&
+                        passport.Type == null)
                     {
                         context.TechPassports.Remove(passport);
                         context.SaveChanges();
@@ -1357,26 +1376,24 @@ namespace Entities
             context.SaveChanges();
         }
 
-        public int AddRepairing(int errorId, DateTime date, double hours, string comment)
+        public int AddRepairing(int errorId, DateTime date, string comment)
         {
             MaintenanceError error = context.MaintenanceErrors.FirstOrDefault(x => x.Id == errorId);
             Repairing repairing = new Repairing();
             repairing.Date = date;
-            repairing.Hours = hours;
-            repairing.Comment = comment;            
+            repairing.Comment = comment;
             context.Repairings.Add(repairing);
             context.SaveChanges();
 
             return repairing.Id;
         }
 
-        public void EditRepairing(int id, DateTime date, double hours, string comment)
+        public void EditRepairing(int id, DateTime date, string comment)
         {
             var repairing = context.Repairings.FirstOrDefault(x => x.Id == id);
             if (repairing != null)
             {
                 repairing.Date = date;
-                repairing.Hours = hours;
                 repairing.Comment = comment;
             }
             context.SaveChanges();
@@ -1505,7 +1522,7 @@ namespace Entities
             {
                 controledParametr.Unit = unit;
             }
-            return Add<ControledParametr>(context.ControledParametrs, controledParametr, passportId);
+            return Add(context.ControledParametrs, controledParametr, passportId);
         }
 
         public void EditControledParam(int passportId, int id, string name, double nominal, int unitId)
@@ -1521,7 +1538,7 @@ namespace Entities
                 {
                     controledParametr.Unit = unit;
                 }
-                AddPassport<ControledParametr>(controledParametr, passportId);
+                AddPassport(controledParametr, passportId);
             }
             context.SaveChanges();
         }
@@ -1560,7 +1577,7 @@ namespace Entities
             HoursInfo hoursInfo = new HoursInfo();
             hoursInfo.Hours = hours;
             hoursInfo.Date = date;
-            return Add<HoursInfo>(context.WorkingHours, hoursInfo, passportId);
+            return Add(context.WorkingHours, hoursInfo, passportId);
         }
 
         public void EditHours(int passportId, int id, int hours, DateTime date)
@@ -1570,7 +1587,7 @@ namespace Entities
             {
                 hoursInfo.Hours = hours;
                 hoursInfo.Date = date;
-                AddPassport<HoursInfo>(hoursInfo, passportId);
+                AddPassport(hoursInfo, passportId);
             }
             context.SaveChanges();
         }
@@ -1585,7 +1602,7 @@ namespace Entities
             work.Hours = hours;
             work.HoursFact = hoursFact;
 
-            return Add<AdditionalWork>(context.AdditionalWorks, work, passportId);
+            return Add(context.AdditionalWorks, work, passportId);
         }
 
         public void EditAdditionalWork(int passportId, int id, string name, DateTime planedDate, DateTime? dateFact, string comment, double hours, double hoursFact)
@@ -1600,7 +1617,7 @@ namespace Entities
                 work.Hours = hours;
                 work.HoursFact = hoursFact;
 
-                AddPassport<AdditionalWork>(work, passportId);
+                AddPassport(work, passportId);
             }
             context.SaveChanges();
         }
@@ -1642,7 +1659,7 @@ namespace Entities
             if (dateOfSolving.HasValue && dateOfSolving.Value != DateTime.MinValue)
                 error.IsWorking = true;
 
-            if (!error.IsWorking.Value && (!isActive.HasValue|| isActive.Value))
+            if (!error.IsWorking.Value && (!isActive.HasValue || isActive.Value))
             {
                 var downtime = context.Downtimes.Where(x => x.TechPassport.Id == passportId && x.End == null).FirstOrDefault();
                 if (downtime != null)
@@ -1653,11 +1670,11 @@ namespace Entities
                 else
                 {
                     Downtime d = new Downtime() { Start = date };
-                    Add<Downtime>(context.Downtimes, d, passportId);
+                    Add(context.Downtimes, d, passportId);
                 }
             }
 
-            return Add<MaintenanceError>(context.MaintenanceErrors, error, passportId);
+            return Add(context.MaintenanceErrors, error, passportId);
         }
 
         public void EditErrorNew(int passportId, int id, DateTime date, string code, string name, bool isWorking, string description, string comment, DateTime? dateOfSolving, bool? isActive)
@@ -1667,7 +1684,7 @@ namespace Entities
             {
                 if ((!isActive.HasValue || isActive.Value) && error.IsWorking != isWorking)
                 {
-                    if (!error.IsWorking.HasValue || (error.IsWorking.HasValue && error.IsWorking.Value))
+                    if (!error.IsWorking.HasValue || error.IsWorking.HasValue && error.IsWorking.Value)
                     {
                         var downtime = context.Downtimes.Where(x => x.TechPassport.Id == passportId && x.End == null).FirstOrDefault();
                         if (downtime != null)
@@ -1678,7 +1695,7 @@ namespace Entities
                         else
                         {
                             Downtime d = new Downtime() { Start = date };
-                            Add<Downtime>(context.Downtimes, d, passportId);
+                            Add(context.Downtimes, d, passportId);
                         }
                     }
                     else
@@ -1688,10 +1705,10 @@ namespace Entities
                         var downtime = context.Downtimes.Where(x => x.TechPassport.Id == passportId && x.End == null).FirstOrDefault();
                         if (downtime != null)
                         {
-                            var allWorking = !context.MaintenanceErrors.Any(x => x.TechPassport.Id == passportId && (!x.IsActive.HasValue || x.IsActive.Value) && (x.IsWorking.HasValue && !x.IsWorking.Value));
+                            var allWorking = !context.MaintenanceErrors.Any(x => x.TechPassport.Id == passportId && (!x.IsActive.HasValue || x.IsActive.Value) && x.IsWorking.HasValue && !x.IsWorking.Value);
                             if (allWorking)
                             {
-                                downtime.End = (dateOfSolving != null && dateOfSolving.Value != DateTime.MinValue)?
+                                downtime.End = dateOfSolving != null && dateOfSolving.Value != DateTime.MinValue ?
                                     dateOfSolving : DateTime.Now;
                                 context.SaveChanges();
                             }
@@ -1708,7 +1725,7 @@ namespace Entities
                 error.Code = code;
                 error.IsActive = isActive;
 
-                AddPassport<MaintenanceError>(error, passportId);
+                AddPassport(error, passportId);
             }
             context.SaveChanges();
         }
@@ -1730,7 +1747,7 @@ namespace Entities
             {
                 instrument.Unit = unit;
             }
-            return Add<Instrument>(context.Instruments, instrument, passportId);
+            return Add(context.Instruments, instrument, passportId);
         }
 
         public void EditInstrument(int passportId, int id, string art, string name, double? count, int unitId,
@@ -1754,7 +1771,7 @@ namespace Entities
                     instrument.Unit = unit;
                 }
 
-                AddPassport<Instrument>(instrument, passportId);
+                AddPassport(instrument, passportId);
             }
             context.SaveChanges();
         }
@@ -1766,7 +1783,7 @@ namespace Entities
             characteristic.Count = count;
             characteristic.Commentary = commentary;
 
-            return Add<Characteristic>(context.Characteristics, characteristic, passportId);
+            return Add(context.Characteristics, characteristic, passportId);
         }
 
         public void EditCharacteristic(int passportId, int id, string name, double? count, string commentary)
@@ -1778,7 +1795,7 @@ namespace Entities
                 characteristic.Count = count;
                 characteristic.Commentary = commentary;
 
-                AddPassport<Characteristic>(characteristic, passportId);
+                AddPassport(characteristic, passportId);
             }
             context.SaveChanges();
         }
@@ -1789,7 +1806,7 @@ namespace Entities
             instruction.Name = name;
             instruction.Path = path;
 
-            return Add<Instruction>(context.Instructions, instruction, passportId);
+            return Add(context.Instructions, instruction, passportId);
         }
 
         public void EditInstruction(int passportId, int id, string name, string path)
@@ -1800,14 +1817,14 @@ namespace Entities
                 instruction.Name = name;
                 instruction.Path = path;
 
-                AddPassport<Instruction>(instruction, passportId);
+                AddPassport(instruction, passportId);
             }
             context.SaveChanges();
         }
 
         private int Add<T>(DbSet<T> db, T item, int passportId) where T : class, IPasportable
         {
-            AddPassport<T>(item, passportId);
+            AddPassport(item, passportId);
             db.Add(item);
             context.SaveChanges();
             return item.Id;

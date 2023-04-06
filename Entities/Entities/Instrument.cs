@@ -5,10 +5,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Entities
+namespace Entities.Entities
 {
     [Table("to_instruments")]
-    public class Instrument: IPasportable
+    public class Instrument : IPasportable
     {
         public int Id { get; set; }
         public string? Art { get; set; }

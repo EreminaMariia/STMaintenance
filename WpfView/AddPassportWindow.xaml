@@ -243,6 +243,7 @@
         <Button x:Name="printInstrumentsButton" Content="Печать инструментов" HorizontalAlignment="Left" Margin="324,0,0,10" VerticalAlignment="Bottom" RenderTransformOrigin="17.061,4.13" Height="25" Width="178" Click="printInstrumentsButton_Click"/>
         <Button x:Name="infoCardButton" Content="Печать карточки объекта обслуживания" HorizontalAlignment="Right" Margin="0,0,10,10" VerticalAlignment="Bottom" Height="25" Width="302" Click="Button_Click_1"/>
         <Button x:Name="archiveButton" Content="Печать архива" HorizontalAlignment="Right" Margin="0,0,330,10" VerticalAlignment="Bottom" Height="25" Width="126" Click="archiveButton_Click"/>
+        <Button x:Name="errorButton" Content="Печать ошибок" HorizontalAlignment="Right" Margin="0,0,476,10" VerticalAlignment="Bottom" Height="25" Width="126" Click="errorButton_Click"/>
         <Button x:Name="saveButton" Content="Сохранить" HorizontalAlignment="Center" Margin="0,0,10,0" VerticalAlignment="Bottom" Background="#FF9DFFA3" Click="Button_Click" Height="42" Width="144" FontSize="24" RenderTransformOrigin="0.446,0.689"/>
     </Grid>
 </Window>

@@ -34,7 +34,6 @@ namespace LogicLibrary.Services
             techPassport.Repairings.Add(new RepairingView
             {
                 Id = id,
-                Hours = rep.Hours,
                 Name = rep.Name,
                 InfoId = errorId
             });
@@ -58,7 +57,6 @@ namespace LogicLibrary.Services
                 canChange = false;
                 var rep = (RepairingView)view;
                 var oldItem = techPassport.Repairings.First(x => x.Id == rep.Id);
-                oldItem.Hours = rep.Hours;
                 oldItem.Name = rep.Name;
                 oldItem.MarkChanged();
                 canChange = true;

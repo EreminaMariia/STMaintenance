@@ -1,4 +1,4 @@
-﻿using Entities;
+﻿using Entities.Entities;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -14,7 +14,7 @@ namespace LogicLibrary
         private bool isChanged;
         private string name = string.Empty;
         private DateTime date = DateTime.Now;
-        private double hours = 0;
+
         public int Id { get; set; }
         public int InfoId { get; set; }
 
@@ -23,13 +23,6 @@ namespace LogicLibrary
         {
             get { return date; }
             private set { date = value; OnPropertyChanged(nameof(Date)); }
-        }
-
-        [System.ComponentModel.DisplayName("Затрачено часов")]
-        public string Hours
-        {
-            get { return hours.ToString(); }
-            set { double.TryParse(value, out hours); OnPropertyChanged(nameof(Hours)); }
         }
 
         [System.ComponentModel.DisplayName("Проведённые работы")]
@@ -64,20 +57,11 @@ namespace LogicLibrary
                     date = repairing.Date.Value;
                 }
                 name = repairing.Comment;
-                if (repairing.Hours != null)
-                {
-                    hours = repairing.Hours.Value;
-                }
                 if (repairing.Error != null)
                 {
                     InfoId = repairing.Error.Id;
                 }
             }
-        }
-
-        public double GetHours()
-        {
-            return hours;
         }
 
         public event PropertyChangedEventHandler? PropertyChanged;

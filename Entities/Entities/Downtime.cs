@@ -4,10 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Entities
+namespace Entities.Entities
 {
     [System.ComponentModel.DataAnnotations.Schema.Table("to_downtimes")]
-    public class Downtime: IPasportable
+    public class Downtime : IPasportable
     {
         public int Id { get; set; }
         public DateTime Start { get; set; }

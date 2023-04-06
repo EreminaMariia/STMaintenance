@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Entities
+namespace Entities.Entities
 {
     [Table("to_instructions")]
     public class Instruction : IPasportable

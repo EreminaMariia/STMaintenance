@@ -1259,5 +1259,16 @@ namespace WpfView
                 }
             }
         }
+
+        private void errorButton_Click(object sender, RoutedEventArgs e)
+        {
+            PickData pickData = new PickData();
+            var result = pickData.ShowDialog();
+            if (result == true)
+            {
+                PrintFormsMaker maker = new PrintFormsMaker("ErrorCard");
+                maker.PrintErrorOneMachineForm(passportMaker.GetPassport(), pickData.Start, pickData.End);
+            }
+        }
     }
 }

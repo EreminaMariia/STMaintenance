@@ -5,11 +5,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Entities
+namespace Entities.Entities
 {
     [Table("to_maintenance_errors")]
-    public class MaintenanceError: IPasportable
-    {        
+    public class MaintenanceError : IPasportable
+    {
         public int Id { get; set; }
         public TechPassport TechPassport { get; set; }
         public DateTime? Date { get; set; }
@@ -21,6 +21,6 @@ namespace Entities
         public string? Comment { get; set; }
         public DateTime? DateOfSolving { get; set; }
         public double? Hours { get; set; }
-        public bool? IsActive{ get; set; }
+        public bool? IsActive { get; set; }
     }
 }

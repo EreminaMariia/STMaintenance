@@ -1,0 +1,16 @@
+﻿<Window x:Class="WpfView.PickData"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:WpfView"
+        mc:Ignorable="d"
+        Title="Выбрать период" Height="180" Width="319">
+    <Grid>
+        <DatePicker Name="startErrorDatePicker" HorizontalAlignment="Left" Margin="60,59,0,0" VerticalAlignment="Top"/>
+        <DatePicker Name="endErrorDatePicker" HorizontalAlignment="Left" Margin="194,59,0,0" VerticalAlignment="Top"/>
+        <Button Content="Выбрать" HorizontalAlignment="Center" Margin="0,99,0,0" VerticalAlignment="Top" Click="Button_Click"/>
+        <Label Content="по" HorizontalAlignment="Left" Margin="169,59,0,0" VerticalAlignment="Top"/>
+        <Label Content="с" HorizontalAlignment="Left" Margin="44,59,0,0" VerticalAlignment="Top"/>
+    </Grid>
+</Window>
