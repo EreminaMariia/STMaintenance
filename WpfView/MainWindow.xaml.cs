@@ -560,7 +560,7 @@ namespace WpfView
                 properties = CommonClass.GetProperties(pg);
             }
 
-            filtred = dataService.GetAllArchiveViews().Where(x => x.Date != null && x.Date >= st && x.Date <= end).ToList();
+            filtred = filtred.Where(x => x.Date != null && x.Date >= st && x.Date <= end).ToList();
             CommonClass.FilterGridByOneField(Archive, filtred, archiveTableService, archiveDataGrid, properties);
         }
 
@@ -584,7 +584,7 @@ namespace WpfView
                 properties = CommonClass.GetProperties(pg);
             }
 
-            filtred = dataService.GetAllArchiveViews().Where(x => x.Date != null && x.Date >= start && x.Date <= st).ToList();
+            filtred = filtred.Where(x => x.Date != null && x.Date >= start && x.Date <= st).ToList();
             CommonClass.FilterGridByOneField(Archive, filtred, archiveTableService, archiveDataGrid, properties);
         }
 

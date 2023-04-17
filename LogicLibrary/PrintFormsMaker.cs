@@ -764,7 +764,7 @@ namespace LogicLibrary
         }
 
 
-        public void PrintArchiveForm(List<OuterArchiveView> instruments, string header)
+        public void PrintArchiveForm(List<OuterArchiveView> archiveItems, string header)
         {
             string name = "Архив" + "--" + DateTime.Now.ToString("dd-MM-yy(hh-mm-ss)");
             sheet.DefaultColWidth = 6.5;
@@ -780,12 +780,14 @@ namespace LogicLibrary
                 "№", "Дата выполнения", "Наименование оборудования", "Вид работ", "Наименование работ",
                 "Плановая трудоемкость ч/час", "Фактическая трудоемкость ч/час", "ФИО лица проводившего работы");
 
-            for (int i = 0; i < instruments.Count; i++)
+            archiveItems = archiveItems.OrderBy(x => x.Date).ToList();
+
+            for (int i = 0; i < archiveItems.Count; i++)
             {
-                var date = instruments[i].Date != null ? ((DateTime)instruments[i].Date).ToString("dd-MM-yy") : "";
+                var date = archiveItems[i].Date != null ? ((DateTime)archiveItems[i].Date).ToString("dd-MM-yy") : "";
                 PrintHorizontalLine(headerY + i, headerX + 1, (i + 1).ToString(),
-                        date, instruments[i].MachineName, instruments[i].Type, instruments[i].Name,
-                        instruments[i].WorkingHours, instruments[i].FactWorkingHours, instruments[i].Operators);
+                        date, archiveItems[i].MachineName, archiveItems[i].Type, archiveItems[i].Name,
+                        archiveItems[i].WorkingHours, archiveItems[i].FactWorkingHours, archiveItems[i].Operators);
             }
             FinalMaking(sheet, package, name);
             StartProcess(name);

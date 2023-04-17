@@ -31,7 +31,6 @@ namespace LogicLibrary.Services
                 Name = item.Name,
                 Count = item.Count,
                 Commentary = item.Commentary,
-                
             });
             return id;
         }
