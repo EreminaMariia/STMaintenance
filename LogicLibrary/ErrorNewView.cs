@@ -145,7 +145,7 @@ namespace LogicLibrary
             Repairings = "";
             foreach (var repairing in repairings)
             {
-                Repairings += repairing.Date + "(" + repairing.Hours + ")" + " - " + repairing.Comment + "\n";
+                Repairings += repairing.Date + " - " + repairing.Comment + "\n";
                 repairingIds.Add(repairing.Id);
             }
         }
@@ -192,7 +192,7 @@ namespace LogicLibrary
                 Repairings = "";
                 foreach (var repairing in error.Repairings)
                 {
-                    Repairings += repairing.Date + "(" + repairing.Hours + ")" + " - " + repairing.Comment + "\n";
+                    Repairings += repairing.Date + " - " + repairing.Comment + "\n";
                     repairingIds.Add(repairing.Id);
                 }
             }

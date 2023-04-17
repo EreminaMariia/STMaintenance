@@ -276,11 +276,11 @@ namespace LogicLibrary
             //MachineName = repairing.Error.TechPassport.Name;
             Name = repairing.Error.Name;
             Type = "Ремонт";
-            if (repairing.Hours != null)
-            {
-                working = Math.Round((double)repairing.Hours, 4, MidpointRounding.AwayFromZero);
-                factWorking = working;
-            }
+            //if (repairing.Hours != null)
+            //{
+            //    working = Math.Round((double)repairing.Hours, 4, MidpointRounding.AwayFromZero);
+            //    factWorking = working;
+            //}
             Operators = MakeOperatirsString(repairing.Operators);
         }
 
