@@ -1,28 +1,13 @@
-﻿using Entities.Entities;
-using System.Text.Json;
+﻿using Entities;
+using Entities.Entities;
 
 namespace LogicLibrary
 {
     public class DataService
     {
-        //public void GetData()
-        //{
-        //    Data.Instance.GetData();
-        //}
-        //public List<TechView> GetTechViews()
-        //{
-        //    var list = Data.Instance.GetTechPassports();
-        //    List<TechView> result = new List<TechView>();
-        //    foreach (TechPassport item in list)
-        //    {
-        //        result.Add(new TechView(item));
-        //    }
-        //    return result;
-        //}
-
-        public List<TechView> GetTechViews(bool isOld)
+        public async Task<List<TechView>> GetTechViews(bool isOld)
         {
-            var list = Data.Instance.GetTechPassports();
+            var list = await Data.Instance.GetTechPassports();
             List<TechView> result = new List<TechView>();
             foreach (TechPassport item in list)
             {

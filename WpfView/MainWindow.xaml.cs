@@ -3,13 +3,11 @@ using LogicLibrary.Services;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
-using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
 
@@ -61,7 +59,7 @@ namespace WpfView
         private List<DepartmentView> departments { get; set; }
         private List<PointView> points { get; set; }
         public List<OuterArchiveView> archive { get; set; }
-        public List<OuterArchiveView> filtred { get; set; }
+        public List<OuterArchiveView> filtered { get; set; }
 
         private int defaultDays = 10;
 
@@ -263,7 +261,7 @@ namespace WpfView
                     System.Drawing.Color dayColor = System.Drawing.Color.White;
                     string dayContent = "";
                     foreach (var item in view)
-                    {                       
+                    {
                         if (i.Date == DateTime.Today.Date && item.GetPlannedDatesForToday().Any(d => d.Date <= i.Date))
                         {
                             if (dateButton.Content == null)
@@ -494,10 +492,10 @@ namespace WpfView
             }
         }
 
-        public void RefreshPassportGrid()
+        public async void RefreshPassportGrid()
         {
-            passports = dataService.GetTechViews(false);
-            oldPassports = dataService.GetTechViews(true);
+            passports = await dataService.GetTechViews(false);
+            oldPassports = await dataService.GetTechViews(true);
             CommonClass.RefreshGrid(passports, Passports, machineDataGrid, passportTableService);
             CommonClass.RefreshGrid(oldPassports, OldPassports, oldMachineDataGrid, oldPassportTableService);
 
@@ -560,8 +558,10 @@ namespace WpfView
                 properties = CommonClass.GetProperties(pg);
             }
 
-            filtred = filtred.Where(x => x.Date != null && x.Date >= st && x.Date <= end).ToList();
-            CommonClass.FilterGridByOneField(Archive, filtred, archiveTableService, archiveDataGrid, properties);
+            filtered ??= dataService.GetAllArchiveViews();
+            archive ??= dataService.GetAllArchiveViews();
+            filtered = filtered.Where(x => x.Date != null && x.Date >= st && x.Date <= end).ToList();
+            CommonClass.FilterGridByOneField(Archive, filtered, archiveTableService, archiveDataGrid, properties);
         }
 
         private void endDatePicker_SelectedDateChanged(object sender, SelectionChangedEventArgs e)
@@ -584,8 +584,10 @@ namespace WpfView
                 properties = CommonClass.GetProperties(pg);
             }
 
-            filtred = filtred.Where(x => x.Date != null && x.Date >= start && x.Date <= st).ToList();
-            CommonClass.FilterGridByOneField(Archive, filtred, archiveTableService, archiveDataGrid, properties);
+            filtered ??= dataService.GetAllArchiveViews();
+            archive ??= dataService.GetAllArchiveViews();
+            filtered = filtered.Where(x => x.Date != null && x.Date >= start && x.Date <= st).ToList();
+            CommonClass.FilterGridByOneField(Archive, filtered, archiveTableService, archiveDataGrid, properties);
         }
 
         private void departmentsDataGrid_MouseDoubleClick(object sender, MouseButtonEventArgs e)
@@ -712,9 +714,9 @@ namespace WpfView
             PrintFormsMaker maker = new PrintFormsMaker("ArchiveInfo");
             DateTime start = startDatePicker.SelectedDate != null ? (DateTime)startDatePicker.SelectedDate : DateTime.MinValue;
             DateTime end = endDatePicker.SelectedDate != null ? (DateTime)endDatePicker.SelectedDate : DateTime.Today;
-            if (filtred != null && filtred.Count > 0)
+            if (filtered != null && filtered.Count > 0)
             {
-                maker.PrintArchiveForm(start, end, filtred);
+                maker.PrintArchiveForm(start, end, filtered);
             }
             else
             {
@@ -823,9 +825,9 @@ namespace WpfView
                                 DateTime start = startDatePicker.SelectedDate != null ? (DateTime)startDatePicker.SelectedDate : DateTime.MinValue;
                                 DateTime end = endDatePicker.SelectedDate != null ? (DateTime)endDatePicker.SelectedDate : DateTime.Today;
                                 archive = dataService.GetAllArchiveViews();
-                                filtred = dataService.GetAllArchiveViews().Where(x => x.Date != null && x.Date >= start && x.Date <= end).ToList();
-                                CommonClass.FilterGridByOneField(Archive, filtred, archiveTableService, archiveDataGrid, properties, out List<OuterArchiveView> f);
-                                filtred = f;
+                                filtered = dataService.GetAllArchiveViews().Where(x => x.Date != null && x.Date >= start && x.Date <= end).ToList();
+                                CommonClass.FilterGridByOneField(Archive, filtered, archiveTableService, archiveDataGrid, properties, out List<OuterArchiveView> f);
+                                filtered = f;
                                 break;
                         }
                     }
@@ -871,13 +873,13 @@ namespace WpfView
             return Task.CompletedTask;
         }
 
-        private void tabControl_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private async void tabControl_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (e.Source is TabControl)
             {
                 if (PassportsItem.IsSelected)
                 {
-                    CommonClass.TabChangeProcess(dataService.GetTechViews(false), passports, Passports, machineDataGrid, passportTableService);
+                    CommonClass.TabChangeProcess(await dataService.GetTechViews(false), passports, Passports, machineDataGrid, passportTableService);
                 }
                 else if (HandBookItem.IsSelected) { }
                 else if (ArchiveItem.IsSelected)
@@ -893,7 +895,7 @@ namespace WpfView
                     {
                         if (passports == null || passports.Count == 0)
                         {
-                            passports = dataService.GetTechViews(false);
+                            passports = await dataService.GetTechViews(false);
                             CommonClass.RefreshGrid(passports, Passports, machineDataGrid, passportTableService);
                         }
                         try
@@ -908,7 +910,7 @@ namespace WpfView
                 }
                 else if (OldPassportsItem.IsSelected)
                 {
-                    CommonClass.TabChangeProcess(dataService.GetTechViews(true), oldPassports, OldPassports, oldMachineDataGrid, oldPassportTableService);
+                    CommonClass.TabChangeProcess(await dataService.GetTechViews(true), oldPassports, OldPassports, oldMachineDataGrid, oldPassportTableService);
                 }
             }
         }

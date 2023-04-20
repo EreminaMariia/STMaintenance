@@ -1,11 +1,10 @@
-﻿using Microsoft.Data.SqlClient;
+﻿using Entities.Entities;
 using Microsoft.EntityFrameworkCore;
 
-namespace Entities.Entities
+namespace Entities
 {
     public class Data
     {
-        private readonly MainContext context;
         private List<MaterialInfoFromOuterBase> materials;
 
         private static Data instance = new Data();
@@ -22,7 +21,7 @@ namespace Entities.Entities
 
         private Data()
         {
-            context = new MainContext();
+            var context = new MainContext();
             materials = new List<MaterialInfoFromOuterBase>();
 
             try
@@ -49,86 +48,104 @@ namespace Entities.Entities
             return materials;
         }
 
-        public List<TechPassport> GetTechPassports()
+        public async Task<List<TechPassport>> GetTechPassports()
         {
-            return context.TechPassports.
-                Include(d => d.Department)
-                .ToList();
+            using var context = new MainContext();
+            return await context.TechPassports
+                .Include(d => d.Department)
+                .ToListAsync();
         }
         public int GetCharacteristicsId()
         {
+            using var context = new MainContext();
             return context.Characteristics.Any() ? context.Characteristics.Max(x => x.Id) + 1 : 1;
         }
         public int GetMaintenancesId()
         {
+            using var context = new MainContext();
             return context.MaintenanceInfos.Any() ? context.MaintenanceInfos.Max(x => x.Id) + 1 : 1;
         }
         public int GetAdditionalsId()
         {
+            using var context = new MainContext();
             return context.AdditionalWorks.Any() ? context.AdditionalWorks.Max(x => x.Id) + 1 : 1;
         }
         public int GetMaterialsId()
         {
+            using var context = new MainContext();
             return context.Materials.Any() ? context.Materials.Max(x => x.Id) + 1 : 1;
         }
         public int GetRepairingsId()
         {
+            using var context = new MainContext();
             return context.Repairings.Any() ? context.Repairings.Max(x => x.Id) + 1 : 1;
         }
         public int GetInstructionsId()
         {
+            using var context = new MainContext();
             return context.Instructions.Any() ? context.Instructions.Max(x => x.Id) + 1 : 1;
         }
         public int GetInstrumentsId()
         {
+            using var context = new MainContext();
             return context.Instruments.Any() ? context.Instruments.Max(x => x.Id) + 1 : 1;
         }
         public int GetWorkingHoursId()
         {
+            using var context = new MainContext();
             return context.WorkingHours.Any() ? context.WorkingHours.Max(x => x.Id) + 1 : 1;
         }
         public int GetErrorsId()
         {
+            using var context = new MainContext();
             return context.MaintenanceErrors.Any() ? context.MaintenanceErrors.Max(x => x.Id) + 1 : 1;
         }
         public int GetEpisodesId()
         {
+            using var context = new MainContext();
             return context.MaintenanceEpisodes.Any() ? context.MaintenanceEpisodes.Max(x => x.Id) + 1 : 1;
         }
 
         public int GetControledParametrsId()
         {
+            using var context = new MainContext();
             return context.ControledParametrs.Any() ? context.ControledParametrs.Max(x => x.Id) + 1 : 1;
         }
 
         public int GetControledParametrEpisodesId()
         {
+            using var context = new MainContext();
             return context.ControledParametrDateInfos.Any() ? context.ControledParametrDateInfos.Max(x => x.Id) + 1 : 1;
         }
 
         public List<MaintenanceError> GetErrors()
         {
+            using var context = new MainContext();
             return context.MaintenanceErrors.Include(s => s.Repairings).Where(x => x.IsActive == null || x.IsActive.Value).ToList();
         }
 
         public List<AdditionalWork> GetAdditionalWorks()
         {
+            using var context = new MainContext();
             return context.AdditionalWorks.Include(a => a.Materials).Include(m => m.Operators).ToList();
         }
 
         public List<ErrorCode> GetErrorCodes()
         {
+            using var context = new MainContext();
             return context.ErrorCodes.ToList();
         }
 
         public MaintenanceType? GetMaintenanceTypeByMaintenanceId(int id)
         {
+            using var context = new MainContext();
             var maintenanceInfo = context.MaintenanceInfos.Include(t => t.MaintenanceType).FirstOrDefault(i => i.Id == id);
             return maintenanceInfo?.MaintenanceType;
         }
 
         public List<ControledParametrDateInfo> GetEpisodesByControlParametr(int id)
         {
+            using var context = new MainContext();
             List<ControledParametrDateInfo> result = new List<ControledParametrDateInfo>();
             var controlParam = context.ControledParametrs.Include(e => e.Episodes).FirstOrDefault(x => x.Id == id);
             if (controlParam != null && controlParam.Episodes != null)
@@ -140,6 +157,7 @@ namespace Entities.Entities
 
         public TechPassport? GetPassportById(int id)
         {
+            using var context = new MainContext();
             return context.TechPassports.
                 Include(m => m.MaintenanceInfos).
                 Include(e => e.Errors).
@@ -159,6 +177,7 @@ namespace Entities.Entities
 
         public IQueryable<TechPassport> GetPassportByIds(List<int> ids)
         {
+            using var context = new MainContext();
             return context.TechPassports.
                 Include(m => m.MaintenanceInfos).
                 Include(e => e.Errors).
@@ -178,6 +197,7 @@ namespace Entities.Entities
 
         public List<TechPassport> GetFullTechPassports()
         {
+            using var context = new MainContext();
             return context.TechPassports.
                 Include(m => m.MaintenanceInfos).
                 Include(e => e.Errors).
@@ -192,52 +212,64 @@ namespace Entities.Entities
         }
         public List<EquipmentType> GetTypes()
         {
+            using var context = new MainContext();
             return context.EquipmentTypes.ToList();
         }
 
         public List<Unit> GetUnitTypes()
         {
+            using var context = new MainContext();
             return context.Units.ToList();
         }
 
         public List<Department> GetDepartmentTypes()
         {
+            using var context = new MainContext();
             return context.Departments.ToList();
         }
 
         public List<MaintenanceType> GetMaintenanceTypes()
         {
+            using var context = new MainContext();
             return context.MaintenanceTypes.ToList();
         }
 
         public List<Operator> GetOperators()
         {
+            using var context = new MainContext();
             return context.Operators.ToList();
         }
 
         public List<EquipmentSupplier> GetSuppliers()
         {
+            using var context = new MainContext();
             return context.EquipmentSuppliers.ToList();
         }
 
         public List<MaintenanceInfo> GetMaintenance()
         {
-            return context.MaintenanceInfos.Include(e => e.Episodes).ThenInclude(o => o.Operators).Include(t => t.MaintenanceType).Include(p => p.TechPassport).ThenInclude(h => h.WorkingHours).ToList();
+            using var context = new MainContext();
+            return context.MaintenanceInfos
+                .Include(e => e.Episodes).ThenInclude(o => o.Operators)
+                .Include(t => t.MaintenanceType)
+                .Include(p => p.TechPassport).ThenInclude(h => h.WorkingHours).ToList();
         }
 
         public void EditCharacteristicsByUnit(int id, int unitId)
         {
+            using var context = new MainContext();
             Characteristic? characteristic = context.Characteristics.FirstOrDefault(x => x.Id == id);
             Unit? unit = context?.Units?.FirstOrDefault(c => c.Id == unitId);
             if (unit != null && characteristic != null)
             {
                 characteristic.Unit = unit;
+                context.SaveChanges();
             }
-            context.SaveChanges();
         }
 
         public void EditMaterialInfoByUnit(int id, int unitId)
         {
+            using var context = new MainContext();
             MaterialInfo? info = context.MaterialInfos.FirstOrDefault(x => x.Id == id);
             if (info != null)
             {
@@ -245,13 +277,14 @@ namespace Entities.Entities
                 if (unit != null)
                 {
                     info.Unit = unit;
+                    context.SaveChanges();
                 }
             }
-            context.SaveChanges();
         }
 
         public void EditMaterialInfoBySupplier(int id, int supId)
         {
+            using var context = new MainContext();
             MaterialInfo? info = context.MaterialInfos.FirstOrDefault(x => x.Id == id);
             if (info != null)
             {
@@ -271,13 +304,14 @@ namespace Entities.Entities
                             Supplier = sup
                         });
                     }
+                    context.SaveChanges();
                 }
             }
-            context.SaveChanges();
         }
 
         public void EditDepartmentByOperator(int id, int unitId)
         {
+            using var context = new MainContext();
             Department? dep = context.Departments.FirstOrDefault(x => x.Id == id);
             if (dep != null)
             {
@@ -285,69 +319,58 @@ namespace Entities.Entities
                 if (dep != null)
                 {
                     dep.Operator = op;
+                    context.SaveChanges();
                 }
             }
-            context.SaveChanges();
         }
 
         public void EditErrorWorking(int id, bool isWorking)
         {
+            using var context = new MainContext();
             MaintenanceError error = context.MaintenanceErrors.FirstOrDefault(x => x.Id == id);
             if (error != null)
             {
                 error.IsWorking = isWorking;
+                context.SaveChanges();
             }
-            context.SaveChanges();
         }
 
         public void EditInstructionPath(int id, string path)
         {
+            using var context = new MainContext();
             Instruction ins = context.Instructions.FirstOrDefault(x => x.Id == id);
             if (ins != null)
             {
                 ins.Path = path;
+                context.SaveChanges();
             }
-            context.SaveChanges();
         }
 
         public void EditAdditionalByType(int id, int maintenanceTypeId)
         {
+            using var context = new MainContext();
             AdditionalWork work = context.AdditionalWorks.FirstOrDefault(x => x.Id == id);
             MaintenanceType type = context.MaintenanceTypes.FirstOrDefault(c => c.Id == maintenanceTypeId);
             work.MaintenanceType = type;
             context.SaveChanges();
         }
 
-        //public void EditMaintenanceByType(int id, int maintenanceTypeId)
-        //{
-        //    MaintenanceInfo info = context.MaintenanceInfos.FirstOrDefault(x => x.Id == id);
-        //    MaintenanceType type = context.MaintenanceTypes.FirstOrDefault(c => c.Id == maintenanceTypeId);
-        //    info.MaintenanceType = type;
-        //    context.SaveChanges();
-        //}
-
-        //public void EditTechpassByDepartment(int id, int departmentId)
-        //{
-        //    TechPassport passport = context.TechPassports.FirstOrDefault(x => x.Id == id);
-        //    Department department = context.Departments.FirstOrDefault(c => c.Id == departmentId);
-        //    passport.Department = department;
-        //    context.SaveChanges();
-        //}
-
         public void EditAdditionalByOperators(int id, List<int> operatorIds)
         {
+            using var context = new MainContext();
             if (operatorIds != null)
             {
                 AdditionalWork work = context.AdditionalWorks.FirstOrDefault(x => x.Id == id);
                 var operators = context.Operators.Where(c => operatorIds.Contains(c.Id)).ToList();
                 work.Operators = operators;
+                context.SaveChanges();
             }
             //повторяющиеся ключи?
-            context.SaveChanges();
         }
 
         public void EditMaterialByInfo(int id, int infoId)
         {
+            using var context = new MainContext();
             Material m = context.Materials.FirstOrDefault(x => x.Id == id);
             var info = context.MaterialInfos.FirstOrDefault(c => c.Id == infoId);
             m.MaterialInfo = info;
@@ -356,6 +379,7 @@ namespace Entities.Entities
 
         public void EditMaterialByArts(int id, List<int> artIds)
         {
+            using var context = new MainContext();
             var info = context.MaterialInfos.FirstOrDefault(c => c.Id == id);
             var originalArt = context.ArtInfos.FirstOrDefault(x => x.Material!.Id == id);
             if (info != null)
@@ -374,59 +398,66 @@ namespace Entities.Entities
                 {
                     info.ArtInfos = arts;
                 }
+                context.SaveChanges();
             }
-            context.SaveChanges();
         }
 
         public void EditAdditionalByMaterials(int id, List<int> materialsIds)
         {
+            using var context = new MainContext();
             if (materialsIds != null)
             {
                 AdditionalWork work = context.AdditionalWorks.FirstOrDefault(x => x.Id == id);
                 var materials = context.Materials.Where(c => materialsIds.Contains(c.Id)).ToList();
                 work.Materials = materials;
+                context.SaveChanges();
             }
-            context.SaveChanges();
         }
 
         public void EditMaintenanceByMaterials(int id, List<int> materialsIds)
         {
+            using var context = new MainContext();
             if (materialsIds != null)
             {
                 MaintenanceInfo work = context.MaintenanceInfos.FirstOrDefault(x => x.Id == id);
                 var materials = context.Materials.Where(c => materialsIds.Contains(c.Id)).ToList();
                 work.Materials = materials;
+                context.SaveChanges();
             }
-            context.SaveChanges();
         }
 
         public void EditErorByRepairings(int id, List<int> repairingIds)
         {
+            using var context = new MainContext();
             if (repairingIds != null)
             {
                 MaintenanceError error = context.MaintenanceErrors.FirstOrDefault(x => x.Id == id);
                 var reps = context.Repairings.Where(c => repairingIds.Contains(c.Id)).ToList();
                 error.Repairings = reps;
+                context.SaveChanges();
             }
-            context.SaveChanges();
         }
         public Characteristic GetCharacteristic(int id)
         {
-            return context.Characteristics.Include(e => e.TechPassport).Include(u => u.Unit).FirstOrDefault(x => x.Id == id);
+            using var context = new MainContext();
+            return context.Characteristics
+                .Include(e => e.TechPassport)
+                .Include(u => u.Unit)
+                .FirstOrDefault(x => x.Id == id);
         }
 
         public List<Characteristic> GetCharacteristics()
         {
-            return context.Characteristics.Include(e => e.TechPassport).Include(u => u.Unit).ToList();
+            using var context = new MainContext();
+            return context.Characteristics
+                .Include(e => e.TechPassport)
+                .Include(u => u.Unit)
+                .ToList();
         }
-
-        //public ControledParametr GetControledParam(int id)
-        //{
-        //    return context.ControledParametrs.Include(e => e.TechPassport).FirstOrDefault(x => x.Id == id);
-        //}
 
         public int AddTechPassport(string name, string serial, string inventory, string departmentNumber)
         {
+            using var context = new MainContext();
             TechPassport techPassport = new TechPassport();
             techPassport.Name = name;
             techPassport.SerialNumber = serial;
@@ -444,6 +475,7 @@ namespace Entities.Entities
 
         public void EditTechPassport(int id, string name, string serial, string inventory, string departmentNumber)
         {
+            using var context = new MainContext();
             TechPassport techPassport = context.TechPassports.FirstOrDefault(x => x.Id == id);
             if (techPassport != null)
             {
@@ -458,12 +490,13 @@ namespace Entities.Entities
                         techPassport.Department = dep;
                     }
                 }
+                context.SaveChanges();
             }
-            context.SaveChanges();
         }
 
         public int AddTechPassport(TechPassport passport)
         {
+            using var context = new MainContext();
             context.TechPassports.Add(passport);
             context.SaveChanges();
             return passport.Id;
@@ -471,16 +504,18 @@ namespace Entities.Entities
 
         public void EditTechPassport(TechPassport passport)
         {
+            using var context = new MainContext();
             TechPassport techPassport = context.TechPassports.FirstOrDefault(x => x.Id == passport.Id);
             if (techPassport != null)
             {
                 techPassport = passport;
+                context.SaveChanges();
             }
-            context.SaveChanges();
         }
 
         public int AddTechPassportBaseInfo(TechPassport passport)
         {
+            using var context = new MainContext();
             TechPassport techPassport = new TechPassport();
             techPassport.Name = passport.Name;
             techPassport.Version = passport.Version;
@@ -518,6 +553,7 @@ namespace Entities.Entities
 
         public void EditTechPassportBaseInfo(TechPassport passport)
         {
+            using var context = new MainContext();
             TechPassport techPassport = context.TechPassports.FirstOrDefault(x => x.Id == passport.Id);
             if (techPassport != null)
             {
@@ -550,34 +586,36 @@ namespace Entities.Entities
                 {
                     techPassport.Operator = passport.Operator;
                 }
+                context.SaveChanges();
             }
-            context.SaveChanges();
         }
 
         public int AddOperator(string name, string position)
         {
+            using var context = new MainContext();
             Operator oper = new Operator();
             oper.Name = name;
             oper.Position = position;
             context.Operators.Add(oper);
             context.SaveChanges();
-
             return oper.Id;
         }
 
         public void EditOperator(int id, string name, string position)
         {
-            Operator oper = context.Operators.FirstOrDefault(o => o.Id == id);
+            using var context = new MainContext();
+            var oper = context.Operators.FirstOrDefault(o => o.Id == id);
             if (oper != null)
             {
                 oper.Name = name;
                 oper.Position = position;
+                context.SaveChanges();
             }
-            context.SaveChanges();
         }
 
         public int AddPoint(string name, string description)
         {
+            using var context = new MainContext();
             ElectroPoint p = new ElectroPoint();
             p.Name = name;
             p.Description = description;
@@ -588,53 +626,23 @@ namespace Entities.Entities
 
         public void EditPoint(int id, string name, string description)
         {
-            ElectroPoint p = context.Points.FirstOrDefault(o => o.Id == id);
+            using var context = new MainContext();
+            var p = context.Points.FirstOrDefault(o => o.Id == id);
             if (p != null)
             {
                 p.Name = name;
                 p.Description = description;
+                context.SaveChanges();
             }
-            context.SaveChanges();
         }
 
-        //public int AddError(TechPassport passport, DateTime date, string code, string name,
-        //    bool isWorking, string solutionMethod, DateTime? dateOfSolving, double hours)
-        //{
-        //    MaintenanceError maintenanceError = new MaintenanceError();
-        //    maintenanceError.TechPassport = passport;
-        //    maintenanceError.Code = code;
-        //    maintenanceError.Name = name;
-        //    maintenanceError.Description = solutionMethod;
-        //    maintenanceError.DateOfSolving = dateOfSolving;
-        //    maintenanceError.Date = date;
-        //    maintenanceError.IsWorking = isWorking;
-        //    maintenanceError.Hours = hours;
-
-        //    context.MaintenanceErrors.Add(maintenanceError);
-        //    context.SaveChanges();
-
-        //    return maintenanceError.Id;
-        //}
-
-        //public void EditError(int id, DateTime date, string code, string name,
-        //    bool isWorking, string solutionMethod, DateTime? dateOfSolving, double hours)
-        //{
-        //    MaintenanceError maintenanceError = context.MaintenanceErrors.FirstOrDefault(x => x.Id == id);
-        //    maintenanceError.Code = code;
-        //    maintenanceError.Name = name;
-        //    maintenanceError.Description = solutionMethod;
-        //    maintenanceError.DateOfSolving = dateOfSolving;
-        //    maintenanceError.Date = date;
-        //    maintenanceError.IsWorking = isWorking;
-        //    maintenanceError.Hours = hours;
-
-        //    context.SaveChanges();
-
-        //}
         public int AddType(string name)
         {
-            EquipmentType type = new EquipmentType();
-            type.Type = name;
+            using var context = new MainContext();
+            var type = new EquipmentType
+            {
+                Type = name
+            };
             context.EquipmentTypes.Add(type);
             context.SaveChanges();
 
@@ -643,19 +651,23 @@ namespace Entities.Entities
 
         public void EditType(int id, string name)
         {
-            EquipmentType type = context.EquipmentTypes.FirstOrDefault(x => x.Id == id);
+            using var context = new MainContext();
+            var type = context.EquipmentTypes.FirstOrDefault(x => x.Id == id);
             if (type != null)
             {
                 type.Type = name;
+                context.SaveChanges();
             }
-            context.SaveChanges();
         }
 
         public int AddMaintenanceType(string name, string description)
         {
-            MaintenanceType type = new MaintenanceType();
-            type.Type = name;
-            type.Description = description;
+            using var context = new MainContext();
+            var type = new MaintenanceType
+            {
+                Type = name,
+                Description = description
+            };
             context.MaintenanceTypes.Add(type);
             context.SaveChanges();
 
@@ -664,88 +676,88 @@ namespace Entities.Entities
 
         public void EditMaintenanceType(int id, string name, string description)
         {
-            MaintenanceType type = context.MaintenanceTypes.FirstOrDefault(x => x.Id == id);
+            using var context = new MainContext();
+            var type = context.MaintenanceTypes.FirstOrDefault(x => x.Id == id);
             if (type != null)
             {
                 type.Type = name;
                 type.Description = description;
+                context.SaveChanges();
             }
-            context.SaveChanges();
         }
 
         public int AddUnit(string shortname, string fullname)
         {
-            Unit unit = new Unit();
-            unit.Name = shortname;
-            unit.FullName = fullname;
+            using var context = new MainContext();
+            var unit = new Unit
+            {
+                Name = shortname,
+                FullName = fullname
+            };
             context.Units.Add(unit);
             context.SaveChanges();
-
             return unit.Id;
         }
 
         public void EditUnit(int id, string shortname, string fullname)
         {
-            Unit unit = context.Units.FirstOrDefault(x => x.Id == id);
+            using var context = new MainContext();
+            var unit = context.Units.FirstOrDefault(x => x.Id == id);
             if (unit != null)
             {
                 unit.Name = shortname;
                 unit.FullName = fullname;
+                context.SaveChanges();
             }
-            context.SaveChanges();
         }
 
         public int AddDepartment(string number, string name)
         {
-            Department department = new Department();
-            department.Name = name;
-            department.Number = number;
+            using var context = new MainContext();
+            var department = new Department
+            {
+                Name = name,
+                Number = number
+            };
             context.Departments.Add(department);
             context.SaveChanges();
-
             return department.Id;
         }
 
         public void EditDepartment(int id, string number, string name)
         {
-            Department department = context.Departments.FirstOrDefault(x => x.Id == id);
+            using var context = new MainContext();
+            var department = context.Departments.FirstOrDefault(x => x.Id == id);
             if (department != null)
             {
                 department.Name = name;
                 department.Number = number;
+                context.SaveChanges();
             }
-            context.SaveChanges();
         }
         public int AddSupplier(string name, string address, string phone, string addphone, string email, string person, string comment)
         {
-            EquipmentSupplier supplier = new EquipmentSupplier();
-            supplier.Name = name;
-            supplier.Address = address;
-            supplier.PhoneNumber = phone;
-            supplier.AdditionalPhoneNumber = addphone;
-            supplier.Email = email;
-            supplier.Person = person;
-            supplier.Commentary = comment;
+            using var context = new MainContext();
+            var supplier = new EquipmentSupplier
+            {
+                Name = name,
+                Address = address,
+                PhoneNumber = phone,
+                AdditionalPhoneNumber = addphone,
+                Email = email,
+                Person = person,
+                Commentary = comment
+            };
             context.EquipmentSuppliers.Add(supplier);
             context.SaveChanges();
 
             return supplier.Id;
         }
 
-        //public Operator GetOperatorById(int id)
-        //{
-        //    return context.Operators.FirstOrDefault(x => x.Id == id);
-        //}
-
-        //public List<Operator> GetOperatorsByEpisodeId(int id)
-        //{
-        //    return context.Operators.Include(s => s.MaintananceEpisodes).Where(x => x.MaintananceEpisodes.FirstOrDefault(y => y.Id == id) != null).ToList();
-        //}
-
-
         public void EditSupplier(int id, string name, string address, string phone, string addphone, string email, string person, string comment)
         {
-            EquipmentSupplier supplier = context.EquipmentSuppliers.FirstOrDefault(x => x.Id == id);
+            using var context = new MainContext();
+            var supplier = context.EquipmentSuppliers.FirstOrDefault(x => x.Id == id);
             if (supplier != null)
             {
                 supplier.Name = name;
@@ -755,86 +767,74 @@ namespace Entities.Entities
                 supplier.Email = email;
                 supplier.Person = person;
                 supplier.Commentary = comment;
+                context.SaveChanges();
             }
-            context.SaveChanges();
         }
 
 
         public int AddMaintanance(int passportId, string name, int type, bool isFixed, double interval, double hours, DateTime? date, bool isInWork)
         {
-            MaintenanceInfo maintenance = new MaintenanceInfo();
+            using var context = new MainContext();
+            var maintenance = new MaintenanceInfo();
             maintenance = MakeMaintanance(maintenance, name, type, isFixed, interval, hours, date, isInWork);
-
             return Add(context.MaintenanceInfos, maintenance, passportId);
         }
 
-        //public void ErasePlannedDate(int id)
-        //{
-        //    MaintenanceInfo maintenance = context.MaintenanceInfos.FirstOrDefault(x => x.Id == id);
-        //    if (maintenance != null)
-        //    {
-        //        maintenance.PlannedDate = null;
-        //    }
-        //    context.SaveChanges();
-        //}
-
-        //public void ChangePlannedDate(int id, DateTime date)
-        //{
-        //    MaintenanceInfo maintenance = context.MaintenanceInfos.FirstOrDefault(x => x.Id == id);
-        //    if (maintenance != null)
-        //    {
-        //        maintenance.PlannedDate = date;
-        //    }
-        //    context.SaveChanges();
-        //}
-
         public void ChangeAdditionalInfo(int id, DateTime date, List<Operator> operators)
         {
+            using var context = new MainContext();
             var add = context.AdditionalWorks.FirstOrDefault(x => x.Id == id);
             if (add != null)
             {
                 add.PlannedDate = date;
                 add.Operators = operators;
+                context.SaveChanges();
             }
-            context.SaveChanges();
         }
 
         public void ChangeFactDate(int id, DateTime date, double hoursOnWork, List<Operator> workers)
         {
-            AdditionalWork work = context.AdditionalWorks.FirstOrDefault(x => x.Id == id);
-            work.DateFact = date;
-            work.HoursFact = hoursOnWork;
-            work.Operators = workers;
-            work.PlannedDate = null;
-            context.SaveChanges();
+            using var context = new MainContext();
+            var work = context.AdditionalWorks.FirstOrDefault(x => x.Id == id);
+            if (work != null)
+            {
+                work.DateFact = date;
+                work.HoursFact = hoursOnWork;
+                work.Operators = workers;
+                work.PlannedDate = null;
+                context.SaveChanges();
+            }
         }
 
-        public int EditMaintanance(int passportId, int id, string name, int type, bool isFixed, double interval, double hours, DateTime? date, bool isInWork)
+        public void EditMaintanance(int passportId, int id, string name, int type, bool isFixed, double interval, double hours, DateTime? date, bool isInWork)
         {
-            MaintenanceInfo maintenance = context.MaintenanceInfos.FirstOrDefault(x => x.Id == id);
+            using var context = new MainContext();
+            var maintenance = context.MaintenanceInfos.FirstOrDefault(x => x.Id == id);
             if (maintenance != null)
             {
                 maintenance = MakeMaintanance(maintenance, name, type, isFixed, interval, hours, date, isInWork);
                 AddPassport(maintenance, passportId);
+                context.SaveChanges();
             }
-            context.SaveChanges();
-            return 0;
         }
 
         public MaintenanceEpisode? GetMaintananceEpisode(int id)
         {
+            using var context = new MainContext();
             return context.MaintenanceEpisodes.Include(m => m.Operators).FirstOrDefault(x => x.Id == id);
         }
 
         public List<MaintenanceEpisode> GetMaintananceEpisodes()
         {
+            using var context = new MainContext();
             return context.MaintenanceEpisodes.Include(m => m.Operators).ToList();
         }
 
         public void AddMaintananceEpisode(int maintenanceId, DateTime Date, double HoursOnWork, List<Operator> Operators)
         {
-            MaintenanceEpisode maintananceEpisode = new MaintenanceEpisode();
-            MaintenanceInfo maintenanceInfo = context.MaintenanceInfos.FirstOrDefault(x => x.Id == maintenanceId);
+            using var context = new MainContext();
+            var maintananceEpisode = new MaintenanceEpisode();
+            var maintenanceInfo = context.MaintenanceInfos.FirstOrDefault(x => x.Id == maintenanceId);
             if (maintenanceInfo != null)
             {
                 maintananceEpisode.Info = maintenanceInfo;
@@ -849,14 +849,15 @@ namespace Entities.Entities
                     maintenanceInfo.Episodes = new List<MaintenanceEpisode>();
                 }
                 maintenanceInfo.Episodes.Add(maintananceEpisode);
+                context.SaveChanges();
             }
-            context.SaveChanges();
         }
 
         public MaintenanceEpisode AddUndoneEpisode(int maintenanceId, DateTime date, List<Operator> operators, DateTime oldDate)
         {
-            MaintenanceEpisode maintananceEpisode = new MaintenanceEpisode();
-            MaintenanceInfo maintenanceInfo = context.MaintenanceInfos.FirstOrDefault(x => x.Id == maintenanceId);
+            using var context = new MainContext();
+            var maintananceEpisode = new MaintenanceEpisode();
+            var maintenanceInfo = context.MaintenanceInfos.FirstOrDefault(x => x.Id == maintenanceId);
             if (maintenanceInfo != null)
             {
                 maintananceEpisode.Info = maintenanceInfo;
@@ -882,30 +883,30 @@ namespace Entities.Entities
                     }
                 }
                 maintenanceInfo.Episodes.Add(maintananceEpisode);
+                context.SaveChanges();
             }
-            context.SaveChanges();
             return maintananceEpisode;
         }
 
         public List<MaintenanceEpisode> AddUndoneEpisodes(int[] maintenanceId, DateTime[] date, List<Operator> operators, DateTime[] oldDate)
         {
-            List<MaintenanceEpisode> maintananceEpisodes = new List<MaintenanceEpisode>();
+            using var context = new MainContext();
+            var maintananceEpisodes = new List<MaintenanceEpisode>();
             for (int i = 0; i < maintenanceId.Length; i++)
             {
-                MaintenanceInfo maintenanceInfo = context.MaintenanceInfos.FirstOrDefault(x => x.Id == maintenanceId[i]);
+                var maintenanceInfo = context.MaintenanceInfos.FirstOrDefault(x => x.Id == maintenanceId[i]);
                 if (maintenanceInfo != null)
                 {
-                    MaintenanceEpisode maintananceEpisode = new MaintenanceEpisode();
-                    maintananceEpisode.Info = maintenanceInfo;
-                    maintananceEpisode.Date = date[i];
-                    maintananceEpisode.Operators = operators;
-                    maintananceEpisode.IsDone = false;
+                    var maintananceEpisode = new MaintenanceEpisode
+                    {
+                        Info = maintenanceInfo,
+                        Date = date[i],
+                        Operators = operators,
+                        IsDone = false
+                    };
                     context.MaintenanceEpisodes.Add(maintananceEpisode);
 
-                    if (maintenanceInfo.Episodes == null)
-                    {
-                        maintenanceInfo.Episodes = new List<MaintenanceEpisode>();
-                    }
+                    maintenanceInfo.Episodes ??= new List<MaintenanceEpisode>();
                     TimeSpan delta = date[i] - oldDate[i];
                     if (delta != TimeSpan.Zero)
                     {
@@ -928,38 +929,39 @@ namespace Entities.Entities
 
         public void SaveEmptyEpisode(int maintenanceId, DateTime date)
         {
-            MaintenanceEpisode maintananceEpisode = new MaintenanceEpisode();
-            MaintenanceInfo maintenanceInfo = context.MaintenanceInfos.FirstOrDefault(x => x.Id == maintenanceId);
+            using var context = new MainContext();
+            var maintananceEpisode = new MaintenanceEpisode();
+            var maintenanceInfo = context.MaintenanceInfos.FirstOrDefault(x => x.Id == maintenanceId);
             if (maintenanceInfo != null)
             {
                 maintananceEpisode.Info = maintenanceInfo;
                 maintananceEpisode.Date = date;
                 context.MaintenanceEpisodes.Add(maintananceEpisode);
+                context.SaveChanges();
             }
-            context.SaveChanges();
         }
 
         public void MakeMaintananceEpisodeDone(int episodeId, DateTime date, double hoursOnWork, List<Operator> operators)
         {
-
-            MaintenanceEpisode maintenanceEpisode = context.MaintenanceEpisodes.FirstOrDefault(x => x.Id == episodeId);
+            using var context = new MainContext();
+            var maintenanceEpisode = context.MaintenanceEpisodes.FirstOrDefault(x => x.Id == episodeId);
             if (maintenanceEpisode != null)
             {
                 maintenanceEpisode.Date = date;
                 maintenanceEpisode.Hours = hoursOnWork;
                 maintenanceEpisode.Operators = operators;
                 maintenanceEpisode.IsDone = true;
-
                 context.SaveChanges();
             }
         }
 
         public void ChangeEpisodeInfo(int episodeId, DateTime date, List<Operator> operators)
         {
-            MaintenanceEpisode maintenanceEpisode = context.MaintenanceEpisodes.FirstOrDefault(x => x.Id == episodeId);
+            using var context = new MainContext();
+            var maintenanceEpisode = context.MaintenanceEpisodes.FirstOrDefault(x => x.Id == episodeId);
             if (maintenanceEpisode != null)
             {
-                DateTime oldDate = maintenanceEpisode.Date;
+                var oldDate = maintenanceEpisode.Date;
 
                 maintenanceEpisode.Date = date;
                 maintenanceEpisode.Operators = operators;
@@ -984,55 +986,63 @@ namespace Entities.Entities
 
         public void AddMaintananceEpisode(int maintenanceId, DateTime Date, double HoursOnWork, List<int> OperatorIds, bool IsDone)
         {
-            MaintenanceEpisode maintananceEpisode = new MaintenanceEpisode();
-            MaintenanceInfo maintenanceInfo = context.MaintenanceInfos.FirstOrDefault(x => x.Id == maintenanceId);
-            maintananceEpisode.Info = maintenanceInfo;
-            maintananceEpisode.Date = Date;
-            maintananceEpisode.Hours = HoursOnWork;
-            maintananceEpisode.IsDone = IsDone;
-            var operators = context.Operators.Where(x => OperatorIds.Contains(x.Id)).ToList();
-            if (operators != null)
+            using var context = new MainContext();
+            var maintananceEpisode = new MaintenanceEpisode();
+            var maintenanceInfo = context.MaintenanceInfos.FirstOrDefault(x => x.Id == maintenanceId);
+            if (maintenanceInfo != null)
             {
-                maintananceEpisode.Operators = operators;
-            }
-            context.MaintenanceEpisodes.Add(maintananceEpisode);
+                maintananceEpisode.Info = maintenanceInfo;
+                maintananceEpisode.Date = Date;
+                maintananceEpisode.Hours = HoursOnWork;
+                maintananceEpisode.IsDone = IsDone;
+                var operators = context.Operators.Where(x => OperatorIds.Contains(x.Id)).ToList();
+                if (operators != null)
+                {
+                    maintananceEpisode.Operators = operators;
+                }
+                context.MaintenanceEpisodes.Add(maintananceEpisode);
 
-            if (maintenanceInfo.Episodes == null)
-            {
-                maintenanceInfo.Episodes = new List<MaintenanceEpisode>();
+                if (maintenanceInfo.Episodes == null)
+                {
+                    maintenanceInfo.Episodes = new List<MaintenanceEpisode>();
+                }
+                maintenanceInfo.Episodes.Add(maintananceEpisode);
+                context.SaveChanges();
             }
-            maintenanceInfo.Episodes.Add(maintananceEpisode);
-
-            context.SaveChanges();
         }
 
         public void EditMaintananceEpisode(int id, DateTime Date, double HoursOnWork, List<int> OperatorIds, bool IsDone)
         {
-            MaintenanceEpisode maintananceEpisode = context.MaintenanceEpisodes.FirstOrDefault(x => x.Id == id);
-            maintananceEpisode.Date = Date;
-            maintananceEpisode.Hours = HoursOnWork;
-            maintananceEpisode.IsDone = IsDone;
-            var operators = context.Operators.Where(x => OperatorIds.Contains(x.Id)).ToList();
-            if (operators != null)
+            using var context = new MainContext();
+            var maintananceEpisode = context.MaintenanceEpisodes.FirstOrDefault(x => x.Id == id);
+            if (maintananceEpisode != null)
             {
-                maintananceEpisode.Operators = operators;
+                maintananceEpisode.Date = Date;
+                maintananceEpisode.Hours = HoursOnWork;
+                maintananceEpisode.IsDone = IsDone;
+                var operators = context.Operators.Where(x => OperatorIds.Contains(x.Id)).ToList();
+                if (operators != null)
+                {
+                    maintananceEpisode.Operators = operators;
+                }
+                context.SaveChanges();
             }
-            context.SaveChanges();
         }
 
         public List<MaintenanceEpisode> GetEpisodesByInfoId(int id)
         {
+            using var context = new MainContext();
             return context.MaintenanceEpisodes.Include(s => s.Operators).Where(x => x.Info.Id == id).ToList();
         }
 
         private MaintenanceInfo MakeMaintanance(MaintenanceInfo maintenance, string name, int typeId, bool isFixed, double interval, double hours, DateTime? date, bool isInWork)
         {
+            using var context = new MainContext();
             maintenance.MaintenanceName = name;
             maintenance.MaintenanceType = context.MaintenanceTypes.FirstOrDefault(x => x.Id == typeId);
             maintenance.IsIntervalFixed = isFixed;
             maintenance.IntervalTime = interval;
             maintenance.Hours = hours;
-            //maintenance.PlannedDate = date;
             maintenance.IsInWork = isInWork;
 
             return maintenance;
@@ -1040,31 +1050,39 @@ namespace Entities.Entities
 
         public List<Operator> GetOperators(List<int> ids)
         {
+            using var context = new MainContext();
             return context.Operators.Include(o => o.MaintananceEpisodes).Include(s => s.Repairings).Where(x => ids.Contains(x.Id)).ToList();
         }
 
         public List<Material> GetMaterials()
         {
+            using var context = new MainContext();
             return context.Materials.Include(s => s.MaterialInfo).ToList();
         }
 
         public List<Repairing> GetRepairings()
         {
+            using var context = new MainContext();
             return context.Repairings.Include(s => s.Error).ToList();
         }
 
         public int AddMaterialInfo(string name, string inner, string original, List<int> arts, string comment, int supId, int? unitId)
         {
-            MaterialInfo materialInfo = new MaterialInfo();
-            materialInfo.Name = name != null ? name : "";
-            materialInfo.InnerArt = inner != null ? inner : "";
-            materialInfo.Commentary = comment != null ? comment : "";
-            materialInfo.ArtInfos = context.ArtInfos.Where(x => arts.Contains(x.Id)).ToList();
-            materialInfo.Unit = context.Units.FirstOrDefault(u => u.Id == unitId);
+            using var context = new MainContext();
+            var materialInfo = new MaterialInfo
+            {
+                Name = name ?? "",
+                InnerArt = inner ?? "",
+                Commentary = comment ?? "",
+                ArtInfos = context.ArtInfos.Where(x => arts.Contains(x.Id)).ToList(),
+                Unit = context.Units.FirstOrDefault(u => u.Id == unitId)
+            };
             context.MaterialInfos.Add(materialInfo);
 
-            ArtInfo artInfo = new ArtInfo();
-            artInfo.Art = original != null ? original : "";
+            var artInfo = new ArtInfo
+            {
+                Art = original != null ? original : ""
+            };
             var supplier = context.EquipmentSuppliers.FirstOrDefault(x => x.Id == supId);
             if (supplier != null)
             {
@@ -1083,6 +1101,7 @@ namespace Entities.Entities
         {
             try
             {
+                using var context = new MainContext();
                 var passport = GetPassportById(id);
                 if (passport != null)
                 {
@@ -1113,6 +1132,7 @@ namespace Entities.Entities
         {
             try
             {
+                using var context = new MainContext();
                 var materialInfo = context.MaterialInfos.Include(y => y.MaterialInUse).FirstOrDefault(x => x.Id == id);
                 if (materialInfo != null)
                 {
@@ -1135,6 +1155,7 @@ namespace Entities.Entities
         {
             try
             {
+                using var context = new MainContext();
                 var point = context.Points.Include(y => y.TechPassports).FirstOrDefault(x => x.Id == id);
                 if (point != null)
                 {
@@ -1157,6 +1178,7 @@ namespace Entities.Entities
         {
             try
             {
+                using var context = new MainContext();
                 var unit = context.Units.FirstOrDefault(x => x.Id == id);
                 if (unit != null)
                 {
@@ -1182,6 +1204,7 @@ namespace Entities.Entities
         {
             try
             {
+                using var context = new MainContext();
                 var dep = context.Departments.FirstOrDefault(x => x.Id == id);
                 if (dep != null)
                 {
@@ -1205,6 +1228,7 @@ namespace Entities.Entities
         {
             try
             {
+                using var context = new MainContext();
                 var sup = context.EquipmentSuppliers.Include(x => x.TechPassports).FirstOrDefault(x => x.Id == id);
                 if (sup != null)
                 {
@@ -1229,6 +1253,7 @@ namespace Entities.Entities
         {
             try
             {
+                using var context = new MainContext();
                 var type = context.EquipmentTypes.Include(y => y.TechPassports).FirstOrDefault(x => x.Id == id);
                 if (type != null)
                 {
@@ -1251,6 +1276,7 @@ namespace Entities.Entities
         {
             try
             {
+                using var context = new MainContext();
                 var type = context.MaintenanceTypes.Include(y => y.MaintenanceInfos)
                     .Include(x => x.AdditionalWorks)
                     .FirstOrDefault(x => x.Id == id);
@@ -1276,6 +1302,7 @@ namespace Entities.Entities
         {
             try
             {
+                using var context = new MainContext();
                 var op = context.Operators.Include(y => y.MaintananceEpisodes)
                     .Include(z => z.AdditionalWorks)
                     .Include(z => z.Repairings)
@@ -1305,7 +1332,8 @@ namespace Entities.Entities
 
         public void EditMaterialInfo(int id, string name, string inner, string original, string comment)
         {
-            MaterialInfo materialInfo = context.MaterialInfos.FirstOrDefault(x => x.Id == id);
+            using var context = new MainContext();
+            var materialInfo = context.MaterialInfos.FirstOrDefault(x => x.Id == id);
             if (materialInfo != null)
             {
                 materialInfo.Name = name;
@@ -1321,9 +1349,11 @@ namespace Entities.Entities
                     }
                     else
                     {
-                        art = new ArtInfo();
-                        art.Art = original;
-                        art.IsOriginal = true;
+                        art = new ArtInfo
+                        {
+                            Art = original,
+                            IsOriginal = true
+                        };
                         materialInfo.ArtInfos.Add(art);
                         context.ArtInfos.Add(art);
                     }
@@ -1331,27 +1361,33 @@ namespace Entities.Entities
                 else
                 {
                     materialInfo.ArtInfos = new List<ArtInfo>();
-                    var art = new ArtInfo();
-                    art.Art = original;
-                    art.IsOriginal = true;
+                    var art = new ArtInfo
+                    {
+                        Art = original,
+                        IsOriginal = true
+                    };
                     materialInfo.ArtInfos.Add(art);
                     context.ArtInfos.Add(art);
                 }
+                context.SaveChanges();
             }
-            context.SaveChanges();
         }
 
         public List<ArtInfo> GetArtInfos()
         {
+            using var context = new MainContext();
             return context.ArtInfos.Include(x => x.Supplier).ToList();
         }
 
         public int AddArtInfo(int materialId, string art, int supId)
         {
-            MaterialInfo materialInfo = context.MaterialInfos.FirstOrDefault(x => x.Id == materialId);
-            ArtInfo artInfo = new ArtInfo();
-            artInfo.Art = art;
-            EquipmentSupplier supplier = context.EquipmentSuppliers.FirstOrDefault(x => x.Id == supId);
+            using var context = new MainContext();
+            var materialInfo = context.MaterialInfos.FirstOrDefault(x => x.Id == materialId);
+            var artInfo = new ArtInfo
+            {
+                Art = art
+            };
+            var supplier = context.EquipmentSuppliers.FirstOrDefault(x => x.Id == supId);
             artInfo.Supplier = supplier;
             artInfo.Material = materialInfo;
             artInfo.IsOriginal = false;
@@ -1363,6 +1399,7 @@ namespace Entities.Entities
 
         public void EditArtInfo(int id, string art, int supId)
         {
+            using var context = new MainContext();
             var info = context.ArtInfos.FirstOrDefault(x => x.Id == id);
             if (info != null)
             {
@@ -1372,16 +1409,19 @@ namespace Entities.Entities
                 {
                     info.Supplier = sup;
                 }
+                context.SaveChanges();
             }
-            context.SaveChanges();
         }
 
         public int AddRepairing(int errorId, DateTime date, string comment)
         {
-            MaintenanceError error = context.MaintenanceErrors.FirstOrDefault(x => x.Id == errorId);
-            Repairing repairing = new Repairing();
-            repairing.Date = date;
-            repairing.Comment = comment;
+            using var context = new MainContext();
+            var error = context.MaintenanceErrors.FirstOrDefault(x => x.Id == errorId);
+            var repairing = new Repairing
+            {
+                Date = date,
+                Comment = comment
+            };
             context.Repairings.Add(repairing);
             context.SaveChanges();
 
@@ -1390,17 +1430,19 @@ namespace Entities.Entities
 
         public void EditRepairing(int id, DateTime date, string comment)
         {
+            using var context = new MainContext();
             var repairing = context.Repairings.FirstOrDefault(x => x.Id == id);
             if (repairing != null)
             {
                 repairing.Date = date;
                 repairing.Comment = comment;
+                context.SaveChanges();
             }
-            context.SaveChanges();
         }
 
         public void EditArtBySupplier(int id, int supId)
         {
+            using var context = new MainContext();
             var info = context.ArtInfos.FirstOrDefault(x => x.Id == id);
             if (info != null)
             {
@@ -1409,18 +1451,19 @@ namespace Entities.Entities
                 {
                     info.Supplier = sup;
                 }
+                context.SaveChanges();
             }
-            context.SaveChanges();
         }
 
         public int AddMaterial(int infoId, double count, int maintenanceId, bool isAdditional)
         {
+            using var context = new MainContext();
             if (infoId == 0)
             {
                 return 0;
             }
             var materialInfo = context.MaterialInfos.FirstOrDefault(x => x.Id == infoId);
-            Material material = new Material();
+            var material = new Material();
             if (materialInfo != null)
             {
                 material.MaterialInfo = materialInfo;
@@ -1453,6 +1496,7 @@ namespace Entities.Entities
 
         public void EditMaterial(int id, int infoId, double count, int maintenanceId)
         {
+            using var context = new MainContext();
             var materialInfo = context.MaterialInfos.FirstOrDefault(x => x.Id == infoId);
             var maintenanceInfo = context.MaintenanceInfos.FirstOrDefault(m => m.Id == maintenanceId);
             var material = context.Materials.FirstOrDefault(x => x.Id == id);
@@ -1471,28 +1515,9 @@ namespace Entities.Entities
             }
         }
 
-        //public int AddMaterialForAdditional(int infoId, double count, int additionalId)
-        //{
-        //    AdditionalWork work = context.AdditionalWorks.FirstOrDefault(m => m.Id == additionalId);
-        //    Material material = new Material();
-        //    MaterialInfo materialInfo = context.MaterialInfos.FirstOrDefault(x => x.Id == infoId);
-        //    if (materialInfo != null)
-        //    {
-        //        material.MaterialInfo = materialInfo;
-        //        material.AdditionalWork = work;
-        //        material.Count = count;
-        //        context.Materials.Add(material);
-        //        context.SaveChanges();
-        //        return material.Id;
-        //    }
-        //    else
-        //    {
-        //        return 0;
-        //    }
-        //}
-
         public void EditMaterialForAdditional(int id, int infoId, double count, int additionalId)
         {
+            using var context = new MainContext();
             var material = context.Materials.FirstOrDefault(x => x.Id == id);
             if (material != null)
             {
@@ -1514,10 +1539,13 @@ namespace Entities.Entities
 
         public int AddControledParam(int passportId, string name, double nominal, int unitId)
         {
-            ControledParametr controledParametr = new ControledParametr();
-            controledParametr.Name = name;
-            controledParametr.Nominal = nominal;
-            Unit unit = context.Units.FirstOrDefault(x => x.Id == unitId);
+            using var context = new MainContext();
+            var controledParametr = new ControledParametr
+            {
+                Name = name,
+                Nominal = nominal
+            };
+            var unit = context.Units.FirstOrDefault(x => x.Id == unitId);
             if (unit != null)
             {
                 controledParametr.Unit = unit;
@@ -1527,28 +1555,30 @@ namespace Entities.Entities
 
         public void EditControledParam(int passportId, int id, string name, double nominal, int unitId)
         {
-            ControledParametr controledParametr = context.ControledParametrs.FirstOrDefault(x => x.Id == id);
+            using var context = new MainContext();
+            var controledParametr = context.ControledParametrs.FirstOrDefault(x => x.Id == id);
             if (controledParametr != null)
             {
                 controledParametr.Name = name;
                 controledParametr.Nominal = nominal;
 
-                Unit unit = context.Units.FirstOrDefault(x => x.Id == unitId);
+                var unit = context.Units.FirstOrDefault(x => x.Id == unitId);
                 if (unit != null)
                 {
                     controledParametr.Unit = unit;
                 }
                 AddPassport(controledParametr, passportId);
+                context.SaveChanges();
             }
-            context.SaveChanges();
         }
 
         public int EditControledParamEpisode(int id, DateTime date, double count, int paramId)
         {
-            ControledParametr controledParametr = context.ControledParametrs.FirstOrDefault(x => x.Id == paramId);
+            using var context = new MainContext();
+            var controledParametr = context.ControledParametrs.FirstOrDefault(x => x.Id == paramId);
             if (controledParametr != null)
             {
-                ControledParametrDateInfo controledParametrDI = context.ControledParametrDateInfos.FirstOrDefault(x => x.Id == id);
+                var controledParametrDI = context.ControledParametrDateInfos.FirstOrDefault(x => x.Id == id);
 
                 if (controledParametrDI != null)
                 {
@@ -1574,40 +1604,48 @@ namespace Entities.Entities
 
         public int AddHours(int passportId, int hours, DateTime date)
         {
-            HoursInfo hoursInfo = new HoursInfo();
-            hoursInfo.Hours = hours;
-            hoursInfo.Date = date;
+            using var context = new MainContext();
+            var hoursInfo = new HoursInfo
+            {
+                Hours = hours,
+                Date = date
+            };
             return Add(context.WorkingHours, hoursInfo, passportId);
         }
 
         public void EditHours(int passportId, int id, int hours, DateTime date)
         {
-            HoursInfo hoursInfo = context.WorkingHours.FirstOrDefault(x => x.Id == id);
+            using var context = new MainContext();
+            var hoursInfo = context.WorkingHours.FirstOrDefault(x => x.Id == id);
             if (hoursInfo != null)
             {
                 hoursInfo.Hours = hours;
                 hoursInfo.Date = date;
                 AddPassport(hoursInfo, passportId);
+                context.SaveChanges();
             }
-            context.SaveChanges();
         }
 
         public int AddAdditionalWork(int passportId, string name, DateTime planedDate, DateTime? dateFact, string comment, double hours, double hoursFact)
         {
-            AdditionalWork work = new AdditionalWork();
-            work.Name = name;
-            work.DateFact = dateFact;
-            work.PlannedDate = planedDate;
-            work.Commentary = comment;
-            work.Hours = hours;
-            work.HoursFact = hoursFact;
+            using var context = new MainContext();
+            var work = new AdditionalWork
+            {
+                Name = name,
+                DateFact = dateFact,
+                PlannedDate = planedDate,
+                Commentary = comment,
+                Hours = hours,
+                HoursFact = hoursFact
+            };
 
             return Add(context.AdditionalWorks, work, passportId);
         }
 
         public void EditAdditionalWork(int passportId, int id, string name, DateTime planedDate, DateTime? dateFact, string comment, double hours, double hoursFact)
         {
-            AdditionalWork work = context.AdditionalWorks.FirstOrDefault(x => x.Id == id);
+            using var context = new MainContext();
+            var work = context.AdditionalWorks.FirstOrDefault(x => x.Id == id);
             if (work != null)
             {
                 work.Name = name;
@@ -1618,43 +1656,24 @@ namespace Entities.Entities
                 work.HoursFact = hoursFact;
 
                 AddPassport(work, passportId);
+                context.SaveChanges();
             }
-            context.SaveChanges();
         }
-
-        //public int AddFile(int passportId, string name, string path)
-        //{
-        //    Instruction instruction = new Instruction();
-        //    instruction.Name = name;
-        //    instruction.Path = path;
-
-        //    return Add<Instruction>(context.Instructions, instruction, passportId);
-        //}
-
-        //public void EditFile(int passportId, int id, string name, string path)
-        //{
-        //    Instruction instruction = context.Instructions.FirstOrDefault(x => x.Id == id);
-        //    if (instruction != null)
-        //    {
-        //        instruction.Name = name;
-        //        instruction.Path = path;
-
-        //        AddPassport<Instruction>(instruction, passportId);
-        //    }
-        //    context.SaveChanges();
-        //}
 
         public int AddErrorNew(int passportId, DateTime date, string code, string name, bool isWorking, string description, string comment, DateTime? dateOfSolving, bool? isActive)
         {
-            MaintenanceError error = new MaintenanceError();
-            error.Date = date;
-            error.Name = name;
-            error.IsWorking = isWorking;
-            error.Comment = comment;
-            error.Description = description;
-            error.DateOfSolving = dateOfSolving;
-            error.Code = code;
-            error.IsActive = isActive;
+            using var context = new MainContext();
+            var error = new MaintenanceError
+            {
+                Date = date,
+                Name = name,
+                IsWorking = isWorking,
+                Comment = comment,
+                Description = description,
+                DateOfSolving = dateOfSolving,
+                Code = code,
+                IsActive = isActive
+            };
 
             if (dateOfSolving.HasValue && dateOfSolving.Value != DateTime.MinValue)
                 error.IsWorking = true;
@@ -1679,7 +1698,8 @@ namespace Entities.Entities
 
         public void EditErrorNew(int passportId, int id, DateTime date, string code, string name, bool isWorking, string description, string comment, DateTime? dateOfSolving, bool? isActive)
         {
-            MaintenanceError error = context.MaintenanceErrors.FirstOrDefault(x => x.Id == id);
+            using var context = new MainContext();
+            var error = context.MaintenanceErrors.FirstOrDefault(x => x.Id == id);
             if (error != null)
             {
                 if ((!isActive.HasValue || isActive.Value) && error.IsWorking != isWorking)
@@ -1733,16 +1753,19 @@ namespace Entities.Entities
         public int AddInstrument(int passportId, string art, string name, double? count, int unitId,
             DateTime? createDate, DateTime? removeDate, string removeReason, string commentary)
         {
-            Instrument instrument = new Instrument();
-            instrument.Name = name;
-            instrument.Art = art;
-            instrument.CreateDate = createDate;
-            instrument.Count = count;
-            instrument.Commentary = commentary;
-            instrument.RemoveDate = removeDate;
-            instrument.RemoveReason = removeReason;
+            using var context = new MainContext();
+            var instrument = new Instrument
+            {
+                Name = name,
+                Art = art,
+                CreateDate = createDate,
+                Count = count,
+                Commentary = commentary,
+                RemoveDate = removeDate,
+                RemoveReason = removeReason
+            };
 
-            Unit unit = context.Units.FirstOrDefault(x => x.Id == unitId);
+            var unit = context.Units.FirstOrDefault(x => x.Id == unitId);
             if (unit != null)
             {
                 instrument.Unit = unit;
@@ -1753,7 +1776,8 @@ namespace Entities.Entities
         public void EditInstrument(int passportId, int id, string art, string name, double? count, int unitId,
             DateTime? createDate, DateTime? removeDate, string removeReason, string commentary)
         {
-            Instrument instrument = context.Instruments.FirstOrDefault(x => x.Id == id);
+            using var context = new MainContext();
+            var instrument = context.Instruments.FirstOrDefault(x => x.Id == id);
             if (instrument != null)
             {
 
@@ -1765,30 +1789,34 @@ namespace Entities.Entities
                 instrument.RemoveDate = removeDate;
                 instrument.RemoveReason = removeReason;
 
-                Unit unit = context.Units.FirstOrDefault(x => x.Id == unitId);
+                var unit = context.Units.FirstOrDefault(x => x.Id == unitId);
                 if (unit != null)
                 {
                     instrument.Unit = unit;
                 }
 
                 AddPassport(instrument, passportId);
+                context.SaveChanges();
             }
-            context.SaveChanges();
         }
 
         public int AddCharacteristic(int passportId, string name, double? count, string commentary)
         {
-            Characteristic characteristic = new Characteristic();
-            characteristic.Name = name;
-            characteristic.Count = count;
-            characteristic.Commentary = commentary;
+            using var context = new MainContext();
+            var characteristic = new Characteristic
+            {
+                Name = name,
+                Count = count,
+                Commentary = commentary
+            };
 
             return Add(context.Characteristics, characteristic, passportId);
         }
 
         public void EditCharacteristic(int passportId, int id, string name, double? count, string commentary)
         {
-            Characteristic characteristic = context.Characteristics.FirstOrDefault(x => x.Id == id);
+            using var context = new MainContext();
+            var characteristic = context.Characteristics.FirstOrDefault(x => x.Id == id);
             if (characteristic != null)
             {
                 characteristic.Name = name;
@@ -1796,34 +1824,39 @@ namespace Entities.Entities
                 characteristic.Commentary = commentary;
 
                 AddPassport(characteristic, passportId);
+                context.SaveChanges();
             }
-            context.SaveChanges();
         }
 
         public int AddInstruction(int passportId, string name, string path)
         {
-            Instruction instruction = new Instruction();
-            instruction.Name = name;
-            instruction.Path = path;
+            using var context = new MainContext();
+            var instruction = new Instruction
+            {
+                Name = name,
+                Path = path
+            };
 
             return Add(context.Instructions, instruction, passportId);
         }
 
         public void EditInstruction(int passportId, int id, string name, string path)
         {
-            Instruction instruction = context.Instructions.FirstOrDefault(x => x.Id == id);
+            using var context = new MainContext();
+            var instruction = context.Instructions.FirstOrDefault(x => x.Id == id);
             if (instruction != null)
             {
                 instruction.Name = name;
                 instruction.Path = path;
 
                 AddPassport(instruction, passportId);
+                context.SaveChanges();
             }
-            context.SaveChanges();
         }
 
         private int Add<T>(DbSet<T> db, T item, int passportId) where T : class, IPasportable
         {
+            using var context = new MainContext();
             AddPassport(item, passportId);
             db.Add(item);
             context.SaveChanges();
@@ -1832,9 +1865,10 @@ namespace Entities.Entities
 
         private void AddPassport<T>(T item, int passportId) where T : class, IPasportable
         {
+            using var context = new MainContext();
             if (passportId > 0)
             {
-                TechPassport passport = context.TechPassports.FirstOrDefault(x => x.Id == passportId);
+                var passport = context.TechPassports.FirstOrDefault(x => x.Id == passportId);
                 if (passport != null)
                 {
                     item.TechPassport = passport;
@@ -1843,11 +1877,13 @@ namespace Entities.Entities
         }
         public List<MaterialInfo> GetMaterialInfos()
         {
+            using var context = new MainContext();
             return context.MaterialInfos.Include(c => c.Unit).Include(a => a.ArtInfos).ToList();
         }
 
         public List<ElectroPoint> GetPoints()
         {
+            using var context = new MainContext();
             return context.Points.ToList();
         }
         string sqlExpression = @"Select SKLN_Cd, max(SklN_Nm) SklN_Nm, sum(EndQt) EndQt, sum(QtRes) QtRes

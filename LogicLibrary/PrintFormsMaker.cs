@@ -1,4 +1,5 @@
-﻿using Entities.Entities;
+﻿using Entities;
+using Entities.Entities;
 using OfficeOpenXml;
 using OfficeOpenXml.Style;
 using QRCoder;
@@ -48,9 +49,9 @@ namespace LogicLibrary
             var date = (DateTime.Now.Month) + "-" + DateTime.Now.Year;
             var timeDate = DateTime.Now.ToString("dd-MM-yy(hh-mm-ss)");
 
-            //string outerPath = @"C:\Users\User\Downloads\";
+            string outerPath = @"C:\Users\Roman_Kitar\Desktop\SomeShit\";
             //string outerPath = @"P:\Цех\Общая\Отчет по состоянию оборудования ПВ-транс\";
-            string outerPath = @"\\192.168.1.252\Share\Update\Программа ТО\";
+            //string outerPath = @"\\192.168.1.252\Share\Update\Программа ТО\";
             //string outerPath = "";
             string name = outerPath + "Информация о простое оборудования" + "-" + date;
 
@@ -736,7 +737,7 @@ namespace LogicLibrary
             FinalMaking(sheet, package, name);
             StartProcess(name);
         }
-        public void PrintCommonPlanForm(DateTime start, DateTime end, List<IPlanedView> planned)
+        public async void PrintCommonPlanForm(DateTime start, DateTime end, List<IPlanedView> planned)
         {
             string name = "План работ(общий)_" + start.ToShortDateString() + "_" + end.ToShortDateString() + "--" + DateTime.Now.ToString("dd-MM-yy(hh-mm-ss)");
             sheet.DefaultColWidth = 6.5;
@@ -775,7 +776,7 @@ namespace LogicLibrary
             {
                 string[] line = new string[dList.Count + 3];
                 line[0] = number.ToString();
-                var passport = Data.Instance.GetTechPassports().FirstOrDefault(x => x.Id == view.Key);
+                var passport = Data.Instance.GetPassportById(view.Key);
                 if (passport != null)
                 {
                     line[1] = passport.Name;

@@ -1,4 +1,5 @@
-﻿using Entities.Entities;
+﻿using Entities;
+using Entities.Entities;
 
 namespace LogicLibrary
 {
