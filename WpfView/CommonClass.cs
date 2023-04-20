@@ -264,77 +264,12 @@ namespace WpfView
         {
             var filtred = new List<T>();
             return _filterGridByOneField<T>(oCollection, collection, service, grid, properties, out filtred);
-            //if (properties.All(x => string.IsNullOrEmpty(x.Value)))
-            //{
-            //    oCollection = AddItem(oCollection, collection, service, grid);
-            //    return oCollection;
-            //}
-            //else
-            //{
-            //    var filtred = new List<T>();
-            //    foreach (var item in collection)
-            //    {
-            //        bool IsFiltred = true;
-            //        var type = item.GetType();
-            //        foreach (var kvp in properties)
-            //        {
-            //            var field = type.GetProperty(kvp.Key);
-            //            var value = field?.GetValue(item);
-            //            if (value != null && !string.IsNullOrEmpty(kvp.Value))
-            //            {
-            //                if (!value.ToString().ToLower().Contains(kvp.Value.ToLower()))
-            //                {
-            //                    IsFiltred = false;
-            //                }
-            //            }
-            //        }
-
-            //        if (IsFiltred)
-            //        {
-            //            filtred.Add(item);
-            //        }
-            //    }
-            //    oCollection = AddItem(oCollection, filtred, service, grid);
-            //    return oCollection;
-            //}
         }
 
         public static ObservableCollection<T> FilterGridByOneField<T>(ObservableCollection<T> oCollection, List<T> collection, TableService<T> service, DataGrid grid, Dictionary<string, string> properties, out List<T> filtred) where T : class, ITableView
         {
             filtred = new List<T>();
-            return _filterGridByOneField<T>(oCollection, collection, service, grid, properties, out filtred);
-            //if (properties.All(x => string.IsNullOrEmpty(x.Value)))
-            //{
-            //    oCollection = AddItem(oCollection, collection, service, grid);
-            //    return oCollection;
-            //}
-            //else
-            //{                
-            //    foreach (var item in collection)
-            //    {
-            //        bool IsFiltred = true;
-            //        var type = item.GetType();
-            //        foreach (var kvp in properties)
-            //        {
-            //            var field = type.GetProperty(kvp.Key);
-            //            var value = field?.GetValue(item);
-            //            if (value != null && !string.IsNullOrEmpty(kvp.Value))
-            //            {
-            //                if (!value.ToString().ToLower().Contains(kvp.Value.ToLower()))
-            //                {
-            //                    IsFiltred = false;
-            //                }
-            //            }
-            //        }
-
-            //        if (IsFiltred)
-            //        {
-            //            filtred.Add(item);
-            //        }
-            //    }
-            //    oCollection = AddItem(oCollection, filtred, service, grid);
-            //    return oCollection;
-            //}
+            return _filterGridByOneField<T>(oCollection, collection, service, grid, properties, out filtred);            
         }
 
         private static ObservableCollection<T> _filterGridByOneField<T>(ObservableCollection<T> oCollection, List<T> collection, TableService<T> service, DataGrid grid, Dictionary<string, string> properties, out List<T> filtred) where T : class, ITableView

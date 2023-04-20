@@ -970,6 +970,39 @@ namespace LogicLibrary
             }
         }
 
+        public void RemoveInstrument(int id, string reason, DateTime date, double count)
+        {
+            if (count > 0)
+            {
+                var ins = Instruments.FirstOrDefault(x => x.Id == id);
+                if (ins != null)
+                {
+                    if (ins.GetCount() == count || ins.GetCount() < count)
+                    {
+                        ins.RemoveReason = reason;
+                        ins.RemoveDate = date;
+                        ins.MarkChanged();
+                    }
+                    else
+                    {
+                        ins.Count = (ins.GetCount() - count).ToString();
+                        ins.MarkChanged();
+                        var cP = new InstrumentView();
+                        int newId = InstrumentsId++;                        
+                        cP.EditUnit(ins.CodeId, ins.Unit);
+                        cP.Name = ins.Name;
+                        cP.Count = count.ToString();
+                        cP.RemoveReason = reason;
+                        cP.RemoveDate = date;
+                        cP.Id = newId;
+
+                        Instruments.Add(cP);
+                        cP.MarkChanged();
+                    }
+                }
+            }
+        }
+
         public int AddInstrument(int unitId, string name, string nominal)
         {
             var cP = new InstrumentView();

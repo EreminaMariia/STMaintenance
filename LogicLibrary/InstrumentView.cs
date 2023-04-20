@@ -89,6 +89,14 @@ namespace LogicLibrary
             }
         }
 
+        [System.ComponentModel.DisplayName("Списать")]
+        public string Remove
+        {
+            get { return "Списать"; }
+            private set
+            {}
+        }
+
         public bool IsChanged()
         {
             return isChanged;
@@ -129,6 +137,12 @@ namespace LogicLibrary
         {
             CodeId = unit.Id;
             Unit = unit.Name;
+        }
+
+        public void EditUnit(int unitId, string unitName)
+        {
+            CodeId = unitId;
+            Unit = unitName;
         }
 
         public InstrumentView() 

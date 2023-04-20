@@ -1,0 +1,19 @@
+﻿<Window x:Class="WpfView.RemoveWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:WpfView"
+        mc:Ignorable="d"
+        Title="Списание" Height="244" Width="430">
+    <Grid>
+        <Button Content="Списать" HorizontalAlignment="Center" Margin="0,169,0,0" VerticalAlignment="Top" Click="Button_Click"/>
+        <TextBox x:Name="reasonTextBox" HorizontalAlignment="Left" Margin="115,14,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="286" Height="86"/>
+        <DatePicker x:Name="removeDatePicker" HorizontalAlignment="Left" Margin="115,132,0,0" VerticalAlignment="Top"/>
+        <Label Content="Причина" HorizontalAlignment="Left" Margin="22,11,0,0" VerticalAlignment="Top"/>
+        <Label Content="Дата" HorizontalAlignment="Right" Margin="0,130,370,0" VerticalAlignment="Top"/>
+        <Label Content="Количество" HorizontalAlignment="Left" Margin="25,0,0,0" VerticalAlignment="Center"/>
+        <TextBox x:Name="countTextBox" HorizontalAlignment="Left" Margin="114,107,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="120"/>
+
+    </Grid>
+</Window>

@@ -39,14 +39,14 @@ namespace LogicLibrary.Services
 
         public bool Delete(int id)
         {
-            var instrument = techPassport.Instruments.FirstOrDefault(m => m.Id == id);
-            if (instrument != null)
-            {
-                instrument.ChangeIfInWork();
-                instrument.MarkChanged();
-            }
-            return true;
-
+            //var instrument = techPassport.Instruments.FirstOrDefault(m => m.Id == id);
+            //if (instrument != null)
+            //{
+            //    instrument.ChangeIfInWork();
+            //    instrument.MarkChanged();
+            //}
+            //return true;
+            return false;
         }
 
         public void Update(ITableView view)

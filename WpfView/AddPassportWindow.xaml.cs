@@ -472,6 +472,15 @@ namespace WpfView
                 e.Column.Visibility = Visibility.Collapsed;
             }
         }
+
+        private void HideOldInstrumentColumn(object sender, DataGridAutoGeneratingColumnEventArgs e)
+        {
+            HideIdColumn(sender, e);
+            if (e.Column.Header.ToString() == "Списать")
+            {
+                e.Column.Visibility = Visibility.Collapsed;
+            }
+        }
         private void Button_Click(object sender, RoutedEventArgs e)
         {
             Save();
@@ -954,6 +963,26 @@ namespace WpfView
                     {
 
                         id = passportMaker.AddInstrument(infoId, name, nominal);
+                    }
+                    RefreshInstrumentGrid();
+                    RefreshOldInstrumentGrid();
+                }
+                else if (column.SortMemberPath == "Remove")
+                {
+                    instrumentGrid.CancelEdit();
+                    instrumentGrid.Items.Refresh();
+
+                    int id = 0;
+                    if (((DataGrid)e.Source).SelectedItem is InstrumentView)
+                    {
+                        var item = (InstrumentView)((DataGrid)e.Source).SelectedItem;
+                        id = item.Id;
+                    }         
+                    if (id > 0)
+                    {
+                        RemoveWindow rw = new RemoveWindow();
+                        rw.ShowDialog();
+                        passportMaker.RemoveInstrument(id, rw.Reason, rw.Date, rw.Count);
                     }
                     RefreshInstrumentGrid();
                     RefreshOldInstrumentGrid();

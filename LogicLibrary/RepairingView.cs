@@ -22,7 +22,7 @@ namespace LogicLibrary
         public DateTime Date
         {
             get { return date; }
-            private set { date = value; OnPropertyChanged(nameof(Date)); }
+            set { date = value; OnPropertyChanged(nameof(Date)); }
         }
 
         [System.ComponentModel.DisplayName("Проведённые работы")]
