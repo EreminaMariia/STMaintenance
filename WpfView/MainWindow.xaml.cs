@@ -556,7 +556,7 @@ namespace WpfView
 
             filtered ??= dataService.GetAllArchiveViews();
             archive ??= dataService.GetAllArchiveViews();
-            filtered = filtered.Where(x => x.Date != null && x.Date >= st && x.Date <= end).ToList();
+            filtered = archive.Where(x => x.Date != null && x.Date >= st && x.Date <= end).ToList();
             CommonClass.FilterGridByOneField(Archive, filtered, archiveTableService, archiveDataGrid, properties);
         }
 
@@ -582,7 +582,7 @@ namespace WpfView
 
             filtered ??= dataService.GetAllArchiveViews();
             archive ??= dataService.GetAllArchiveViews();
-            filtered = filtered.Where(x => x.Date != null && x.Date >= start && x.Date <= st).ToList();
+            filtered = archive.Where(x => x.Date != null && x.Date >= start && x.Date <= st).ToList();
             CommonClass.FilterGridByOneField(Archive, filtered, archiveTableService, archiveDataGrid, properties);
         }
 
@@ -878,10 +878,13 @@ namespace WpfView
                 else if (HandBookItem.IsSelected) { }
                 else if (ArchiveItem.IsSelected)
                 {
-                    archive = dataService.GetAllArchiveViews().Where(x => x.Date != null &&
-                        x.Date >= DateTime.Today.AddDays(-30) && x.Date <= DateTime.Today).ToList();
+                    archive = dataService.GetAllArchiveViews().ToList();
+                    filtered = dataService.GetAllArchiveViews().Where(x => x.Date != null &&
+                        x.Date >= new DateTime(DateTime.Today.Year, DateTime.Today.Month - 1, DateTime.Today.Day)).ToList();
                     CommonClass.TabChangeProcess(archive,
                             archive, Archive, archiveDataGrid, archiveTableService);
+                    startDatePicker.SelectedDate = new DateTime(DateTime.Today.Year, DateTime.Today.Month-1, DateTime.Today.Day);
+                    endDatePicker.SelectedDate = DateTime.Today;
                 }
                 else if (PlanItem.IsSelected)
                 {
