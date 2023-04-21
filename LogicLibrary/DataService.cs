@@ -5,9 +5,9 @@ namespace LogicLibrary
 {
     public class DataService
     {
-        public async Task<List<TechView>> GetTechViews(bool isOld)
+        public List<TechView> GetTechViews(bool isOld)
         {
-            var list = await Data.Instance.GetTechPassports();
+            var list = Data.Instance.GetTechPassports();
             List<TechView> result = new List<TechView>();
             foreach (TechPassport item in list)
             {

@@ -103,7 +103,7 @@ namespace LogicLibrary
                 int headerX = 1;
                 headerY = MakeHeader(headerY, headerX + 1, "Информация о простое оборудования на " + date, 4, infos.ToArray());
 
-                var techs = Data.Instance.GetPassportByIds(techIds).OrderBy(d => d.Department.Number);
+                var techs = Data.Instance.GetPassportByIds(techIds);
 
                 foreach (var tech in techs)
                 {
@@ -737,7 +737,7 @@ namespace LogicLibrary
             FinalMaking(sheet, package, name);
             StartProcess(name);
         }
-        public async void PrintCommonPlanForm(DateTime start, DateTime end, List<IPlanedView> planned)
+        public void PrintCommonPlanForm(DateTime start, DateTime end, List<IPlanedView> planned)
         {
             string name = "План работ(общий)_" + start.ToShortDateString() + "_" + end.ToShortDateString() + "--" + DateTime.Now.ToString("dd-MM-yy(hh-mm-ss)");
             sheet.DefaultColWidth = 6.5;
@@ -776,7 +776,7 @@ namespace LogicLibrary
             {
                 string[] line = new string[dList.Count + 3];
                 line[0] = number.ToString();
-                var passport = Data.Instance.GetPassportById(view.Key);
+                var passport = Data.Instance.GetTechPassports().FirstOrDefault(x => x.Id == view.Key);
                 if (passport != null)
                 {
                     line[1] = passport.Name;

@@ -108,12 +108,8 @@ namespace WpfView
                 archiveTableService = new TableService<OuterArchiveView>
                     (new OuterArchiveViewService(), new TableService<OuterArchiveView>.DeleteHandler(ShowMessage));
                 DataContext = this;
-
                 RefreshPassportGrid();
-                Task.Run(async () =>
-                {
-                    await PrintFilteredErrors(true);
-                });
+                PrintFilteredErrors(true);
             }
             catch (Exception ex)
             {
@@ -492,10 +488,10 @@ namespace WpfView
             }
         }
 
-        public async void RefreshPassportGrid()
+        public void RefreshPassportGrid()
         {
-            passports = await dataService.GetTechViews(false);
-            oldPassports = await dataService.GetTechViews(true);
+            passports = dataService.GetTechViews(false);
+            oldPassports = dataService.GetTechViews(true);
             CommonClass.RefreshGrid(passports, Passports, machineDataGrid, passportTableService);
             CommonClass.RefreshGrid(oldPassports, OldPassports, oldMachineDataGrid, oldPassportTableService);
 
@@ -850,7 +846,7 @@ namespace WpfView
             PrintFilteredErrors(false);
         }
 
-        private Task PrintFilteredErrors(bool isEveryDayForm)
+        private void PrintFilteredErrors(bool isEveryDayForm)
         {
             List<int> techIds = new List<int>();
             PrintFormsMaker maker = new PrintFormsMaker("ErrorInfo");
@@ -869,8 +865,6 @@ namespace WpfView
             {
                 maker.PrintAllFiltredErrorsForm(techIds);
             }
-
-            return Task.CompletedTask;
         }
 
         private async void tabControl_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -879,7 +873,7 @@ namespace WpfView
             {
                 if (PassportsItem.IsSelected)
                 {
-                    CommonClass.TabChangeProcess(await dataService.GetTechViews(false), passports, Passports, machineDataGrid, passportTableService);
+                    CommonClass.TabChangeProcess(dataService.GetTechViews(false), passports, Passports, machineDataGrid, passportTableService);
                 }
                 else if (HandBookItem.IsSelected) { }
                 else if (ArchiveItem.IsSelected)
@@ -895,7 +889,7 @@ namespace WpfView
                     {
                         if (passports == null || passports.Count == 0)
                         {
-                            passports = await dataService.GetTechViews(false);
+                            passports = dataService.GetTechViews(false);
                             CommonClass.RefreshGrid(passports, Passports, machineDataGrid, passportTableService);
                         }
                         try
@@ -910,7 +904,7 @@ namespace WpfView
                 }
                 else if (OldPassportsItem.IsSelected)
                 {
-                    CommonClass.TabChangeProcess(await dataService.GetTechViews(true), oldPassports, OldPassports, oldMachineDataGrid, oldPassportTableService);
+                    CommonClass.TabChangeProcess(dataService.GetTechViews(true), oldPassports, OldPassports, oldMachineDataGrid, oldPassportTableService);
                 }
             }
         }
