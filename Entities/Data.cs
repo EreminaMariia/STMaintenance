@@ -175,7 +175,7 @@ namespace Entities
                 FirstOrDefault(t => t.Id == id);
         }
 
-        public IQueryable<TechPassport> GetPassportByIds(List<int> ids)
+        public List<TechPassport> GetPassportByIds(List<int> ids)
         {
             using var context = new MainContext();
             return context.TechPassports.
@@ -191,7 +191,9 @@ namespace Entities
                 Include(d => d.Department).
                 Include(t => t.Type).
                 Include(s => s.Instruments).ThenInclude(u => u.Unit).
-                Where(t => ids.Contains(t.Id));
+                Where(t => ids.Contains(t.Id))
+                .OrderBy(d => d.Department.Number)
+                .ToList();
         }
 
 
