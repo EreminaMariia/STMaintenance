@@ -884,10 +884,13 @@ namespace WpfView
                 else if (HandBookItem.IsSelected) { }
                 else if (ArchiveItem.IsSelected)
                 {
-                    archive = dataService.GetAllArchiveViews().Where(x => x.Date != null &&
-                        x.Date >= DateTime.Today.AddDays(-30) && x.Date <= DateTime.Today).ToList();
+                    archive = dataService.GetAllArchiveViews().ToList();
+                    filtered = dataService.GetAllArchiveViews().Where(x => x.Date != null &&
+                        x.Date >= new DateTime(DateTime.Today.Year, DateTime.Today.Month - 1, DateTime.Today.Day)).ToList();
                     CommonClass.TabChangeProcess(archive,
                             archive, Archive, archiveDataGrid, archiveTableService);
+                    startDatePicker.SelectedDate = new DateTime(DateTime.Today.Year, DateTime.Today.Month-1, DateTime.Today.Day);
+                    endDatePicker.SelectedDate = DateTime.Today;
                 }
                 else if (PlanItem.IsSelected)
                 {
