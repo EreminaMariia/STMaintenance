@@ -560,7 +560,7 @@ namespace WpfView
 
             filtered ??= dataService.GetAllArchiveViews();
             archive ??= dataService.GetAllArchiveViews();
-            filtered = filtered.Where(x => x.Date != null && x.Date >= st && x.Date <= end).ToList();
+            filtered = archive.Where(x => x.Date != null && x.Date >= st && x.Date <= end).ToList();
             CommonClass.FilterGridByOneField(Archive, filtered, archiveTableService, archiveDataGrid, properties);
         }
 
@@ -586,7 +586,7 @@ namespace WpfView
 
             filtered ??= dataService.GetAllArchiveViews();
             archive ??= dataService.GetAllArchiveViews();
-            filtered = filtered.Where(x => x.Date != null && x.Date >= start && x.Date <= st).ToList();
+            filtered = archive.Where(x => x.Date != null && x.Date >= start && x.Date <= st).ToList();
             CommonClass.FilterGridByOneField(Archive, filtered, archiveTableService, archiveDataGrid, properties);
         }
 
