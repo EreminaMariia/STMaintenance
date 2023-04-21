@@ -48,12 +48,12 @@ namespace Entities
             return materials;
         }
 
-        public async Task<List<TechPassport>> GetTechPassports()
+        public List<TechPassport> GetTechPassports()
         {
             using var context = new MainContext();
-            return await context.TechPassports
+            return context.TechPassports
                 .Include(d => d.Department)
-                .ToListAsync();
+                .ToList();
         }
         public int GetCharacteristicsId()
         {
