@@ -49,8 +49,9 @@ namespace LogicLibrary
             var timeDate = DateTime.Now.ToString("dd-MM-yy(hh-mm-ss)");
 
             //string outerPath = @"C:\Users\User\Downloads\";
+            string outerPath = @"P:\Общая\Программа ТО\";
             //string outerPath = @"P:\Цех\Общая\Отчет по состоянию оборудования ПВ-транс\";
-            string outerPath = @"\\192.168.1.252\Share\Update\Программа ТО\";
+            //string outerPath = @"\\192.168.1.252\Share\Update\Программа ТО\";
             //string outerPath = "";
             string name = outerPath + "Информация о простое оборудования" + "-" + date;
 

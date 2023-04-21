@@ -61,7 +61,7 @@ namespace WpfView
         private List<DepartmentView> departments { get; set; }
         private List<PointView> points { get; set; }
         public List<OuterArchiveView> archive { get; set; }
-        public List<OuterArchiveView> filtred { get; set; }
+        public List<OuterArchiveView> filtered { get; set; }
 
         private int defaultDays = 10;
 
@@ -560,8 +560,10 @@ namespace WpfView
                 properties = CommonClass.GetProperties(pg);
             }
 
-            filtred = filtred.Where(x => x.Date != null && x.Date >= st && x.Date <= end).ToList();
-            CommonClass.FilterGridByOneField(Archive, filtred, archiveTableService, archiveDataGrid, properties);
+            filtered ??= dataService.GetAllArchiveViews();
+            archive ??= dataService.GetAllArchiveViews();
+            filtered = archive.Where(x => x.Date != null && x.Date >= st && x.Date <= end).ToList();
+            CommonClass.FilterGridByOneField(Archive, filtered, archiveTableService, archiveDataGrid, properties);
         }
 
         private void endDatePicker_SelectedDateChanged(object sender, SelectionChangedEventArgs e)
@@ -584,8 +586,10 @@ namespace WpfView
                 properties = CommonClass.GetProperties(pg);
             }
 
-            filtred = filtred.Where(x => x.Date != null && x.Date >= start && x.Date <= st).ToList();
-            CommonClass.FilterGridByOneField(Archive, filtred, archiveTableService, archiveDataGrid, properties);
+            filtered ??= dataService.GetAllArchiveViews();
+            archive ??= dataService.GetAllArchiveViews();
+            filtered = archive.Where(x => x.Date != null && x.Date >= start && x.Date <= st).ToList();
+            CommonClass.FilterGridByOneField(Archive, filtered, archiveTableService, archiveDataGrid, properties);
         }
 
         private void departmentsDataGrid_MouseDoubleClick(object sender, MouseButtonEventArgs e)
@@ -712,9 +716,9 @@ namespace WpfView
             PrintFormsMaker maker = new PrintFormsMaker("ArchiveInfo");
             DateTime start = startDatePicker.SelectedDate != null ? (DateTime)startDatePicker.SelectedDate : DateTime.MinValue;
             DateTime end = endDatePicker.SelectedDate != null ? (DateTime)endDatePicker.SelectedDate : DateTime.Today;
-            if (filtred != null && filtred.Count > 0)
+            if (filtered != null && filtered.Count > 0)
             {
-                maker.PrintArchiveForm(start, end, filtred);
+                maker.PrintArchiveForm(start, end, filtered);
             }
             else
             {
@@ -823,9 +827,9 @@ namespace WpfView
                                 DateTime start = startDatePicker.SelectedDate != null ? (DateTime)startDatePicker.SelectedDate : DateTime.MinValue;
                                 DateTime end = endDatePicker.SelectedDate != null ? (DateTime)endDatePicker.SelectedDate : DateTime.Today;
                                 archive = dataService.GetAllArchiveViews();
-                                filtred = dataService.GetAllArchiveViews().Where(x => x.Date != null && x.Date >= start && x.Date <= end).ToList();
-                                CommonClass.FilterGridByOneField(Archive, filtred, archiveTableService, archiveDataGrid, properties, out List<OuterArchiveView> f);
-                                filtred = f;
+                                filtered = dataService.GetAllArchiveViews().Where(x => x.Date != null && x.Date >= start && x.Date <= end).ToList();
+                                CommonClass.FilterGridByOneField(Archive, filtered, archiveTableService, archiveDataGrid, properties, out List<OuterArchiveView> f);
+                                filtered = f;
                                 break;
                         }
                     }
@@ -882,10 +886,13 @@ namespace WpfView
                 else if (HandBookItem.IsSelected) { }
                 else if (ArchiveItem.IsSelected)
                 {
-                    archive = dataService.GetAllArchiveViews().Where(x => x.Date != null &&
-                        x.Date >= DateTime.Today.AddDays(-30) && x.Date <= DateTime.Today).ToList();
+                    archive = dataService.GetAllArchiveViews().ToList();
+                    filtered = dataService.GetAllArchiveViews().Where(x => x.Date != null &&
+                        x.Date >= new DateTime(DateTime.Today.Year, DateTime.Today.Month - 1, DateTime.Today.Day)).ToList();            
                     CommonClass.TabChangeProcess(archive,
                             archive, Archive, archiveDataGrid, archiveTableService);
+                    startDatePicker.SelectedDate = new DateTime(DateTime.Today.Year, DateTime.Today.Month - 1, DateTime.Today.Day);
+                    endDatePicker.SelectedDate = DateTime.Today;
                 }
                 else if (PlanItem.IsSelected)
                 {
