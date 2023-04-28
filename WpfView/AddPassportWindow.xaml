@@ -109,7 +109,7 @@
                               CanUserAddRows="True" ItemsSource="{Binding Maintenances}" 
                               MouseDoubleClick="maintenanceGrid_MouseDoubleClick" 
                               CellEditEnding="сellEditEnding" Margin="0,27,0,0"
-                              SizeChanged="SizeChanged" Loaded="Loaded"/>
+                              SizeChanged="SizeChanged" Loaded="Loaded" MouseUp="maintenanceGrid_MouseUp"/>
                                 <!--<Label Content="Поиск" HorizontalAlignment="Left" Margin="2,-4,0,0" VerticalAlignment="Top"/>
                                 <TextBox HorizontalAlignment="Left" Margin="62,0,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="381" Height="27" 
                                          TextChanged="Maintenances_TextBox_TextChanged"/>-->
@@ -142,7 +142,7 @@
                               CanUserAddRows="True" ItemsSource="{Binding Instruments}" 
                               MouseDoubleClick="instrumentGrid_MouseDoubleClick" 
                               CellEditEnding="сellEditEnding" Margin="0,27,0,0"
-                              SizeChanged="SizeChanged" Loaded="Loaded"/>
+                              SizeChanged="SizeChanged" Loaded="Loaded" MouseUp="instrumentGrid_MouseUp"/>
                             </Grid>
                         </TabItem.Content>
                     </TabItem>
@@ -170,7 +170,7 @@
             <TabItem x:Name="workhoursTab" Header="Часы наработки оборудования">
                 <TabItem.Content>
                     <DataGrid x:Name="workhoursGrid" AutoGeneratingColumn="HideIdColumn"
-                              CanUserAddRows="True" ItemsSource="{Binding Hours}"></DataGrid>
+                              CanUserAddRows="True" ItemsSource="{Binding Hours}" MouseUp="workhoursGrid_MouseUp"></DataGrid>
                 </TabItem.Content>
             </TabItem>
             <TabItem x:Name="controlTab" Header="Контролируемые параметры">
@@ -179,7 +179,7 @@
                         <DataGrid x:Name="controlGrid" AutoGeneratingColumn="HideIdColumn"
                               CanUserAddRows="True" ItemsSource="{Binding ControledParams}" Height="177" VerticalAlignment="Top" MouseDoubleClick="controlGrid_MouseDoubleClick" CellEditEnding="сellEditEnding"/>
                         <DataGrid x:Name="controlEpisodeGrid" AutoGeneratingColumn="HideIdColumn"
-                              CanUserAddRows="True" ItemsSource="{Binding ControledParamEpisodes}" VerticalAlignment="Stretch" Margin="0,182,0,0" MouseDoubleClick="controlEpisodeGrid_MouseDoubleClick" CellEditEnding="сellEditEnding"/>
+                              CanUserAddRows="True" ItemsSource="{Binding ControledParamEpisodes}" VerticalAlignment="Stretch" Margin="0,182,0,0" MouseDoubleClick="controlEpisodeGrid_MouseDoubleClick" CellEditEnding="сellEditEnding" MouseUp="controlEpisodeGrid_MouseUp"/>
                     </Grid>
                 </TabItem.Content>
             </TabItem>
@@ -204,7 +204,7 @@
                               CanUserAddRows="True" ItemsSource="{Binding Errors}" 
                               CellEditEnding="сellEditEnding" 
                               MouseDoubleClick="errorsGrid_MouseDoubleClick" Margin="0,27,0,0"
-                              SizeChanged="SizeChanged" Loaded="Loaded"/>
+                              SizeChanged="SizeChanged" Loaded="Loaded" MouseUp="errorsGrid_MouseUp"/>
                         <!--<Label Content="Поиск" HorizontalAlignment="Left" Margin="2,-4,0,0" VerticalAlignment="Top"/>
                         <TextBox HorizontalAlignment="Left" Margin="62,0,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="381" Height="27" 
                                  TextChanged="Errors_TextBox_TextChanged"/>-->
@@ -218,7 +218,7 @@
                               CanUserAddRows="True" ItemsSource="{Binding Additionals}" 
                               MouseDoubleClick="additionalGrid_MouseDoubleClick" 
                               CellEditEnding="сellEditEnding" Margin="0,27,0,0"
-                              SizeChanged="SizeChanged" Loaded="Loaded"/>
+                              SizeChanged="SizeChanged" Loaded="Loaded" MouseUp="additionalGrid_MouseUp"/>
                         <!--<Label Content="Поиск" HorizontalAlignment="Left" Margin="2,-4,0,0" VerticalAlignment="Top"/>
                         <TextBox HorizontalAlignment="Left" Margin="62,0,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="381" Height="27" 
                                  TextChanged="Additionals_TextBox_TextChanged"/>-->

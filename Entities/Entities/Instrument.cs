@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Entities.Entities
 {
@@ -19,6 +14,7 @@ namespace Entities.Entities
         public string? Commentary { get; set; }
         public DateTime? RemoveDate { get; set; }
         public string? RemoveReason { get; set; }
+        public int TechPassportId { get; set; }
         public TechPassport TechPassport { get; set; }
     }
 }

@@ -16,20 +16,7 @@ namespace WpfView
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    /// 
-
-    //списание части инструментов + форма
-    //печать архива с фильтром по датам
-    //план работ(общий)
-    //остановить автоматическую выгрузку
-
-    //отчет-копия планировщика + справа расшифровка типов обслуживания + расшифровка цветов -- График работ по техническому обслуживанию машин и механизмов установленных на участке ЦЗМ
-    //поле Модель оборудования + из таблицы -- во всех отчётах и таблицах слепить
-    //новый отчет с ошибками на месяц
-    //ошибки висят до конца месяца
-    //форма с диалогом по ошибкам
-    //отчет за период 
-
+    ///    
 
     public partial class MainWindow : Window
     {
@@ -198,7 +185,7 @@ namespace WpfView
 
             int defaultRowHeight = 60;
             int nameWidth = 250;
-            int cellWidth = 60;
+            int cellWidth = 80;
 
             plannedViews = new List<IPlanedView>();
             plannedViews.AddRange(additionalViews);
@@ -859,14 +846,13 @@ namespace WpfView
             }
             if (isEveryDayForm)
             {
-                maker.PrintAllFiltredErrorsEverydayForm(techIds);
+               maker.PrintAllFiltredErrorsEverydayForm(techIds);
             }
             else
             {
                 maker.PrintAllFiltredErrorsForm(techIds);
             }
         }
-
         private async void tabControl_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (e.Source is TabControl)
@@ -884,7 +870,7 @@ namespace WpfView
                     CommonClass.TabChangeProcess(archive,
                             archive, Archive, archiveDataGrid, archiveTableService);
                     startDatePicker.SelectedDate = new DateTime(DateTime.Today.Year, DateTime.Today.Month-1, DateTime.Today.Day);
-                    endDatePicker.SelectedDate = DateTime.Today;
+                    endDatePicker.SelectedDate = DateTime.Today;                   
                 }
                 else if (PlanItem.IsSelected)
                 {

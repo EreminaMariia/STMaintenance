@@ -119,10 +119,22 @@ namespace WpfView
             if (parent != null && parent is Grid)
             {
                 var pg = (Grid)parent;
-                Dictionary<string, string> properties = CommonClass.GetProperties(pg);
+                Dictionary<string, string> properties = GetProperties(pg);
                 foreach (var property in properties)
                 {
                     properties[property.Key] = "";
+                }
+                foreach (var child in pg.Children)
+                {
+                    if (child is TextBox)
+                    {
+                        var tb = (TextBox)child;
+                        var n = tb.Name.Split('_');
+                        if (n.Length > 2)
+                        {
+                            tb.Text = "";
+                        }
+                    }
                 }
                 FilterGridByOneField(collection, items, service, grid, properties);
             }

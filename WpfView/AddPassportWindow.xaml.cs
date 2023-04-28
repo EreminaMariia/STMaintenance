@@ -450,9 +450,9 @@ namespace WpfView
                 (new ControledParamEpisodeViewService(passportMaker), new TableService<ControledParametrEpisodeView>.DeleteHandler(ShowMessage));
             foreach (var item in ControledParamEpisodes)
             {
-                item.PropertyChanged += controlTableService.Item_PropertyChanged;
+                item.PropertyChanged += controlEpisodeTableService.Item_PropertyChanged;
             }
-            ControledParamEpisodes.CollectionChanged += controlTableService.Entries_CollectionChanged;
+            ControledParamEpisodes.CollectionChanged += controlEpisodeTableService.Entries_CollectionChanged;
 
             DataContext = this;
         }
@@ -465,11 +465,22 @@ namespace WpfView
 
         private void HideInstrumentColumn(object sender, DataGridAutoGeneratingColumnEventArgs e)
         {
-            HideIdColumn(sender, e);
-            if (e.Column.Header.ToString() == "Дата удаления" ||
-                e.Column.Header.ToString() == "Причина удаления")
+            if (e.Column.Header.ToString() == "Дата удаления" || e.Column.Header.ToString() == "RemoveDate" ||
+                e.Column.Header.ToString() == "Причина удаления" || e.Column.Header.ToString() == "RemoveReason")
             {
                 e.Column.Visibility = Visibility.Collapsed;
+            }
+            else
+            {
+                HideIdColumn(sender, e);
+            }
+            if (e.Column.Header.ToString() == "Списать")
+            {
+                e.Column.CellStyle = new Style(typeof(DataGridCell));
+                e.Column.CellStyle.Setters.Add(new Setter(BackgroundProperty, Brushes.GreenYellow));
+                e.Column.CellStyle.Setters.Add(new Setter(TextBlock.TextAlignmentProperty, TextAlignment.Center));
+                e.Column.CellStyle.Setters.Add(new Setter(BorderThicknessProperty, new Thickness(5, 5, 5, 5)));
+                e.Column.CellStyle.Setters.Add(new Setter(BorderBrushProperty, Brushes.White));
             }
         }
 
@@ -477,6 +488,10 @@ namespace WpfView
         {
             HideIdColumn(sender, e);
             if (e.Column.Header.ToString() == "Списать")
+            {
+                e.Column.Visibility = Visibility.Collapsed;
+            }
+            else if (e.Column.Header.ToString() == "Дата")
             {
                 e.Column.Visibility = Visibility.Collapsed;
             }
@@ -564,7 +579,7 @@ namespace WpfView
         {
             var a = passportMaker.GetArchiveView();
             CommonClass.RefreshGridWithoutFilter(a, Archive, archiveGrid, archiveTableService);
-        }       
+        }
 
         public void RefreshOldMaintenanceGrid(bool isFiltred = true)
         {
@@ -977,7 +992,7 @@ namespace WpfView
                     {
                         var item = (InstrumentView)((DataGrid)e.Source).SelectedItem;
                         id = item.Id;
-                    }         
+                    }
                     if (id > 0)
                     {
                         RemoveWindow rw = new RemoveWindow();
@@ -1297,6 +1312,101 @@ namespace WpfView
             {
                 PrintFormsMaker maker = new PrintFormsMaker("ErrorCard");
                 maker.PrintErrorOneMachineForm(passportMaker.GetPassport(), pickData.Start, pickData.End);
+            }
+        }
+
+        private void errorsGrid_MouseUp(object sender, MouseButtonEventArgs e)
+        {
+            if (errorsGrid.SelectedItem == null) return;
+            var item = errorsGrid.SelectedItem as ErrorNewView;
+            if (item == null) return;
+            var column = errorsGrid.CurrentColumn;
+
+            if (column.SortMemberPath == "DateOfSolving" && (item.DateOfSolving == null || item.DateOfSolving == DateTime.MinValue))
+            {
+                item.DateOfSolving = DateTime.Now;
+                item.MarkChanged();
+            }
+            else if (column.SortMemberPath == "Date" && (item.Date == DateTime.MinValue))
+            {
+                item.Date = DateTime.Now;
+                item.MarkChanged();
+            }
+        }
+
+        private void additionalGrid_MouseUp(object sender, MouseButtonEventArgs e)
+        {
+            if (additionalGrid.SelectedItem == null) return;
+            var item = additionalGrid.SelectedItem as AdditionalWorkView;
+            if (item == null) return;
+            var column = additionalGrid.CurrentColumn;
+
+            if (column.SortMemberPath == "FutureDate" && (item.FutureDate == DateTime.MinValue))
+            {
+                item.FutureDate = DateTime.Now;
+                item.MarkChanged();
+            }
+
+            else if (column.SortMemberPath == "DateFact" && (item.DateFact == null || item.DateFact == DateTime.MinValue))
+            {
+                item.DateFact = DateTime.Now;
+                item.MarkChanged();
+            }
+        }
+
+        private void maintenanceGrid_MouseUp(object sender, MouseButtonEventArgs e)
+        {
+            if (maintenanceGrid.SelectedItem == null) return;
+            var item = maintenanceGrid.SelectedItem as MaintenanceNewView;
+            if (item == null) return;
+            var column = maintenanceGrid.CurrentColumn;
+
+            if (column.SortMemberPath == "FutureDate" && (item.FutureDate == DateTime.MinValue))
+            {
+                item.FutureDate = DateTime.Now;
+                item.MarkChanged();
+            }
+        }
+
+        private void workhoursGrid_MouseUp(object sender, MouseButtonEventArgs e)
+        {
+            if (workhoursGrid.SelectedItem == null) return;
+            var item = workhoursGrid.SelectedItem as HourView;
+            if (item == null) return;
+            var column = workhoursGrid.CurrentColumn;
+
+            if (column.SortMemberPath == "Date" && (item.Date == DateTime.MinValue))
+            {
+                item.Date = DateTime.Now;
+                item.MarkChanged();
+            }
+        }
+
+        private void instrumentGrid_MouseUp(object sender, MouseButtonEventArgs e)
+        {
+            if (instrumentGrid.SelectedItem == null) return;
+            var item = instrumentGrid.SelectedItem as InstrumentView;
+            if (item == null) return;
+            var column = instrumentGrid.CurrentColumn;
+
+            if (column.SortMemberPath == "CreateDate" && (item.CreateDate == null || item.CreateDate == DateTime.MinValue))
+            {
+                item.CreateDate = DateTime.Now;
+                item.MarkChanged();
+            }
+        }
+
+        private void controlEpisodeGrid_MouseUp(object sender, MouseButtonEventArgs e)
+        {
+            if (controlEpisodeGrid.SelectedItem == null) return;
+            var item = controlEpisodeGrid.SelectedItem as ControledParametrEpisodeView;
+            if (item == null) return;
+            var column = controlEpisodeGrid.CurrentColumn;
+
+            if (column.SortMemberPath == "Date" && (item.Date == DateTime.MinValue))
+            {
+                item.Date = DateTime.Now;
+                item.MarkChanged();
             }
         }
     }

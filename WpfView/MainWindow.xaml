@@ -153,7 +153,7 @@
                                   Margin="0,60,0,0" Width ="250" Height="60">
                         <StackPanel x:Name="fixedNamePanel" HorizontalAlignment="Left" Margin="0,0,0,0" Width ="250" Opacity="1"></StackPanel>
                     </ScrollViewer>
-                    <ScrollViewer x:Name="nameGetScrollViewer" VerticalAlignment="Top" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility ="Hidden" 
+                    <ScrollViewer x:Name="nameGetScrollViewer" VerticalAlignment="Top" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility ="Visible" 
                                   Margin="250,60,0,0" Height="60">
                         <StackPanel x:Name="allNamePanel" Margin="0,0,0,0" Opacity="1"></StackPanel>
                     </ScrollViewer>
@@ -162,7 +162,7 @@
                                   Margin="0,120,0,0" Width ="250" ScrollChanged="ScrollChanged">
                         <StackPanel x:Name="fixedPanel" HorizontalAlignment="Left" Margin="0,0,0,0" Width ="250" Opacity="1"></StackPanel>
                     </ScrollViewer>
-                    <ScrollViewer x:Name="getScrollViewer" HorizontalScrollBarVisibility="Visible" VerticalScrollBarVisibility ="Auto" 
+                    <ScrollViewer x:Name="getScrollViewer" HorizontalScrollBarVisibility="Visible" VerticalScrollBarVisibility ="Visible" 
                                   Margin="250,120,0,0" ScrollChanged="ScrollChanged">
                         <StackPanel x:Name="allPanel" Margin="0,0,0,0" Opacity="1"></StackPanel>
                     </ScrollViewer>
@@ -180,9 +180,9 @@
                     <Button Content=" " Background="Aquamarine" Height="25" Width="25" HorizontalAlignment="Left" Margin="10,31,0,0" VerticalAlignment="Top"/>
                     <Button Content=" " Background="Coral" Height="25" Width="25" HorizontalAlignment="Left" Margin="232,31,0,0" VerticalAlignment="Top"/>
                     <Button Content=" " Background="Beige" Height="25" Width="25" HorizontalAlignment="Left" Margin="439,31,0,0" VerticalAlignment="Top"/>
-                    <Label Content="Есть запланированные" HorizontalAlignment="Left" Margin="36,28,0,0" VerticalAlignment="Top"/>
-                    <Label Content="Есть просроченные" HorizontalAlignment="Left" Margin="258,28,0,0" VerticalAlignment="Top"/>
-                    <Label Content="Есть архивные" HorizontalAlignment="Left" Margin="466,28,0,0" VerticalAlignment="Top"/>
+                    <Label Content="Запланированные" HorizontalAlignment="Left" Margin="36,28,0,0" VerticalAlignment="Top"/>
+                    <Label Content="Просроченные" HorizontalAlignment="Left" Margin="258,28,0,0" VerticalAlignment="Top"/>
+                    <Label Content="Архивные" HorizontalAlignment="Left" Margin="466,28,0,0" VerticalAlignment="Top"/>
                     <!--</DataGrid>-->
                 </Grid>
             </TabItem>

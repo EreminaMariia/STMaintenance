@@ -35,6 +35,7 @@ namespace LogicLibrary.Services
             {
                 Id = id,
                 Name = rep.Name,
+                Date = rep.Date,
                 InfoId = errorId
             });
             ErrorNewView error = techPassport.Errors.FirstOrDefault(x => x.Id == errorId);
@@ -58,6 +59,7 @@ namespace LogicLibrary.Services
                 var rep = (RepairingView)view;
                 var oldItem = techPassport.Repairings.First(x => x.Id == rep.Id);
                 oldItem.Name = rep.Name;
+                oldItem.Date = rep.Date;
                 oldItem.MarkChanged();
                 canChange = true;
             }

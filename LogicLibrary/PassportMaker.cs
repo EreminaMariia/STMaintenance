@@ -7,7 +7,7 @@ namespace LogicLibrary
     {
         DataService dataService;
         bool isPassportInfoChanged;
-        public TechPassport TechPassport { get; }
+        public TechPassport TechPassport { get; set; }
         public List<CharacteristicView> Characteristics { get; set; }
         public List<MaintenanceNewView> Maintenances { get; set; }
         public List<AdditionalWorkView> Additionals { get; set; }
@@ -272,6 +272,7 @@ namespace LogicLibrary
             DateTime releaseYear, DateTime commissioningDate, DateTime decommissioningDate, DateTime guaranteeEndDate, double power,
             int supplierId, int typeId, int departmentId, int pointId, int operatorId)
         {
+            TechPassport = dataService.GetPassportById(TechPassport.Id)!;
             if (TechPassport.Name != name)
             {
                 TechPassport.Name = name;
@@ -991,6 +992,7 @@ namespace LogicLibrary
                         var cP = new InstrumentView();
                         int newId = InstrumentsId++;                        
                         cP.EditUnit(ins.CodeId, ins.Unit);
+                        cP.Art = ins.Art;
                         cP.Name = ins.Name;
                         cP.Count = count.ToString();
                         cP.RemoveReason = reason;

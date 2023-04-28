@@ -49,7 +49,7 @@ namespace LogicLibrary
             var date = (DateTime.Now.Month) + "-" + DateTime.Now.Year;
             var timeDate = DateTime.Now.ToString("dd-MM-yy(hh-mm-ss)");
 
-            string outerPath = @"C:\Users\Roman_Kitar\Desktop\SomeShit\";
+            string outerPath = @"P:\Общая\Программа ТО\";
             //string outerPath = @"P:\Цех\Общая\Отчет по состоянию оборудования ПВ-транс\";
             //string outerPath = @"\\192.168.1.252\Share\Update\Программа ТО\";
             //string outerPath = "";
@@ -270,66 +270,73 @@ namespace LogicLibrary
                         }
                     }
                     int end = headerY;
-                    sheet.Cells[start, 2, end - 1, 2].Merge = true;
+                    sheet.Cells[start, 2, end - 1, 2].Merge = true;                   
+                }
+                else
+                {
+                    string name = (passport.Name != null ? passport.Name : "") + " " + (passport.Version != null ? passport.Version : "");
+                    int endPoint = PrintHorizontalLine(headerY, headerX + 1,
+                                name, "", "", "", "");
+                    headerY++;
 
-                    var downtimes = passport.Downtimes.Where(x => x.End == null || x.End.Value >= new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1)).ToList();
-                    if (downtimes != null && downtimes.Count > 0)
+                }
+                var downtimes = passport.Downtimes.Where(x => x.End == null || x.End.Value >= new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1)).ToList();
+                if (downtimes != null && downtimes.Count > 0)
+                {
+                    var lastStartDate = downtimes.Max(x => x.Start);
+                    var lastDownTime = downtimes.Where(x => x.Start == lastStartDate).FirstOrDefault();
+                    double downtimeHours = 0;
+
+                    var st = DateTime.MinValue;
+                    var en = DateTime.Now;
+                    foreach (var d in downtimes)
                     {
-                        var lastStartDate = downtimes.Max(x => x.Start);
-                        var lastDownTime = downtimes.Where(x => x.Start == lastStartDate).FirstOrDefault();
-                        double downtimeHours = 0;
-
-                        var st = DateTime.MinValue;
-                        var en = DateTime.Now;
-                        foreach (var d in downtimes)
+                        if (d.Start >= st)
                         {
-                            if (d.Start >= st)
+                            if (d.End != null && d.End.Value != DateTime.MinValue)
                             {
-                                if (d.End != null && d.End.Value != DateTime.MinValue)
-                                {
-                                    downtimeHours += (d.End - d.Start).Value.TotalHours;
-                                }
-                                else
-                                {
-                                    downtimeHours += (en - d.Start).TotalHours;
-                                }
+                                downtimeHours += (d.End - d.Start).Value.TotalHours;
                             }
                             else
                             {
-                                var firstDay = st;
-                                if (d.End != null && d.End.Value != DateTime.MinValue)
-                                {
-                                    downtimeHours += (d.End - firstDay).Value.TotalHours;
-                                }
-                                else
-                                {
-                                    downtimeHours += (en - firstDay).TotalHours;
-                                }
+                                downtimeHours += (en - d.Start).TotalHours;
                             }
                         }
-
-                        DateTime s = lastDownTime.Start;
-                        DateTime? e = lastDownTime.End;
-
-                        PrintHorizontalLineItem(headerY, 2, "Дата начала простоя");
-                        PrintHorizontalLineItem(headerY++, 3, s.ToLongDateString() + " " + s.ToLongTimeString());
-                        PrintHorizontalLineItem(headerY, 2, "Дата окончания простоя");
-                        PrintHorizontalLineItem(headerY++, 3, (e != null && e.Value != DateTime.MinValue) ? (e.Value.ToLongDateString() + " " + e.Value.ToLongTimeString()) : "");
-                        PrintHorizontalLineItem(headerY, 2, "Общее количество часов простоя");
-                        PrintHorizontalLineItem(headerY++, 3, downtimeHours.ToString("N2"));
+                        else
+                        {
+                            var firstDay = st;
+                            if (d.End != null && d.End.Value != DateTime.MinValue)
+                            {
+                                downtimeHours += (d.End - firstDay).Value.TotalHours;
+                            }
+                            else
+                            {
+                                downtimeHours += (en - firstDay).TotalHours;
+                            }
+                        }
                     }
-                    else
-                    {
-                        PrintHorizontalLineItem(headerY++, 2, "Дата начала простоя");
-                        PrintHorizontalLineItem(headerY++, 2, "Дата окончания простоя");
-                        PrintHorizontalLineItem(headerY++, 2, "Общее количество часов простоя");
-                    }
+
+                    DateTime s = lastDownTime.Start;
+                    DateTime? e = lastDownTime.End;
+
+                    PrintHorizontalLineItem(headerY, 2, "Дата начала простоя");
+                    PrintHorizontalLineItem(headerY++, 3, s.ToLongDateString() + " " + s.ToLongTimeString());
+                    PrintHorizontalLineItem(headerY, 2, "Дата окончания простоя");
+                    PrintHorizontalLineItem(headerY++, 3, (e != null && e.Value != DateTime.MinValue) ? (e.Value.ToLongDateString() + " " + e.Value.ToLongTimeString()) : "");
+                    PrintHorizontalLineItem(headerY, 2, "Общее количество часов простоя");
+                    PrintHorizontalLineItem(headerY++, 3, downtimeHours.ToString("N2"));
+                }
+                else
+                {
+                    PrintHorizontalLineItem(headerY++, 2, "Дата начала простоя");
+                    PrintHorizontalLineItem(headerY++, 2, "Дата окончания простоя");
+                    PrintHorizontalLineItem(headerY++, 2, "Общее количество часов простоя");
                 }
             }
             return headerY;
         }
 
-        private int PrintOneMachineErrorCard(TechPassport tech, int headerY, int headerX, DateTime? startDate, DateTime? endDate)
+        private int PrintOneMachineErrorCard(TechPassport tech, int headerY, int headerX, DateTime startDate, DateTime endDate)
         {
             if (tech != null &&
                             (!string.IsNullOrEmpty(tech.Name) || !string.IsNullOrEmpty(tech.SerialNumber) || !string.IsNullOrEmpty(tech.InventoryNumber)))
@@ -392,57 +399,59 @@ namespace LogicLibrary
                     headerY++;
                 }
 
-                var downtimes = passport.Downtimes.Where(x => x.End == null || x.End.Value >= new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1)).ToList();
+                var oldDowntimes = passport.Downtimes.Where(x => x.End == null || x.End.Value >= new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1)).ToList();
+                var downtimes = passport.Downtimes.Where(x => (x.End == null || x.End.Value >= startDate) && (x.Start <= endDate)).ToList();
                 if (downtimes != null && downtimes.Count > 0)
                 {
                     var lastStartDate = downtimes.Max(x => x.Start);
                     var lastDownTime = downtimes.Where(x => x.Start == lastStartDate).FirstOrDefault();
                     double downtimeHours = 0;
 
-                    var st = startDate != null ? startDate.Value : DateTime.MinValue;
-                    var en = endDate != null ? endDate.Value : DateTime.Now;
                     foreach (var d in downtimes)
                     {
-                        if (d.Start >= st)
+                        if (d.Start >= startDate)
                         {
-                            if (d.End != null && d.End.Value != DateTime.MinValue && (endDate == null || d.End.Value <= endDate.Value))
+                            if (d.End != null && d.End.Value != DateTime.MinValue && d.End.Value <= endDate)
                             {
                                 downtimeHours += (d.End - d.Start).Value.TotalHours;
                             }
                             else
                             {
-                                downtimeHours += (en - d.Start).TotalHours;
+                                downtimeHours += (endDate - d.Start).TotalHours;
                             }
                         }
                         else
                         {
-                            var firstDay = st;
-                            if (d.End != null && d.End.Value != DateTime.MinValue && (endDate == null || d.End.Value <= endDate.Value))
+                            var firstDay = startDate;
+                            if (d.End != null && d.End.Value != DateTime.MinValue && d.End.Value <= endDate)
                             {
                                 downtimeHours += (d.End - firstDay).Value.TotalHours;
                             }
                             else
                             {
-                                downtimeHours += (en - firstDay).TotalHours;
+                                downtimeHours += (endDate - firstDay).TotalHours;
                             }
                         }
                     }
 
-                    DateTime s = (startDate != null && lastDownTime.Start < startDate.Value) ? startDate.Value : lastDownTime.Start;
+                    //DateTime s = (lastDownTime.Start < startDate) ? startDate : lastDownTime.Start;
                     //DateTime? e = (endDate != null && (lastDownTime.End == null || lastDownTime.End.Value > endDate.Value)) ? endDate.Value : lastDownTime.End;
-                    DateTime? e = lastDownTime.End;
+                    //DateTime? e = lastDownTime.End;
 
-                    PrintHorizontalLineItem(headerY, 2, "Дата начала простоя");
-                    PrintHorizontalLineItem(headerY++, 3, s.ToLongDateString() + " " + s.ToLongTimeString());
-                    PrintHorizontalLineItem(headerY, 2, "Дата окончания простоя");
-                    PrintHorizontalLineItem(headerY++, 3, (e != null && e.Value != DateTime.MinValue) ? (e.Value.ToLongDateString() + " " + e.Value.ToLongTimeString()) : "");
+                    //PrintHorizontalLineItem(headerY, 2, "Дата начала простоя");
+                    //PrintHorizontalLineItem(headerY++, 3, s.ToLongDateString() + " " + s.ToLongTimeString());
+                    //PrintHorizontalLineItem(headerY, 2, "Дата окончания простоя");
+                    //PrintHorizontalLineItem(headerY++, 3, (e != null && e.Value != DateTime.MinValue) ? (e.Value.ToLongDateString() + " " + e.Value.ToLongTimeString()) : "");
+                    PrintHorizontalLineItem(headerY, 2, "Количество простоев");
+                    PrintHorizontalLineItem(headerY++, 3, downtimes.Count.ToString());
                     PrintHorizontalLineItem(headerY, 2, "Общее количество часов простоя");
                     PrintHorizontalLineItem(headerY++, 3, downtimeHours.ToString("N2"));
                 }
                 else
                 {
-                    PrintHorizontalLineItem(headerY++, 2, "Дата начала простоя");
-                    PrintHorizontalLineItem(headerY++, 2, "Дата окончания простоя");
+                    //PrintHorizontalLineItem(headerY++, 2, "Дата начала простоя");
+                    //PrintHorizontalLineItem(headerY++, 2, "Дата окончания простоя");
+                    PrintHorizontalLineItem(headerY++, 2, "Количество простоев");
                     PrintHorizontalLineItem(headerY++, 2, "Общее количество часов простоя");
                 }
             }
