@@ -635,14 +635,14 @@ namespace LogicLibrary
 
         public void MakeMaintananceEpisodeDone(int episodeId, DateTime date, double hoursOnWork, List<int> workerIds)
         {
-            List<Operator> operators = Data.Instance.GetOperators(workerIds);
-            Data.Instance.MakeMaintananceEpisodeDone(episodeId, date, hoursOnWork, operators);
+           //List<Operator> operators = Data.Instance.GetOperators(workerIds);
+            Data.Instance.MakeMaintananceEpisodeDone(episodeId, date, hoursOnWork, workerIds);
         }
 
         public void ChangeEpisodeInfo(int episodeId, DateTime date, List<int> workerIds)
         {
-            List<Operator> operators = Data.Instance.GetOperators(workerIds);
-            Data.Instance.ChangeEpisodeInfo(episodeId, date, operators);
+            //List<Operator> operators = Data.Instance.GetOperators(workerIds);
+            Data.Instance.ChangeEpisodeInfo(episodeId, date, workerIds);
         }
 
         //public void ErasePlannedDate(int id)
@@ -657,14 +657,14 @@ namespace LogicLibrary
 
         public void ChangeAdditionalInfo(int id, DateTime date, List<int> workerIds)
         {
-            List<Operator> operators = Data.Instance.GetOperators(workerIds);
-            Data.Instance.ChangeAdditionalInfo(id, date, operators);
+            //List<Operator> operators = Data.Instance.GetOperators(workerIds);
+            Data.Instance.ChangeAdditionalInfo(id, date, workerIds);
         }
 
         public void ChangeFactDate(int id, DateTime date, double hoursOnWork, List<int> workerIds)
         {
-            List<Operator> operators = Data.Instance.GetOperators(workerIds);
-            Data.Instance.ChangeFactDate(id, date, hoursOnWork, operators);
+            //List<Operator> operators = Data.Instance.GetOperators(workerIds);
+            Data.Instance.ChangeFactDate(id, date, hoursOnWork, workerIds);
         }
 
         public List<MaintenanceEpisodeView> GetEpisodeViewsByMaintenance(int maintenanceId)

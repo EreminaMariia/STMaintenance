@@ -157,7 +157,7 @@ namespace WpfView
         {
             plannedGrid.Children.Clear();
             List<IPlanedView> planed = new List<IPlanedView>();
-            foreach (MaintenanceNewView m in passportMaker.Maintenances)
+            foreach (MaintenanceNewView m in passportMaker.Maintenances.Where(p => p.IsInWork()).ToList())
             {
                 var episodes = passportMaker.Episodes.Where(e => e.MaintenanceId == m.Id && !e.IsDone).ToList();
                 if (episodes != null && episodes.Count > 0)

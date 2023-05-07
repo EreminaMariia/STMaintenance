@@ -103,7 +103,7 @@ namespace LogicLibrary
                 int headerX = 1;
                 headerY = MakeHeader(headerY, headerX + 1, "Информация о простое оборудования на " + date, 4, infos.ToArray());
 
-                var techs = Data.Instance.GetPassportByIds(techIds);
+                var techs = Data.Instance.GetPassportByIdsForEveryDayPrint(techIds);
 
                 foreach (var tech in techs)
                 {

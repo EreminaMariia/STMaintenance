@@ -22,38 +22,38 @@ namespace WpfView
     {
         DataService dataService;
         DateTime date;
-        public ChooseMaintenanceWindow(DataService dataService, int id, DateTime date)
-        {
-            this.dataService = dataService;
-            this.date = date;
-            InitializeComponent();
-            List<IPlanedView> temp = new List<IPlanedView>();
-            temp.AddRange(dataService.GetMaintenanceNewViews());
-            temp.AddRange(dataService.GetAdditionalWorkViews().Where(a => a.DateFact == null || a.DateFact == DateTime.MinValue));
-            //List<MaintenanceNewView> maintenances = new List<MaintenanceNewView>();
-            //if (date.Date != DateTime.Today.Date)
-            //{
-            //    temp = temp.
-            //    Where(d => d.MachineId == id && d.FutureDate.Date == date.Date).ToList();
-            //}
-            //else
-            //{
-            //    temp = temp.
-            //    Where(d => d.MachineId == id && d.FutureDate.Date <= date.Date).ToList();
-            //}
+        //public ChooseMaintenanceWindow(DataService dataService, int id, DateTime date)
+        //{
+        //    this.dataService = dataService;
+        //    this.date = date;
+        //    InitializeComponent();
+        //    List<IPlanedView> temp = new List<IPlanedView>();
+        //    temp.AddRange(dataService.GetMaintenanceNewViews());
+        //    temp.AddRange(dataService.GetAdditionalWorkViews().Where(a => a.DateFact == null || a.DateFact == DateTime.MinValue));
+        //    //List<MaintenanceNewView> maintenances = new List<MaintenanceNewView>();
+        //    //if (date.Date != DateTime.Today.Date)
+        //    //{
+        //    //    temp = temp.
+        //    //    Where(d => d.MachineId == id && d.FutureDate.Date == date.Date).ToList();
+        //    //}
+        //    //else
+        //    //{
+        //    //    temp = temp.
+        //    //    Where(d => d.MachineId == id && d.FutureDate.Date <= date.Date).ToList();
+        //    //}
 
-            if (date.Date != DateTime.Today.Date)
-            {
-                temp = temp.
-                Where(d => d.MachineId == id && d.GetPlannedDates(date, date).Count > 0).ToList();
-            }
-            else
-            {
-                temp = temp.
-                Where(d => d.MachineId == id && d.GetPlannedDates(DateTime.MinValue, date).Count > 0).ToList();
-            }
-            maintenanceListBox.ItemsSource = temp;
-        }
+        //    if (date.Date != DateTime.Today.Date)
+        //    {
+        //        temp = temp.
+        //        Where(d => d.MachineId == id && d.GetPlannedDates(date, date).Count > 0).ToList();
+        //    }
+        //    else
+        //    {
+        //        temp = temp.
+        //        Where(d => d.MachineId == id && d.GetPlannedDates(DateTime.MinValue, date).Count > 0).ToList();
+        //    }
+        //    maintenanceListBox.ItemsSource = temp;
+        //}
 
         public ChooseMaintenanceWindow(DataService dataService, List<IPlanedView> temp, int id, DateTime date)
         {

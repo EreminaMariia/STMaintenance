@@ -10,7 +10,8 @@
         <ListView x:Name="maintenanceListBox" SelectionMode="Single" MouseDoubleClick="maintenanceListBox_MouseDoubleClick">
             <ListView.View>
                 <GridView>
-                    <GridViewColumn DisplayMemberBinding="{Binding Path=Id}" Width="0">Id</GridViewColumn>
+                    <GridViewColumn DisplayMemberBinding="{Binding Path=Id}">Id</GridViewColumn>
+                    <GridViewColumn DisplayMemberBinding="{Binding Path=FutureDate}" Width="0">Дата</GridViewColumn>
                     <GridViewColumn DisplayMemberBinding="{Binding Path=Type}">Тип</GridViewColumn>
                     <GridViewColumn DisplayMemberBinding="{Binding Path=Name}">Наименование</GridViewColumn>
                 </GridView>

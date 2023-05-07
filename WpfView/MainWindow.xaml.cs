@@ -128,7 +128,7 @@ namespace WpfView
 
             episodes.AddRange(GetNewEpisodes(end, episodes, maintenances));
 
-            MakePlanTab(start, end, adds, episodes);
+            MakePlanTab(start, end, adds, episodes, "");
         }
 
         private List<MaintenanceEpisodeView> GetNewEpisodes(DateTime end, List<MaintenanceEpisodeView> episodes, List<MaintenanceNewView> maintenances)
@@ -175,7 +175,7 @@ namespace WpfView
         double letterCount = 25;
         int rowCount = 2;
         List<List<KeyValuePair<System.Drawing.Color, string>>> planLocal = new();
-        private void MakePlanTab(DateTime start, DateTime end, List<AdditionalWorkView> additionalViews, List<MaintenanceEpisodeView> episodeViews)
+        private void MakePlanTab(DateTime start, DateTime end, List<AdditionalWorkView> additionalViews, List<MaintenanceEpisodeView> episodeViews, string filter)
         {
             allPanel.Children.Clear();
             fixedPanel.Children.Clear();
@@ -218,99 +218,102 @@ namespace WpfView
             foreach (var view in filtred)
             {
                 int rowHeight = defaultRowHeight;
-                var machine = dataService.GetPassportTechViewById(view.Key);
-                string machineName = machine.Name + " " + machine.Version;
-                if (machineName.Length > letterCount * rowCount)
+                var machine = passports.FirstOrDefault(x => x.Id == view.Key);                
+                string machineName = machine!=null? machine.Name + " " + machine.Version: "";
+                if (machineName != null && (string.IsNullOrEmpty(filter) || machineName.ToLowerInvariant().Contains(filter.ToLowerInvariant())))
                 {
-                    int nameRowsCount = (int)Math.Ceiling(machineName.Length / letterCount);
-                    rowHeight = (defaultRowHeight / rowCount) * nameRowsCount;
-                }
-                List<KeyValuePair<System.Drawing.Color, string>> machineLine = new() { new KeyValuePair<System.Drawing.Color, string>(System.Drawing.Color.White, machineName) };
-
-                StackPanel viewPanel = new StackPanel();
-                viewPanel.Orientation = Orientation.Horizontal;
-                viewPanel.Height = rowHeight;
-                Button nameButton = new Button();
-                nameButton.Width = nameWidth;
-                nameButton.Content = new TextBlock() { Text = machineName, TextWrapping = TextWrapping.Wrap };
-                nameButton.Tag = view.Key;
-                nameButton.Click += new RoutedEventHandler(ShowPassport);
-                nameButton.Height = rowHeight;
-                fixedPanel.Children.Add(nameButton);
-                for (DateTime i = start.Date; i <= end.Date; i = i.AddDays(1))
-                {
-                    Button dateButton = new Button();
-                    dateButton.Width = cellWidth;
-                    System.Drawing.Color dayColor = System.Drawing.Color.White;
-                    string dayContent = "";
-                    foreach (var item in view)
+                    if (machineName.Length > letterCount * rowCount)
                     {
-                        if (i.Date == DateTime.Today.Date && item.GetPlannedDatesForToday().Any(d => d.Date <= i.Date))
+                        int nameRowsCount = (int)Math.Ceiling(machineName.Length / letterCount);
+                        rowHeight = (defaultRowHeight / rowCount) * nameRowsCount;
+                    }
+                    List<KeyValuePair<System.Drawing.Color, string>> machineLine = new() { new KeyValuePair<System.Drawing.Color, string>(System.Drawing.Color.White, machineName) };
+
+                    StackPanel viewPanel = new StackPanel();
+                    viewPanel.Orientation = Orientation.Horizontal;
+                    viewPanel.Height = rowHeight;
+                    Button nameButton = new Button();
+                    nameButton.Width = nameWidth;
+                    nameButton.Content = new TextBlock() { Text = machineName, TextWrapping = TextWrapping.Wrap };
+                    nameButton.Tag = view.Key;
+                    nameButton.Click += new RoutedEventHandler(ShowPassport);
+                    nameButton.Height = rowHeight;
+                    fixedPanel.Children.Add(nameButton);
+                    for (DateTime i = start.Date; i <= end.Date; i = i.AddDays(1))
+                    {
+                        Button dateButton = new Button();
+                        dateButton.Width = cellWidth;
+                        System.Drawing.Color dayColor = System.Drawing.Color.White;
+                        string dayContent = "";
+                        foreach (var item in view)
                         {
-                            if (dateButton.Content == null)
-                            {
-                                dateButton.Click += new RoutedEventHandler(DoWork);
-                                dateButton.Content = "";
-                                dayContent = "";
-                            }
-                            if (!string.IsNullOrEmpty(item.Type))
-                            {
-                                dateButton.Content += item.Type + "\n";
-                                dayContent += item.Type + "\n";
-                            }
-                            if (item.GetPlannedDatesForToday().Any(d => d.Date < i.Date))
-                            {
-                                dateButton.Background = Brushes.Coral;
-                                dayColor = System.Drawing.Color.Coral;
-                            }
-                            else if (dateButton.Background != Brushes.Coral)
-                            {
-                                dateButton.Background = Brushes.Aquamarine;
-                                dayColor = System.Drawing.Color.Aquamarine;
-                            }
-                        }
-                        else if (item.GetPlannedDates(start, end).Any(d => d.Date == i.Date))
-                        {
-                            if (i.Date.Date < DateTime.Today.Date)
-                            {
-                                if (dateButton.Content == null)
-                                {
-                                    dateButton.Content = "";
-                                    dateButton.Background = Brushes.Beige;
-                                    dayContent = "";
-                                    dayColor = System.Drawing.Color.Beige;
-                                }
-                                if (!string.IsNullOrEmpty(item.Type))
-                                {
-                                    dateButton.Content += item.Type + "\n";
-                                    dayContent += item.Type + "\n";
-                                }
-                            }
-                            else
+                            if (i.Date == DateTime.Today.Date && item.GetPlannedDatesForToday().Any(d => d.Date <= i.Date))
                             {
                                 if (dateButton.Content == null)
                                 {
                                     dateButton.Click += new RoutedEventHandler(DoWork);
                                     dateButton.Content = "";
-                                    dateButton.Background = Brushes.Aquamarine;
                                     dayContent = "";
-                                    dayColor = System.Drawing.Color.Aquamarine;
                                 }
                                 if (!string.IsNullOrEmpty(item.Type))
                                 {
                                     dateButton.Content += item.Type + "\n";
                                     dayContent += item.Type + "\n";
                                 }
+                                if (item.GetPlannedDatesForToday().Any(d => d.Date < i.Date))
+                                {
+                                    dateButton.Background = Brushes.Coral;
+                                    dayColor = System.Drawing.Color.Coral;
+                                }
+                                else if (dateButton.Background != Brushes.Coral)
+                                {
+                                    dateButton.Background = Brushes.Aquamarine;
+                                    dayColor = System.Drawing.Color.Aquamarine;
+                                }
                             }
+                            else if (item.GetPlannedDates(i.Date, end).Any(d => d.Date == i.Date))
+                            {
+                                if (i.Date < DateTime.Today.Date)
+                                {
+                                    if (dateButton.Content == null)
+                                    {
+                                        dateButton.Content = "";
+                                        dateButton.Background = Brushes.Beige;
+                                        dayContent = "";
+                                        dayColor = System.Drawing.Color.Beige;
+                                    }
+                                    if (!string.IsNullOrEmpty(item.Type))
+                                    {
+                                        dateButton.Content += item.Type + "\n";
+                                        dayContent += item.Type + "\n";
+                                    }
+                                }
+                                else
+                                {
+                                    if (dateButton.Content == null)
+                                    {
+                                        dateButton.Click += new RoutedEventHandler(DoWork);
+                                        dateButton.Content = "";
+                                        dateButton.Background = Brushes.Aquamarine;
+                                        dayContent = "";
+                                        dayColor = System.Drawing.Color.Aquamarine;
+                                    }
+                                    if (!string.IsNullOrEmpty(item.Type))
+                                    {
+                                        dateButton.Content += item.Type + "\n";
+                                        dayContent += item.Type + "\n";
+                                    }
+                                }
+                            }
+                            dateButton.Tag = i.Date;
+                            dateButton.Name = "button_" + item.MachineId + "_";
                         }
-                        dateButton.Tag = i.Date;
-                        dateButton.Name = "button_" + item.MachineId + "_";
+                        viewPanel.Children.Add(dateButton);
+                        machineLine.Add(new KeyValuePair<System.Drawing.Color, string>(dayColor, dayContent));
                     }
-                    viewPanel.Children.Add(dateButton);
-                    machineLine.Add(new KeyValuePair<System.Drawing.Color, string>(dayColor, dayContent));
+                    allPanel.Children.Add(viewPanel);
+                    planLocal.Add(machineLine);
                 }
-                allPanel.Children.Add(viewPanel);
-                planLocal.Add(machineLine);
             }
         }
 
@@ -500,25 +503,36 @@ namespace WpfView
 
         private void startPlanPicker_SelectedDateChanged(object sender, SelectionChangedEventArgs e)
         {
-            var start = (DatePicker)e.OriginalSource;
-            var st = (DateTime)start.SelectedDate;
+            var start = (DatePicker)e.OriginalSource;            
             DateTime end = endPlanPicker.SelectedDate != null ? (DateTime)endPlanPicker.SelectedDate : DateTime.Today.AddDays(defaultDays);
-            startPlanPicker.SelectedDate = st;
-            RefilterPlannedGrid(st, end, plannedTextBox.Text);
+            if (start.SelectedDate != null)
+            {
+                //var st = start.SelectedDate != null ? (DateTime)start.SelectedDate : end;
+                var st = (DateTime)start.SelectedDate;
+                startPlanPicker.SelectedDate = st;
+                if (st > end)
+                {
+                    st = end;
+                }
+                RefilterPlannedGrid(st, end, plannedTextBox.Text);
+            }
         }
 
         private void endPlanPicker_SelectedDateChanged(object sender, SelectionChangedEventArgs e)
         {
             DateTime start = startPlanPicker.SelectedDate != null ? (DateTime)startPlanPicker.SelectedDate : DateTime.Today;
             var end = (DatePicker)e.OriginalSource;
-            var st = (DateTime)end.SelectedDate;
-            endPlanPicker.SelectedDate = st;
-
-            if (st < start)
+            if (end.SelectedDate != null)
             {
-                st = start;
+                var en = (DateTime)end.SelectedDate;
+                endPlanPicker.SelectedDate = en;
+
+                if (en < start)
+                {
+                    en = start;
+                }
+                RefilterPlannedGrid(start, en, plannedTextBox.Text);
             }
-            RefilterPlannedGrid(start, st, plannedTextBox.Text);
         }
 
         private void startDatePicker_SelectedDateChanged(object sender, SelectionChangedEventArgs e)
@@ -641,12 +655,13 @@ namespace WpfView
 
             if (string.IsNullOrEmpty(s))
             {
-                MakePlanTab(start, end, adds, episodes);
+                MakePlanTab(start, end, adds, episodes, "");
             }
             else
             {
-                MakePlanTab(start, end, adds.Where(x => x.Machine.ToLower().Contains(s.ToLower())).ToList(),
-                    episodes.Where(x => x.Machine.ToLower().Contains(s.ToLower())).ToList());
+                //MakePlanTab(start, end, adds.Where(x => x.Machine.ToLower().Contains(s.ToLower())).ToList(),
+                //    episodes.Where(x => x.Machine.ToLower().Contains(s.ToLower())).ToList());
+                MakePlanTab(start, end, adds, episodes, s);
             }
         }
 

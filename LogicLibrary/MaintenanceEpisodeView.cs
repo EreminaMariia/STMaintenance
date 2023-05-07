@@ -28,7 +28,7 @@ namespace LogicLibrary
         {
             return WorkingHours;
         }
-        public MaintenanceEpisodeView (MaintenanceEpisode episode)
+            public MaintenanceEpisodeView (MaintenanceEpisode episode)
         {
             Id = episode.Id;
             FutureDate = episode.Date;

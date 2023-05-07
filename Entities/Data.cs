@@ -200,6 +200,19 @@ namespace Entities
                 .ToList();
         }
 
+        public List<TechPassport> GetPassportByIdsForEveryDayPrint(List<int> ids)
+        {
+            using var context = new MainContext();
+            return context.TechPassports.
+                Include(e => e.Errors).
+                Include(w => w.Downtimes).
+                Include(d => d.Department).
+                Include(t => t.Type).
+                Where(t => ids.Contains(t.Id))
+                .OrderBy(d => d.Department.Number)
+                .ToList();
+        }
+
 
         public List<TechPassport> GetFullTechPassports()
         {
@@ -789,28 +802,28 @@ namespace Entities
             return maintenance.Id;
         }
 
-        public void ChangeAdditionalInfo(int id, DateTime date, List<Operator> operators)
+        public void ChangeAdditionalInfo(int id, DateTime date, List<int> workerIds)
         {
             using var context = new MainContext();
-            var add = context.AdditionalWorks.FirstOrDefault(x => x.Id == id);
+            var add = context.AdditionalWorks.Include(o=>o.Operators).FirstOrDefault(x => x.Id == id);
             if (add != null)
             {
                 add.PlannedDate = date;
-                add.Operators = operators;
+                add.Operators = context.Operators.Where(x => workerIds.Contains(x.Id)).ToList();
                 context.SaveChanges();
             }
         }
 
-        public void ChangeFactDate(int id, DateTime date, double hoursOnWork, List<Operator> workers)
+        public void ChangeFactDate(int id, DateTime date, double hoursOnWork, List<int> workerIds)
         {
             using var context = new MainContext();
-            var work = context.AdditionalWorks.FirstOrDefault(x => x.Id == id);
+            var work = context.AdditionalWorks.Include(o => o.Operators).FirstOrDefault(x => x.Id == id);
             if (work != null)
             {
                 work.DateFact = date;
                 work.HoursFact = hoursOnWork;
-                work.Operators = workers;
-                work.PlannedDate = null;
+                work.Operators = context.Operators.Where(x => workerIds.Contains(x.Id)).ToList();
+                work.PlannedDate = null;          
                 context.SaveChanges();
             }
         }
@@ -953,41 +966,44 @@ namespace Entities
             }
         }
 
-        public void MakeMaintananceEpisodeDone(int episodeId, DateTime date, double hoursOnWork, List<Operator> operators)
+        public void MakeMaintananceEpisodeDone(int episodeId, DateTime date, double hoursOnWork, List<int> workerIds)
         {
             using var context = new MainContext();
-            var maintenanceEpisode = context.MaintenanceEpisodes.FirstOrDefault(x => x.Id == episodeId);
+            var maintenanceEpisode = context.MaintenanceEpisodes.Include(j => j.Operators).FirstOrDefault(x => x.Id == episodeId);
             if (maintenanceEpisode != null)
             {
                 maintenanceEpisode.Date = date;
                 maintenanceEpisode.Hours = hoursOnWork;
-                maintenanceEpisode.Operators = operators;
+                maintenanceEpisode.Operators = context.Operators.Where(x => workerIds.Contains(x.Id)).ToList();
                 maintenanceEpisode.IsDone = true;
                 context.SaveChanges();
             }
         }
 
-        public void ChangeEpisodeInfo(int episodeId, DateTime date, List<Operator> operators)
+        public void ChangeEpisodeInfo(int episodeId, DateTime date, List<int> workerIds)
         {
             using var context = new MainContext();
-            var maintenanceEpisode = context.MaintenanceEpisodes.FirstOrDefault(x => x.Id == episodeId);
+            var maintenanceEpisode = context.MaintenanceEpisodes.Include(i => i.Info).Include(j => j.Operators).FirstOrDefault(x => x.Id == episodeId);
             if (maintenanceEpisode != null)
             {
                 var oldDate = maintenanceEpisode.Date;
 
                 maintenanceEpisode.Date = date;
-                maintenanceEpisode.Operators = operators;
+                maintenanceEpisode.Operators = context.Operators.Where(x => workerIds.Contains(x.Id)).ToList();
                 maintenanceEpisode.IsDone = false;
 
                 TimeSpan delta = date - oldDate;
                 if (delta != TimeSpan.Zero)
                 {
-                    var eps = context.MaintenanceEpisodes.Where(a => a.Info.Id == maintenanceEpisode.Info.Id && a.Date.Date > oldDate);
-                    foreach (var e in eps)
+                    var eps = context.MaintenanceEpisodes.Where(a => a.Info.Id == maintenanceEpisode.Info.Id && a.Date.Date > oldDate).ToList();
+                    if (eps != null)
                     {
-                        if (e.IsDone == null || !(bool)e.IsDone)
+                        foreach (var e in eps)
                         {
-                            e.Date += delta;
+                            if (e.IsDone == null || !(bool)e.IsDone)
+                            {
+                                e.Date += delta;
+                            }
                         }
                     }
                 }
@@ -1044,7 +1060,7 @@ namespace Entities
         public List<MaintenanceEpisode> GetEpisodesByInfoId(int id)
         {
             using var context = new MainContext();
-            return context.MaintenanceEpisodes.Include(s => s.Operators).Where(x => x.Info.Id == id).ToList();
+            return context.MaintenanceEpisodes.Include(m => m.Info).Include(s => s.Operators).Where(x => x.Info.Id == id).ToList();
         }
 
         private MaintenanceInfo MakeMaintanance(MaintenanceInfo maintenance, string name, int typeId, bool isFixed, double interval, double hours, DateTime? date, bool isInWork)
