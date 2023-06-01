@@ -31,9 +31,6 @@ namespace LogicLibrary.Services
             techPassport.ControledParametrEpisodes.Add(new ControledParametrEpisodeView
             {
                 Id = id,
-                //Name = item.Name,
-                //Nominal = item.Nominal,
-                //Unit = item.Unit
                 Date = item.Date,
                 Count = item.Count
 
@@ -53,9 +50,6 @@ namespace LogicLibrary.Services
                 canChange = false;
                 var item = (ControledParametrEpisodeView)view;
                 var oldItem = techPassport.ControledParametrEpisodes.First(x => x.Id == item.Id);
-                //oldItem.Name = item.Name;
-                //oldItem.Nominal = item.Nominal;
-                //oldItem.Unit = item.Unit;
                 oldItem.Date = item.Date;
                 oldItem.Count = item.Count;
                 oldItem.MarkChanged();

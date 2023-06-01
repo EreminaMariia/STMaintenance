@@ -90,13 +90,11 @@ namespace WpfView
 
                     string t = "";
                     int id = 0;
-                    //double d = 0;
                     string count = "";
                     if (((DataGrid)e.Source).SelectedItem is MaterialView)
                     {
                         var item = (MaterialView)((DataGrid)e.Source).SelectedItem;
                         id = item.Id;
-                        //double.TryParse(item.Count, out d);
                         count = item.Count;
                         var m = dataService.GetMaterialViewById(id);
                         if (m != null)
@@ -113,8 +111,7 @@ namespace WpfView
                         passportMaker.EditMaterialByInfo(id, infoId);
                     }
                     else
-                    {
-                         
+                    {                    
                         id = passportMaker.AddMaterial(infoId, count, maintenanceId, isAdditional);
                     }
                     RefreshMaterialsGrid(id);

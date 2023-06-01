@@ -24,17 +24,22 @@ namespace LogicLibrary
             var list = Data.Instance.GetMaterialInfos();
             var outerList = Data.Instance.MaterialsInfoFromOuterBase();
             List<MaterialInfoView> result = new List<MaterialInfoView>();
-            foreach (var item in list)
+            try
             {
-                var artInfos = Data.Instance.GetArtInfos().Where(x => x.Material != null && x.Material.Id == item.Id);
-                string bdForm = "";
-                if (item.InnerArt != null)
+                foreach (var item in list)
                 {
-                    bdForm = item.InnerArt.Replace(" ", "").ToLower();
-                }               
-                var outerInfo = outerList.FirstOrDefault(x => x.SKLN_Cd == bdForm);
-                result.Add(new MaterialInfoView(item, artInfos, outerInfo));
+                    var artInfos = Data.Instance.GetArtInfos().Where(x => x.Material != null && x.Material.Id == item.Id);
+                    string bdForm = "";
+                    if (item.InnerArt != null)
+                    {
+                        bdForm = item.InnerArt.Replace(" ", "").ToLower();
+                    }
+                    var outerInfo = outerList.FirstOrDefault(x => x.SKLN_Cd == bdForm);
+                    result.Add(new MaterialInfoView(item, artInfos, outerInfo));
+                }
             }
+            catch (Exception ex)
+            { }
             return result;
         }
 
@@ -143,9 +148,9 @@ namespace LogicLibrary
             return result;
         }
 
-        public List<MaintenanceNewView> GetMaintenanceNewViews()
+        public List<MaintenanceNewView> GetMaintenanceNewViews(int passportId = 0)
         {
-            var list = Data.Instance.GetMaintenance();
+            var list = passportId == 0 ? Data.Instance.GetMaintenance() : Data.Instance.GetMaintenance(passportId);
             List<MaintenanceNewView> result = new List<MaintenanceNewView>();
             foreach (MaintenanceInfo item in list)
             {
@@ -154,9 +159,9 @@ namespace LogicLibrary
             return result;
         }
 
-        public List<AdditionalWorkView> GetAdditionalWorkViews()
-        {           
-            var list = Data.Instance.GetAdditionalWorks();
+        public List<AdditionalWorkView> GetAdditionalWorkViews(int passportId = 0)
+        {
+            var list = passportId == 0 ? Data.Instance.GetAdditionalWorks() : Data.Instance.GetAdditionalWorks(passportId);
             List<AdditionalWorkView> result = new List<AdditionalWorkView>();
             foreach (var item in list)
             {
@@ -176,7 +181,7 @@ namespace LogicLibrary
             return result;
         }
 
-        
+
 
         public MaintenanceNewView GetMaintenanceNewById(int id)
         {
@@ -284,16 +289,6 @@ namespace LogicLibrary
 
         }
 
-        //public void EditCharacteristicsByUnit(int id, int unitId)
-        //{
-        //    Characteristic? characteristic = Data.Instance.GetCharacteristic(id);
-        //    Unit? unit = Data.Instance.GetUnitTypes().FirstOrDefault(c => c.Id == unitId);
-        //    if (unit != null && characteristic != null)
-        //    {
-        //        characteristic.Unit = unit;
-        //    }            
-        //}
-
         public void EditMaterialInfoByUnit(int id, int unitId)
         {
             Data.Instance.EditMaterialInfoByUnit(id, unitId);
@@ -309,12 +304,12 @@ namespace LogicLibrary
             Data.Instance.EditDepartmentByOperator(id, unitId);
         }
 
-        public void EditErrorWorking (int id, bool isWorking)
+        public void EditErrorWorking(int id, bool isWorking)
         {
             Data.Instance.EditErrorWorking(id, isWorking);
         }
 
-        
+
 
         public void EditMaterialByInfo(int id, int infoId)
         {
@@ -346,7 +341,7 @@ namespace LogicLibrary
             return new ErrorNewView(GetErrorById(id));
         }
 
-        public int AddTechPassport (TechPassport passport)
+        public int AddTechPassport(TechPassport passport)
         {
             return Data.Instance.AddTechPassport(passport);
         }
@@ -366,58 +361,15 @@ namespace LogicLibrary
             Data.Instance.EditTechPassportBaseInfo(passport);
         }
 
-        //public void SaveCharacteristics(int techPassportId, List<CharacteristicView> Characteristics)
-        //{
-        //    var techPassport = Data.Instance.GetPassportById(techPassportId);
-        //    if (techPassport != null)
-        //    {
-        //        foreach (CharacteristicView cV in Characteristics)
-        //        {
-        //            if (cV != null)
-        //            {
-        //                if (techPassport.Characteristics != null)
-        //                {
-        //                    var ch = techPassport.Characteristics.FirstOrDefault(x => x.Id == cV.Id);
-        //                    if (ch != null)
-        //                    {
-        //                        Data.Instance.EditCharacteristic(techPassportId, cV.Id, cV.Name, cV.GetCount(), cV.Commentary);
-        //                        Data.Instance.EditCharacteristicsByUnit(cV.Id, cV.GetUnitId());
-        //                    }
-        //                    else
-        //                    {
-        //                        int id = Data.Instance.AddCharacteristic(techPassportId, cV.Name, cV.GetCount(), cV.Commentary);
-        //                        Data.Instance.EditCharacteristicsByUnit(id, cV.GetUnitId());
-        //                    }
-        //                }
-        //                else
-        //                {
-        //                    int id = Data.Instance.AddCharacteristic(techPassportId, cV.Name, cV.GetCount(), cV.Commentary);
-        //                    Data.Instance.EditCharacteristicsByUnit(id, cV.GetUnitId());
-        //                }
-        //            }
-        //        }
-        //    }
-        //}
-
         public TechView GetPassportTechViewById(int id)
         {
             TechPassport passport = GetPassportById(id);
             return new TechView(passport);
         }
 
-        public List<MaintenanceNewView> GetMaintenanceViewsByInfos(ICollection<MaintenanceInfo> infos)
+        public List<ControledParametrView> GetControlParamViews(int passportId)
         {
-            List<MaintenanceNewView> views = new List<MaintenanceNewView>();
-            foreach (var info in infos)
-            {
-                info.MaintenanceType = Data.Instance.GetMaintenanceTypeByMaintenanceId(info.Id);
-                views.Add(new MaintenanceNewView(info));
-            }
-            return views;
-        }
-
-        public List<ControledParametrView> GetControlViewsByInfos(ICollection<ControledParametr> infos)
-        {
+            var infos = Data.Instance.GetControlParams(passportId);
             List<ControledParametrView> views = new List<ControledParametrView>();
             foreach (var info in infos)
             {
@@ -436,8 +388,9 @@ namespace LogicLibrary
             return views;
         }
 
-        public List<CharacteristicView> GetCharacteristicViewsByInfos(ICollection<Characteristic> infos)
+        public List<CharacteristicView> GetCharacteristicViews(int passportId)
         {
+            var infos = Data.Instance.GetCharacteristics(passportId);
             List<CharacteristicView> views = new List<CharacteristicView>();
             foreach (var info in infos)
             {
@@ -446,8 +399,11 @@ namespace LogicLibrary
             return views;
         }
 
-        public List<InstructionView> GetInstructionViewsByInfos(ICollection<Instruction> infos)
+        public List<Characteristic> GetCharacteristics(int passportId) { return Data.Instance.GetCharacteristics(passportId); }
+
+        public List<InstructionView> GetInstructionViews(int passportId)
         {
+            var infos = Data.Instance.GetInstructions(passportId);
             List<InstructionView> views = new List<InstructionView>();
             foreach (var info in infos)
             {
@@ -456,8 +412,9 @@ namespace LogicLibrary
             return views;
         }
 
-        public List<InstrumentView> GetInstrumentViewsByInfos(ICollection<Instrument> infos)
+        public List<InstrumentView> GetInstrumentViews(int passportId)
         {
+            var infos = Data.Instance.GetInstruments(passportId);
             List<InstrumentView> views = new List<InstrumentView>();
             foreach (var info in infos)
             {
@@ -466,10 +423,13 @@ namespace LogicLibrary
             return views;
         }
 
-        
-
-        public List<ErrorNewView> GetErrorViewsByInfos(ICollection<MaintenanceError> infos)
+        public List<Downtime> GetDowntimes(int passportId)
         {
+            return Data.Instance.GetDowntimes(passportId);
+        }
+        public List<ErrorNewView> GetErrorViews(int passportId)
+        {
+            var infos = Data.Instance.GetErrors(passportId);
             List<ErrorNewView> views = new List<ErrorNewView>();
             foreach (var info in infos)
             {
@@ -480,18 +440,9 @@ namespace LogicLibrary
             return views;
         }
 
-        public List<AdditionalWorkView> GetAdditionalWorkViewsByInfos(ICollection<AdditionalWork> infos)
+        public List<HourView> GetHourViews(int passportId)
         {
-            List<AdditionalWorkView> views = new List<AdditionalWorkView>();
-            foreach (var info in infos)
-            {
-                views.Add(new AdditionalWorkView(info));
-            }
-            return views;
-        }
-
-        public List<HourView> GetHourViewsByInfos(ICollection<HoursInfo> infos)
-        {
+            var infos = Data.Instance.GetWorkingHours(passportId);
             List<HourView> views = new List<HourView>();
             foreach (var info in infos)
             {
@@ -536,7 +487,7 @@ namespace LogicLibrary
                 {
                     foreach (var ep in info.Episodes)
                     {
-                        if (ep.Date <= date && ep.Date > DateTime.MinValue 
+                        if (ep.Date <= date && ep.Date > DateTime.MinValue
                             && ep.IsDone != null && ep.IsDone.Value)
                         {
                             views.Add(new OuterArchiveView(ep));
@@ -548,43 +499,6 @@ namespace LogicLibrary
             return views.OrderByDescending(x => x.Date).ToList();
         }
 
-        
-
-        //public List<PlannedView> GetPlannedViewsByInfos(ICollection<AdditionalWork> additional,ICollection<MaintenanceInfo> maintenance)
-        //{
-        //    DateTime date = DateTime.Now;
-        //    List<PlannedView> views = new List<PlannedView>();
-        //    foreach (var ad in additional)
-        //    {
-        //        if ((ad.DateFact == null || ad.DateFact >= date) && (ad.PlannedDate != null && ad.PlannedDate >=date))
-        //        {
-        //            views.Add(new PlannedView(ad));
-        //        }
-        //    }
-        //    foreach (var info in maintenance)
-        //    {
-        //        foreach (var ep in info.Episodes)
-        //        {
-        //            if ((ep.Date == null || ep.Date >= date) && (info.PlannedDate != null && info.PlannedDate >= date))
-        //            {
-        //                views.Add(new PlannedView(ep));
-        //            }
-        //        }
-        //    }
-
-        //    return views;
-        //}
-
-        //public List<ControledParametrView> GetControledParametrViewsByInfos(List<ControledParametr> infos)
-        //{
-        //    List<ControledParametrView> views = new List<ControledParametrView>();
-        //    foreach (var info in infos)
-        //    {
-        //        views.Add(new ControledParametrView(info));
-        //    }
-        //    return views;
-        //}
-
         public TechPassport? GetPassportById(int id)
         {
             return Data.Instance.GetPassportById(id);
@@ -595,7 +509,7 @@ namespace LogicLibrary
             return Data.Instance.GetCharacteristics().Where(i => i.TechPassport != null && i.TechPassport.Id == id).ToList();
         }
 
-            public void AddMaintananceEpisode(int maintenanceId, DateTime date, double hoursOnWork, List<int> workerIds)
+        public void AddMaintananceEpisode(int maintenanceId, DateTime date, double hoursOnWork, List<int> workerIds)
         {
             List<Operator> operators = Data.Instance.GetOperators(workerIds);
             Data.Instance.AddMaintananceEpisode(maintenanceId, date, hoursOnWork, operators);
@@ -621,7 +535,7 @@ namespace LogicLibrary
 
         public void SaveEmptyEpisodes(int maintenanceId, DateTime date)
         {
-            var m = Data.Instance.GetMaintenance().FirstOrDefault(x => x.Id ==  maintenanceId);
+            var m = Data.Instance.GetMaintenance().FirstOrDefault(x => x.Id == maintenanceId);
             if (m != null)
             {
                 var mView = new MaintenanceNewView(m);
@@ -635,35 +549,21 @@ namespace LogicLibrary
 
         public void MakeMaintananceEpisodeDone(int episodeId, DateTime date, double hoursOnWork, List<int> workerIds)
         {
-           //List<Operator> operators = Data.Instance.GetOperators(workerIds);
             Data.Instance.MakeMaintananceEpisodeDone(episodeId, date, hoursOnWork, workerIds);
         }
 
         public void ChangeEpisodeInfo(int episodeId, DateTime date, List<int> workerIds)
         {
-            //List<Operator> operators = Data.Instance.GetOperators(workerIds);
             Data.Instance.ChangeEpisodeInfo(episodeId, date, workerIds);
         }
 
-        //public void ErasePlannedDate(int id)
-        //{
-        //    Data.Instance.ErasePlannedDate(id);
-        //}
-
-        //public void ChangePlannedDate(int id, DateTime date)
-        //{
-        //    Data.Instance.ChangePlannedDate(id, date);
-        //}
-
         public void ChangeAdditionalInfo(int id, DateTime date, List<int> workerIds)
         {
-            //List<Operator> operators = Data.Instance.GetOperators(workerIds);
             Data.Instance.ChangeAdditionalInfo(id, date, workerIds);
         }
 
         public void ChangeFactDate(int id, DateTime date, double hoursOnWork, List<int> workerIds)
         {
-            //List<Operator> operators = Data.Instance.GetOperators(workerIds);
             Data.Instance.ChangeFactDate(id, date, hoursOnWork, workerIds);
         }
 
@@ -678,20 +578,13 @@ namespace LogicLibrary
             return result;
         }
 
-        public List<MaterialView> GetMaterialViewsByMaintenance(int maintenanceId, bool isAdditional)
+        public List<MaterialView> GetMaterialViewsByMaintenance(List<int> ids, bool isAdditional)
         {
             List<Material> materials = new List<Material>();
-            if (Data.Instance.GetMaterials() != null)
-            {
-                if (isAdditional)
-                {
-                    materials = Data.Instance.GetMaterials().Where(x => x.AdditionalWork != null && x.AdditionalWork.Id == maintenanceId).ToList();
-                }
-                else
-                {
-                    materials = Data.Instance.GetMaterials().Where(x => x.MaintenanceInfo != null && x.MaintenanceInfo.Id == maintenanceId).ToList();
-                }
-            }
+            if (isAdditional)
+                materials = Data.Instance.GetMaterialsForAdditional(ids);
+            else
+                materials = Data.Instance.GetMaterialsForMaintenance(ids);
             List<MaterialView> materialViews = new List<MaterialView>();
             foreach (Material material in materials)
             {
@@ -726,10 +619,5 @@ namespace LogicLibrary
         {
             return Data.Instance.AddArtInfo(materialId, artName, supId);
         }
-
-        //public int AddMaintenance (MaintenanceNewView view)
-        //{
-        //    return Data.Instance.AddMaintanance(view.MachineId, view.MaintenanceName, view.Type, view.IsFixed);
-        //}
     }
 }

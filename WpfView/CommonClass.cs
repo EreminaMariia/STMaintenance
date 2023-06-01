@@ -34,6 +34,7 @@ namespace WpfView
                 e.Column.Header.ToString() == "MachineId" ||
                 e.Column.Header.ToString() == "InfoId" ||
                 e.Column.Header.ToString() == "Machine" ||
+                e.Column.Header.ToString() == "MachineModel" ||
                 e.Column.Header.ToString() == "CodeId" ||
                 e.Column.Header.ToString() == "TypeId")
             {
@@ -54,6 +55,7 @@ namespace WpfView
             }
             PropertyDescriptor pd = DependencyPropertyDescriptor.FromProperty(DataGridColumn.ActualWidthProperty, typeof(DataGridColumn));           
         }
+
 
         public static ObservableCollection<T> AddItem<T>(ObservableCollection<T> collection, List<T> list, ITableViewService<T> service, DataGrid grid) where T : class, ITableView
         {
@@ -309,6 +311,10 @@ namespace WpfView
                             {
                                 IsFiltred = false;
                             }
+                        }
+                        else if ((value == null || string.IsNullOrEmpty(value.ToString())) && !string.IsNullOrEmpty(kvp.Value))
+                        {
+                            IsFiltred = false;
                         }
                     }
 

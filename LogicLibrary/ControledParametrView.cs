@@ -12,20 +12,12 @@ namespace LogicLibrary
     public class ControledParametrView : ITableView, INameIdView
     {
         private bool isChanged;
-        //private DateTime date = DateTime.MinValue;
         private string name = string.Empty;
         private string unit = string.Empty;
         private double nominal = 0;
         private int unitId = 0;
-        //private double count = 0;
         public int Id { get; set; }      
 
-        //[System.ComponentModel.DisplayName("Дата")]
-        //public DateTime Date
-        //{
-        //    get { return date; }
-        //    set { date = value; OnPropertyChanged(nameof(Date)); }
-        //}
         [System.ComponentModel.DisplayName("Наименование контролируемого параметра")]
         public string Name
         {
@@ -44,14 +36,6 @@ namespace LogicLibrary
             get { return unit; }
             set { unit = value; OnPropertyChanged(nameof(Unit)); }
         }
-
-
-        //[System.ComponentModel.DisplayName("Фактическое значение")]
-        //public double Count
-        //{
-        //    get { return count; }
-        //    set { count = value; OnPropertyChanged(nameof(Count)); }
-        //}
 
         public bool IsChanged()
         {
@@ -88,8 +72,6 @@ namespace LogicLibrary
         {
             isChanged = false;
             Id = info.Id;
-            //Date = info.Date;
-            //Count = info.Count;
             Name = info.Name;
             Nominal = info.Nominal;
             if (info.Unit != null)

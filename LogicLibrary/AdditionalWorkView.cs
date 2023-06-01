@@ -27,6 +27,7 @@ namespace LogicLibrary
         public int TypeId { get; set; }
         public int MachineId { get; set; }
         public string Machine { get; set; }
+        public string MachineModel { get; set; }
         [System.ComponentModel.DisplayName("Планируемая\nдата проведения\nработ")]
         public DateTime FutureDate
         {
@@ -110,6 +111,7 @@ namespace LogicLibrary
             {
                 MachineId = work.TechPassport.Id;
                 Machine = work.TechPassport.Name;
+                MachineModel = work.TechPassport.Version;
             }
             if (work.MaintenanceType != null)
             {
@@ -183,14 +185,7 @@ namespace LogicLibrary
                 {
                     dates.Add(FutureDate);
                 }
-            }
-            //else if (start.Date == DateTime.Today.Date)
-            //{
-            //    if (FutureDate.Date >= DateTime.MinValue && FutureDate.Date <= end.Date && (DateFact == DateTime.MinValue || DateFact == null))
-            //    {
-            //        dates.Add(FutureDate);
-            //    }
-            //}
+            }           
             else
             {
                 if (FutureDate.Date >= start.Date && FutureDate.Date <= end.Date && (DateFact == DateTime.MinValue || DateFact == null))

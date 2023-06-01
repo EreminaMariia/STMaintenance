@@ -6,17 +6,13 @@ namespace Entities
     public class AdditionalContext : DbContext
     {
         public AdditionalContext()
-        {
-            //Database.EnsureCreated();
-        }
+        {}
 
         public AdditionalContext(DbContextOptions<AdditionalContext> options)
             : base(options)
-        {
-        }
+        {}
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            //optionsBuilder.UseSqlServer("Data Source=localhost;Initial Catalog=MaterialsDB;Integrated Security=True;MultipleActiveResultSets=true");
             optionsBuilder.UseSqlServer("Data Source=192.168.168.100;Initial Catalog=vkt007;User id=pvt_fa;Password=Fed4evg62+=;");
         }
 

@@ -15,8 +15,6 @@ namespace LogicLibrary.Services
             var item = (ControledParametrView)view;
             int id = 1;
 
-            //return Data.Instance.AddControledParam(passportId, item.Name, item.Nominal);
-
             if (techPassport.ControledParametrs == null)
             {
                 techPassport.ControledParametrs = new List<ControledParametrView>();

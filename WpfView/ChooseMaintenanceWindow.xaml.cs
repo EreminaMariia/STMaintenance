@@ -22,38 +22,7 @@ namespace WpfView
     {
         DataService dataService;
         DateTime date;
-        //public ChooseMaintenanceWindow(DataService dataService, int id, DateTime date)
-        //{
-        //    this.dataService = dataService;
-        //    this.date = date;
-        //    InitializeComponent();
-        //    List<IPlanedView> temp = new List<IPlanedView>();
-        //    temp.AddRange(dataService.GetMaintenanceNewViews());
-        //    temp.AddRange(dataService.GetAdditionalWorkViews().Where(a => a.DateFact == null || a.DateFact == DateTime.MinValue));
-        //    //List<MaintenanceNewView> maintenances = new List<MaintenanceNewView>();
-        //    //if (date.Date != DateTime.Today.Date)
-        //    //{
-        //    //    temp = temp.
-        //    //    Where(d => d.MachineId == id && d.FutureDate.Date == date.Date).ToList();
-        //    //}
-        //    //else
-        //    //{
-        //    //    temp = temp.
-        //    //    Where(d => d.MachineId == id && d.FutureDate.Date <= date.Date).ToList();
-        //    //}
-
-        //    if (date.Date != DateTime.Today.Date)
-        //    {
-        //        temp = temp.
-        //        Where(d => d.MachineId == id && d.GetPlannedDates(date, date).Count > 0).ToList();
-        //    }
-        //    else
-        //    {
-        //        temp = temp.
-        //        Where(d => d.MachineId == id && d.GetPlannedDates(DateTime.MinValue, date).Count > 0).ToList();
-        //    }
-        //    maintenanceListBox.ItemsSource = temp;
-        //}
+        List<IPlanedView> viewList = new();
 
         public ChooseMaintenanceWindow(DataService dataService, List<IPlanedView> temp, int id, DateTime date)
         {
@@ -65,46 +34,35 @@ namespace WpfView
             {
                 temp = temp.
                 Where(d => d.MachineId == id && d.GetPlannedDates(date, date).Count > 0).ToList();
+                viewList = temp;
             }
             else
             {
-                temp = temp.
-                //Where(d => d.MachineId == id && d.GetPlannedDates(DateTime.MinValue, date).Count > 0).ToList();
+                temp = temp.                
                 Where(d => d.MachineId == id && d.GetPlannedDatesForToday().Count > 0).ToList();
+                viewList = temp;
             }
             maintenanceListBox.ItemsSource = temp;
         }
 
         private void maintenanceListBox_MouseDoubleClick(object sender, MouseButtonEventArgs e)
-        {
+        {            
             ListView list = sender as ListView;
             if (list != null)
             {
-                //if (list.SelectedItem is MaintenanceNewView)
-                //{
-                //    MaintenanceNewView maintenanceNewView = (MaintenanceNewView)list.SelectedItem;
-                //    AddMaintenanceEpisodeWindow episodeWindow = new AddMaintenanceEpisodeWindow(dataService, maintenanceNewView.Id, false, true, date);
-                //    DialogResult = episodeWindow.ShowDialog();
-                //}
-                //if (list.SelectedItem is AdditionalWorkView)
-                //{
-                //    AdditionalWorkView maintenanceNewView = (AdditionalWorkView)list.SelectedItem;
-                //    AddMaintenanceEpisodeWindow episodeWindow = new AddMaintenanceEpisodeWindow(dataService, maintenanceNewView.Id, false, false);
-                //    DialogResult = episodeWindow.ShowDialog();
-                //}
-                //if (list.SelectedItem is MaintenanceEpisodeView)
-                //{
-                //    MaintenanceEpisodeView maintenanceNewView = (MaintenanceEpisodeView)list.SelectedItem;
-                //    AddMaintenanceEpisodeWindow episodeWindow = new AddMaintenanceEpisodeWindow(dataService, maintenanceNewView.Id, false, true);
-                //    //DialogResult = episodeWindow.ShowDialog();
-                //}
                 if (list.SelectedItem is IPlanedView)
                 {
                     var item = list.SelectedItem;
                     AddMaintenanceEpisodeWindow episodeWindow = new AddMaintenanceEpisodeWindow(date, dataService, (IPlanedView)item);
-                    DialogResult = episodeWindow.ShowDialog();
+                    var result = episodeWindow.ShowDialog();
+                    if (result.HasValue && result.Value)
+                    {
+                        viewList.Remove((IPlanedView)item);
+                        maintenanceListBox.ItemsSource = null;
+                        maintenanceListBox.ItemsSource = viewList;
+                        DataContext = this;
+                    }
                 }
-                this.Close();
             }         
         }
     }

@@ -9,21 +9,11 @@ namespace LogicLibrary
 
         public delegate void DeleteHandler();
         public event DeleteHandler Notify;
-
-        //public delegate void RefreshHandler();
-        //public event RefreshHandler Refresh;
         public TableService(ITableViewService<T> dataService, DeleteHandler notify)
         {
             _dataService = dataService;
             Notify += notify;
         }
-
-        //public TableService(ITableViewService<T> dataService, DeleteHandler notify, RefreshHandler refresh)
-        //{
-        //    _dataService = dataService;
-        //    Notify += notify;
-        //    Refresh += refresh;
-        //}
 
         public TableService(ITableViewService<T> dataService)
         {
@@ -36,7 +26,6 @@ namespace LogicLibrary
             {
                 foreach (ITableView item in e.OldItems)
                 {
-                    //удаление
                     item.PropertyChanged -= Item_PropertyChanged;
                     bool result = _dataService.Delete(item.Id);
                     if (!result)

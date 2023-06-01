@@ -25,7 +25,6 @@ namespace LogicLibrary
             SerialNumber = passport.SerialNumber;
             InventoryNumber = passport.InventoryNumber;
             Supplier = passport.Supplier.Name;
-            //OperatingHours = passport.OperatingHours.ToString();
             Type = passport.Type.Type;
             DepartmentNumber = passport.Department.Number + ": " + passport.Department.Name;
             

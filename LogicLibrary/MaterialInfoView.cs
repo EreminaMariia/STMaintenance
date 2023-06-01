@@ -104,7 +104,6 @@ namespace LogicLibrary
 
         public MaterialInfoView(MaterialInfo info, IEnumerable<ArtInfo> arts, MaterialInfoFromOuterBase? outInfo)
         {
-            //working = Math.Round(h, 4, MidpointRounding.AwayFromZero);
             Id = info.Id;
             Name = !string.IsNullOrEmpty(info.Name) ? info.Name : info.InnerArt;
             InnerArt = info.InnerArt != null ? info.InnerArt : "";
@@ -149,7 +148,6 @@ namespace LogicLibrary
                     }
                 }
             }
-            //OriginalArt = info.OriginalArt != null ? info.OriginalArt : "";
             Commentary = info.Commentary != null ? info.Commentary : "";
             if (info.Unit != null)
             {

@@ -79,8 +79,6 @@ namespace WpfView
             changeRadioButton.IsChecked = !IsDoing;
             var visibility = IsDoing ? Visibility.Visible : Visibility.Collapsed;
             var alternativeVisibiliti = !IsDoing ? Visibility.Visible : Visibility.Collapsed;
-            //workerLabel.Visibility = visibility;
-            //workerListBox.Visibility = visibility;
             hoursLabel.Visibility = visibility;
             hoursTextBox.Visibility = visibility;
             doButton.Visibility = visibility;
@@ -128,8 +126,6 @@ namespace WpfView
                         dataService.MakeMaintananceEpisodeDone(id, date, hours, operatorsIds);
                     }
                 }
-
-
                 DialogResult = true;
                 this.Close();
             }
@@ -183,7 +179,6 @@ namespace WpfView
                     dataService.ChangeEpisodeInfo(id, date, operatorsIds);
                 }
             }
-
             DialogResult = true;
             this.Close();
         }

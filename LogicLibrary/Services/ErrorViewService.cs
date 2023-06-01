@@ -22,7 +22,6 @@ namespace LogicLibrary.Services
             }
             if (techPassport.Errors.Count > 0)
             {
-                //id = techPassport.Errors.Any() ? techPassport.Errors.Max(x => x.Id) + 1 : 1;
                 id = techPassport.ErrorsId++;
             }
             item.Id = id;

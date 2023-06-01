@@ -169,7 +169,6 @@ namespace LogicLibrary
             {
                 Code = error.Code;
             }          
-            //MachineName = error.TechPassport.Name + "/" + error.TechPassport.Id;
             DateOfSolving = error.DateOfSolving;
             Description = error.Description;
             Comment = error.Comment;

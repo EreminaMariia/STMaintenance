@@ -4,9 +4,7 @@ using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Collections.Specialized;
 using System.Diagnostics;
-using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
@@ -73,7 +71,6 @@ namespace WpfView
             passportMaker = new PassportMaker(dataService);
             InitializeComponent();
             MakeComboBoxes();
-            BindGrids();
 
         }
         public AddPassportWindow(int passportId, AddHandler handler)
@@ -83,7 +80,6 @@ namespace WpfView
             passportMaker = new PassportMaker(dataService, passportId);
             InitializeComponent();
             MakeComboBoxes();
-            BindGrids();
 
             var passport = passportMaker.GetPassport();
 
@@ -339,123 +335,6 @@ namespace WpfView
 
             result = MessageBox.Show(messageBoxText, caption, button, icon, MessageBoxResult.OK);
         }
-        public void BindGrids()
-        {
-            MakePlannedGrid();
-            MakeArchiveGrid();
-
-            maintenances = passportMaker.Maintenances.Where(p => p.IsInWork()).ToList();
-            Maintenances = new ObservableCollection<MaintenanceNewView>(maintenances);
-            maintenanceTableService = new TableService<MaintenanceNewView>
-                (new MaintenanceViewService(passportMaker), new TableService<MaintenanceNewView>.DeleteHandler(ShowMessage));
-            foreach (var item in Maintenances)
-            {
-                item.PropertyChanged += maintenanceTableService.Item_PropertyChanged;
-            }
-            Maintenances.CollectionChanged += maintenanceTableService.Entries_CollectionChanged;
-
-            oldMaintenances = passportMaker.Maintenances.Where(p => !p.IsInWork()).ToList();
-            OldMaintenances = new ObservableCollection<MaintenanceNewView>(oldMaintenances);
-            oldMaintenanceTableService = new TableService<MaintenanceNewView>
-                (new MaintenanceViewService(passportMaker), new TableService<MaintenanceNewView>.DeleteHandler(ShowMessage));
-            foreach (var item in OldMaintenances)
-            {
-                item.PropertyChanged += oldMaintenanceTableService.Item_PropertyChanged;
-            }
-            OldMaintenances.CollectionChanged += oldMaintenanceTableService.Entries_CollectionChanged;
-
-            characteristics = passportMaker.Characteristics;
-            Characteristics = new ObservableCollection<CharacteristicView>(characteristics);
-            characteristicTableService = new TableService<CharacteristicView>
-                (new CharacteristicViewService(passportMaker), new TableService<CharacteristicView>.DeleteHandler(ShowMessage));
-            foreach (var item in Characteristics)
-            {
-                item.PropertyChanged += characteristicTableService.Item_PropertyChanged;
-            }
-            Characteristics.CollectionChanged += characteristicTableService.Entries_CollectionChanged;
-
-            instructions = passportMaker.Instructions;
-            Instructions = new ObservableCollection<InstructionView>(instructions);
-            instructionTableService = new TableService<InstructionView>
-                (new InstructionViewService(passportMaker), new TableService<InstructionView>.DeleteHandler(ShowMessage));
-            foreach (var item in Instructions)
-            {
-                item.PropertyChanged += instructionTableService.Item_PropertyChanged;
-            }
-            Instructions.CollectionChanged += instructionTableService.Entries_CollectionChanged;
-
-            instruments = passportMaker.Instruments.Where(i => i.RemoveDate == null || i.RemoveDate == DateTime.MinValue).ToList();
-            Instruments = new ObservableCollection<InstrumentView>(instruments);
-            instrumentTableService = new TableService<InstrumentView>
-                (new InstrumentViewService(passportMaker), new TableService<InstrumentView>.DeleteHandler(ShowMessage));
-            foreach (var item in Instruments)
-            {
-                item.PropertyChanged += instrumentTableService.Item_PropertyChanged;
-            }
-            Instruments.CollectionChanged += instrumentTableService.Entries_CollectionChanged;
-
-            oldInstruments = passportMaker.Instruments.Where(i => i.RemoveDate != null && i.RemoveDate != DateTime.MinValue).ToList(); ;
-            OldInstruments = new ObservableCollection<InstrumentView>(oldInstruments);
-            oldInstrumentTableService = new TableService<InstrumentView>
-                (new InstrumentViewService(passportMaker), new TableService<InstrumentView>.DeleteHandler(ShowMessage));
-            foreach (var item in OldInstruments)
-            {
-                item.PropertyChanged += oldInstrumentTableService.Item_PropertyChanged;
-            }
-            OldInstruments.CollectionChanged += oldInstrumentTableService.Entries_CollectionChanged;
-
-            errors = passportMaker.Errors;
-            Errors = new ObservableCollection<ErrorNewView>(errors);
-            errorTableService = new TableService<ErrorNewView>
-                (new ErrorViewService(passportMaker), new TableService<ErrorNewView>.DeleteHandler(ShowMessage));
-            foreach (var item in Errors)
-            {
-                item.PropertyChanged += errorTableService.Item_PropertyChanged;
-            }
-            Errors.CollectionChanged += errorTableService.Entries_CollectionChanged;
-
-            additionals = passportMaker.Additionals;
-            Additionals = new ObservableCollection<AdditionalWorkView>(additionals);
-            additionalTableService = new TableService<AdditionalWorkView>
-                (new AdditionalWorkViewService(passportMaker), new TableService<AdditionalWorkView>.DeleteHandler(ShowMessage));
-            foreach (var item in Additionals)
-            {
-                item.PropertyChanged += additionalTableService.Item_PropertyChanged;
-            }
-            Additionals.CollectionChanged += additionalTableService.Entries_CollectionChanged;
-
-            hours = passportMaker.WorkingHours;
-            Hours = new ObservableCollection<HourView>(hours);
-            hourTableService = new TableService<HourView>
-                (new HourViewService(passportMaker), new TableService<HourView>.DeleteHandler(ShowMessage));
-            foreach (var item in Hours)
-            {
-                item.PropertyChanged += hourTableService.Item_PropertyChanged;
-            }
-            Hours.CollectionChanged += hourTableService.Entries_CollectionChanged;
-
-            controledParams = passportMaker.ControledParametrs;
-            ControledParams = new ObservableCollection<ControledParametrView>(controledParams);
-            controlTableService = new TableService<ControledParametrView>
-                (new ControledParamViewService(passportMaker), new TableService<ControledParametrView>.DeleteHandler(ShowMessage));
-            foreach (var item in ControledParams)
-            {
-                item.PropertyChanged += controlTableService.Item_PropertyChanged;
-            }
-            ControledParams.CollectionChanged += controlTableService.Entries_CollectionChanged;
-
-            controledParamEpisodes = passportMaker.ControledParametrEpisodes;
-            ControledParamEpisodes = new ObservableCollection<ControledParametrEpisodeView>(controledParamEpisodes);
-            controlEpisodeTableService = new TableService<ControledParametrEpisodeView>
-                (new ControledParamEpisodeViewService(passportMaker), new TableService<ControledParametrEpisodeView>.DeleteHandler(ShowMessage));
-            foreach (var item in ControledParamEpisodes)
-            {
-                item.PropertyChanged += controlEpisodeTableService.Item_PropertyChanged;
-            }
-            ControledParamEpisodes.CollectionChanged += controlEpisodeTableService.Entries_CollectionChanged;
-
-            DataContext = this;
-        }
         private void HideIdColumn(object sender, DataGridAutoGeneratingColumnEventArgs e)
         {
             e.Column.HeaderStyle = new Style(typeof(DataGridColumnHeader));
@@ -539,13 +418,10 @@ namespace WpfView
             return id;
         }
 
-        public void RefreshCharacteristicsGrid(int id)
+        public void RefreshCharacteristicsGrid()
         {
-            if (id > 0)
-            {
-                var c = passportMaker.Characteristics;
-                Characteristics = CommonClass.AddItem(Characteristics, c, characteristicTableService, characteristicsGrid);
-            }
+             var c = passportMaker.Characteristics;
+             Characteristics = CommonClass.AddItem(Characteristics, c, characteristicTableService, characteristicsGrid);
         }
 
         public void RefreshInstrumentGrid()
@@ -571,8 +447,6 @@ namespace WpfView
             {
                 CommonClass.RefreshGridWithoutFilter(m, Maintenances, maintenanceGrid, maintenanceTableService);
             }
-            MakePlannedGrid();
-            MakeArchiveGrid();
         }
 
         public void RefreshArchive()
@@ -592,17 +466,18 @@ namespace WpfView
             {
                 CommonClass.RefreshGridWithoutFilter(m, OldMaintenances, oldMaintenanceGrid, oldMaintenanceTableService);
             }
-            MakePlannedGrid();
-            MakeArchiveGrid();
         }
 
-        public void RefreshInstructionGrid(int id)
+        public void RefreshInstructionGrid()
         {
-            if (id > 0)
-            {
-                var m = passportMaker.Instructions;
-                Instructions = CommonClass.AddItem(Instructions, m, instructionTableService, documentsGrid);
-            }
+             var m = passportMaker.Instructions;
+             Instructions = CommonClass.AddItem(Instructions, m, instructionTableService, documentsGrid);
+        }
+
+        public void RefreshHoursGrid()
+        {
+            var m = passportMaker.WorkingHours;
+            Hours = CommonClass.AddItem(Hours, m, hourTableService, workhoursGrid);
         }
 
         public void RefreshAdditionalGrid(bool isFiltred = true)
@@ -616,8 +491,6 @@ namespace WpfView
             {
                 CommonClass.RefreshGridWithoutFilter(a, Additionals, additionalGrid, additionalTableService);
             }
-            MakePlannedGrid();
-            MakeArchiveGrid();
         }
 
         public void RefreshErrorGrid(bool isFiltred = true)
@@ -836,7 +709,7 @@ namespace WpfView
                         int unitId = uw.Id;
                         var c = passportMaker.Characteristics.First(x => x.Id == id);
                         c.AddUnit(dataService.GetUnitViews().First(c => c.Id == unitId));
-                        RefreshCharacteristicsGrid(id);
+                        RefreshCharacteristicsGrid();
                     }
                 }
             }
@@ -909,13 +782,12 @@ namespace WpfView
                     documentsGrid.Items.Refresh();
 
                     string name;
-                    //string folder = @"\\192.168.1.253\Цех\ceh05\Главный механик\Станки";
                     OpenFileDialog openFileDialog = new OpenFileDialog();
                     if (openFileDialog.ShowDialog() == true)
                     {
                         name = openFileDialog.FileName;
                         passportMaker.EditInstructionPath(id, name);
-                        RefreshInstructionGrid(id);
+                        RefreshInstructionGrid();
                     }
                 }
             }
@@ -935,13 +807,9 @@ namespace WpfView
                     }
                     catch (Exception ex)
                     {
-                        //!!!
                     }
-
-
                 }
             }
-
         }
 
         private void instrumentGrid_MouseDoubleClick(object sender, MouseButtonEventArgs e)
@@ -1130,7 +998,6 @@ namespace WpfView
 
         private void Window_Closed(object sender, EventArgs e)
         {
-            //Save();
             Notify?.Invoke();
         }
 
@@ -1144,24 +1011,16 @@ namespace WpfView
                 grid.CommitEdit(DataGridEditingUnit.Row, true);
                 isManualEditCommit = false;
             }
+        }
 
-            if (((DataGrid)sender).Name == "additionalGrid")
+        private void BindGrid<T>(List<T> collection, ObservableCollection<T> oCollection, TableService<T> service) where T : class, ITableView
+        {
+            oCollection = new ObservableCollection<T>(collection);
+            foreach (var item in oCollection)
             {
-                MakeArchiveGrid();
-                MakePlannedGrid();
+                item.PropertyChanged += service.Item_PropertyChanged;
             }
-            else if (((DataGrid)sender).Name == "maintenanceGrid")
-            {
-                MakeArchiveGrid();
-                MakePlannedGrid();
-            }
-            else if (((DataGrid)sender).Name == "workhoursGrid")
-            {
-                passportMaker.RecountMaintenances();
-                MakeArchiveGrid();
-                MakePlannedGrid();
-            }
-
+            oCollection.CollectionChanged += service.Entries_CollectionChanged;
         }
         private void TabControl_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
@@ -1169,31 +1028,167 @@ namespace WpfView
             {
                 if (maintenanceTab.IsSelected)
                 {
+                    if (passportMaker.Maintenances == null)
+                        passportMaker.LoadMaintenances();
+
+                    if (maintenances == null || maintenances.Count == 0)
+                    {
+                        maintenances = passportMaker.Maintenances.Where(p => p.IsInWork()).ToList();
+                        maintenanceTableService = new TableService<MaintenanceNewView>
+                            (new MaintenanceViewService(passportMaker), new TableService<MaintenanceNewView>.DeleteHandler(ShowMessage));
+                        BindGrid(maintenances, Maintenances, maintenanceTableService);
+                    }
+                }
+                if (innerMaintenanceTab.IsSelected)
+                {
                     RefreshMaintenanceGrid(false);
                 }
-                else if (oldMaintenanceTab.IsSelected)
+                if (oldMaintenanceTab.IsSelected)
                 {
+                    if (passportMaker.Maintenances == null)
+                        passportMaker.LoadMaintenances();
+
+                    if (oldMaintenances == null || oldMaintenances.Count == 0)
+                    {
+                        oldMaintenances = passportMaker.Maintenances.Where(p => !p.IsInWork()).ToList();
+                        oldMaintenanceTableService = new TableService<MaintenanceNewView>
+                            (new MaintenanceViewService(passportMaker), new TableService<MaintenanceNewView>.DeleteHandler(ShowMessage));
+                        BindGrid(oldMaintenances, OldMaintenances, oldMaintenanceTableService);
+                    }                   
                     RefreshOldMaintenanceGrid(false);
                 }
-                else if (errorsTab.IsSelected)
+                if (errorsTab.IsSelected)
                 {
+                    if (passportMaker.Errors == null)
+                        passportMaker.LoadErrors();
+
+                    if (errors == null || errors.Count == 0)
+                    {
+                        errors = passportMaker.Errors;
+                        errorTableService = new TableService<ErrorNewView>
+                           (new ErrorViewService(passportMaker), new TableService<ErrorNewView>.DeleteHandler(ShowMessage));
+                        BindGrid(errors, Errors, errorTableService);
+                    }
                     RefreshErrorGrid(false);
+
                 }
-                else if (additionalTab.IsSelected)
+                if (additionalTab.IsSelected)
                 {
+                    if (passportMaker.Additionals == null)
+                        passportMaker.LoadAdditionals();
+
+                    if (additionals == null || additionals.Count == 0)
+                    {
+                        additionals = passportMaker.Additionals;
+                        additionalTableService = new TableService<AdditionalWorkView>
+                            (new AdditionalWorkViewService(passportMaker), new TableService<AdditionalWorkView>.DeleteHandler(ShowMessage));
+                        BindGrid(additionals, Additionals, additionalTableService);
+                    }
                     RefreshAdditionalGrid(false);
                 }
-                else if (innerInstrumentTab.IsSelected)
+                if (instrumentTab.IsSelected)
+                {
+                    if (passportMaker.Instruments == null)
+                    {
+                        passportMaker.LoadInstruments();
+                        instruments = passportMaker.Instruments.Where(i => i.RemoveDate == null || i.RemoveDate == DateTime.MinValue).ToList();
+                        instrumentTableService = new TableService<InstrumentView>
+                            (new InstrumentViewService(passportMaker), new TableService<InstrumentView>.DeleteHandler(ShowMessage));
+                        BindGrid(instruments, Instruments, instrumentTableService);
+                        oldInstruments = passportMaker.Instruments.Where(i => i.RemoveDate != null && i.RemoveDate != DateTime.MinValue).ToList(); ;
+                        oldInstrumentTableService = new TableService<InstrumentView>
+                            (new InstrumentViewService(passportMaker), new TableService<InstrumentView>.DeleteHandler(ShowMessage));
+                        BindGrid(oldInstruments, OldInstruments, oldInstrumentTableService);
+                    }
+                }
+                if (innerInstrumentTab.IsSelected)
                 {
                     RefreshInstrumentGrid();
                 }
-                else if (oldInstrumentTab.IsSelected)
+                if (oldInstrumentTab.IsSelected)
                 {
                     RefreshOldInstrumentGrid();
                 }
-                else if (archiveTab.IsSelected)
+                if (archiveTab.IsSelected)
                 {
+                    if (passportMaker.Maintenances == null)
+                        passportMaker.LoadMaintenances();
+                    if (passportMaker.Additionals == null)
+                        passportMaker.LoadAdditionals();
+                    if (passportMaker.Errors == null)
+                        passportMaker.LoadErrors();
+                    if (archive == null || archive.Count == 0)
+                        MakeArchiveGrid();
                     RefreshArchive();
+                }
+                if (characteristicsTab.IsSelected)
+                {
+                    if (passportMaker.Characteristics == null)
+                        passportMaker.LoadCharacteristics();
+
+                    if (characteristics == null || characteristics.Count == 0)
+                    {
+                        characteristics = passportMaker.Characteristics;
+                        characteristicTableService = new TableService<CharacteristicView>
+                            (new CharacteristicViewService(passportMaker), new TableService<CharacteristicView>.DeleteHandler(ShowMessage));
+                        BindGrid(characteristics, Characteristics, characteristicTableService);
+                    }
+                    RefreshCharacteristicsGrid();
+                }
+                if (documentsTab.IsSelected)
+                {
+                    if (passportMaker.Instructions == null)
+                        passportMaker.LoadInstructions();
+
+                    if (instructions == null || instructions.Count == 0)
+                    {
+                        instructions = passportMaker.Instructions;
+                        instructionTableService = new TableService<InstructionView>
+                            (new InstructionViewService(passportMaker), new TableService<InstructionView>.DeleteHandler(ShowMessage));
+                        BindGrid(instructions, Instructions, instructionTableService);
+                    }
+                    RefreshInstructionGrid();
+                }
+                if (workhoursTab.IsSelected)
+                {
+                    if (passportMaker.WorkingHours == null)
+                        passportMaker.LoadHours();
+
+                    if (hours == null || hours.Count == 0)
+                    {
+                        hours = passportMaker.WorkingHours;
+                        hourTableService = new TableService<HourView>
+                            (new HourViewService(passportMaker), new TableService<HourView>.DeleteHandler(ShowMessage));
+                        BindGrid(hours, Hours, hourTableService);
+                    }
+                    RefreshHoursGrid();
+                }
+                if (controlTab.IsSelected)
+                {
+                    if (passportMaker.ControledParametrs == null)
+                    {
+                        passportMaker.LoadControledParametrs();
+                        controledParams = passportMaker.ControledParametrs;
+                        controlTableService = new TableService<ControledParametrView>
+                            (new ControledParamViewService(passportMaker), new TableService<ControledParametrView>.DeleteHandler(ShowMessage));
+                        BindGrid(controledParams, ControledParams, controlTableService);
+                        controledParamEpisodes = passportMaker.ControledParametrEpisodes;
+                        controlEpisodeTableService = new TableService<ControledParametrEpisodeView>
+                            (new ControledParamEpisodeViewService(passportMaker), new TableService<ControledParametrEpisodeView>.DeleteHandler(ShowMessage));
+                        BindGrid(controledParamEpisodes, ControledParamEpisodes, controlEpisodeTableService);
+                    }
+                    RefreshControlGrid();
+                    RefreshControlEpisodeGrid();
+                }
+                if (plannedTab.IsSelected)
+                {
+                    if (passportMaker.Maintenances == null)
+                        passportMaker.LoadMaintenances();
+                    if (passportMaker.Additionals == null)
+                        passportMaker.LoadAdditionals();
+                    if (passportMaker.Errors == null)
+                        passportMaker.LoadErrors();
+                    MakePlannedGrid();
                 }
             }
         }
@@ -1221,22 +1216,6 @@ namespace WpfView
             PrintFormsMaker maker = new PrintFormsMaker("ArchiveForm");
             maker.PrintArchiveForm(passportMaker.TechPassport.Name, passportMaker.GetArchiveView());
         }
-
-        //private void Archive_TextBox_TextChanged(object sender, TextChangedEventArgs e)
-        //{
-        //    string s = ((TextBox)e.Source).Text;
-        //    if (string.IsNullOrEmpty(s))
-        //    {
-        //        Archive = archive;
-        //    }
-        //    else
-        //    {
-        //        var filtred = archive.Where(x => CommonClass.IsContained(x, s)).ToList();
-        //        Archive = filtred;
-        //    }
-        //    archiveGrid.ItemsSource = null;
-        //    archiveGrid.ItemsSource = Archive;
-        //}
 
         private void SizeChanged(object sender, SizeChangedEventArgs e)
         {
@@ -1311,7 +1290,7 @@ namespace WpfView
             if (result == true)
             {
                 PrintFormsMaker maker = new PrintFormsMaker("ErrorCard");
-                maker.PrintErrorOneMachineForm(passportMaker.GetPassport(), pickData.Start, pickData.End);
+                maker.PrintErrorOneMachineForm(passportMaker.GetPassport(), passportMaker.Errors, passportMaker.Downtimes, pickData.Start, pickData.End);
             }
         }
 

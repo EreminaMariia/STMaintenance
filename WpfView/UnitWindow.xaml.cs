@@ -66,8 +66,7 @@ namespace WpfView
                     unitComboBox.SelectedItem = item;
                 }
             }
-
-            //надо ли вообще вот это?
+            
             unitComboBox.Loaded += delegate
             {
                 System.Windows.Controls.TextBox textBox = unitComboBox.Template.FindName("PART_EditableTextBox", unitComboBox) as System.Windows.Controls.TextBox;
@@ -86,7 +85,6 @@ namespace WpfView
                             }
                             else
                             {
-                                // popup.IsOpen = false;
                                 return false;
                             }
                         };

@@ -18,9 +18,6 @@ namespace LogicLibrary
         private string version = string.Empty;
         public int Id { get; set; }
 
-        //[System.ComponentModel.DisplayName(" ")]
-        //public bool IsPrintable { get; set; }
-
         [System.ComponentModel.DisplayName("Наименование\nоборудования")]
         public string Name
         {
@@ -79,12 +76,6 @@ namespace LogicLibrary
                 PropertyChanged(this, new PropertyChangedEventArgs(prop));
         }
 
-        //public delegate void DeleteHandler(ITableView view);
         public event ITableView.DeleteHandler DeletingEvent;
-        //public void OnDeleting()
-        //{
-        //    if (DeletingEvent != null)
-        //        DeletingEvent.Invoke(this);
-        //}
     }
 }

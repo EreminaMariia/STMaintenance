@@ -77,6 +77,7 @@ namespace LogicLibrary
             set { futureDate = value; OnPropertyChanged(nameof(FutureDate)); }
         }
         public string Machine { get; set; }
+        public string MachineModel { get; set; }
         public int MachineId { get; set; }
         public bool IsFixed { get; set; }
 
@@ -152,6 +153,7 @@ namespace LogicLibrary
             if (info.TechPassport != null)
             {
                 Machine = info.TechPassport.Name;
+                MachineModel = info.TechPassport.Version;
                 MachineId = info.TechPassport.Id;
                 if (info.TechPassport.WorkingHours != null)
                 {

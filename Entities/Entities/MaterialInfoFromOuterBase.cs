@@ -8,8 +8,6 @@ namespace Entities.Entities
 {
     public class MaterialInfoFromOuterBase
     {
-        //public int Id { get; set; }
-
         //артикул
         public string? SKLN_Cd { get; set; }
 

@@ -21,7 +21,6 @@ namespace LogicLibrary.Services
             }
             if (techPassport.Instructions.Count > 0)
             {
-                //id = techPassport.Instructions.Any() ? techPassport.Instructions.Max(x => x.Id) + 1 : 1;
                 id = techPassport.InstructionsId++;
             }
             techPassport.Instructions.Add(new InstructionView

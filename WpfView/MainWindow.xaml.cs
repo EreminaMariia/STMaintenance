@@ -337,9 +337,9 @@ namespace WpfView
             DateTime date = (DateTime)((Button)sender).Tag;
 
             ChooseMaintenanceWindow chooseMaintenanceWindow = new ChooseMaintenanceWindow(dataService, plannedViews, machineId, date);
-            var result = chooseMaintenanceWindow.ShowDialog();
-            if (result != null && result.Value)
-            {
+            var result = chooseMaintenanceWindow.ShowDialog();            
+            //if (result != null && result.Value)
+            //{
                 DateTime start = DateTime.Today;
                 DateTime end = DateTime.Today.AddDays(defaultDays);
                 if (startPlanPicker.SelectedDate != null)
@@ -351,7 +351,7 @@ namespace WpfView
                     end = (DateTime)endPlanPicker.SelectedDate;
                 }
                 RefilterPlannedGrid(start, end, plannedTextBox.Text);
-            }
+            //}
         }
 
         private void HideIdColumn(object sender, System.Windows.Controls.DataGridAutoGeneratingColumnEventArgs e)
@@ -507,7 +507,6 @@ namespace WpfView
             DateTime end = endPlanPicker.SelectedDate != null ? (DateTime)endPlanPicker.SelectedDate : DateTime.Today.AddDays(defaultDays);
             if (start.SelectedDate != null)
             {
-                //var st = start.SelectedDate != null ? (DateTime)start.SelectedDate : end;
                 var st = (DateTime)start.SelectedDate;
                 startPlanPicker.SelectedDate = st;
                 if (st > end)
@@ -658,9 +657,7 @@ namespace WpfView
                 MakePlanTab(start, end, adds, episodes, "");
             }
             else
-            {
-                //MakePlanTab(start, end, adds.Where(x => x.Machine.ToLower().Contains(s.ToLower())).ToList(),
-                //    episodes.Where(x => x.Machine.ToLower().Contains(s.ToLower())).ToList());
+            {                
                 MakePlanTab(start, end, adds, episodes, s);
             }
         }

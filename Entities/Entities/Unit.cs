@@ -13,7 +13,5 @@ namespace Entities.Entities
         public int Id { get; set; }
         public string? Name { get; set; }
         public string? FullName { get; set; }
-        //public ICollection<MaterialInfo> Materials { get; set; }
-        //public ICollection<Characteristic> Characteristics { get; set; }
     }
 }

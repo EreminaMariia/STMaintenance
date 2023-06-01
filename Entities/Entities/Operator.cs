@@ -14,8 +14,6 @@ namespace Entities.Entities
         public string? Name { get; set; }
         public string? Position { get; set; }
         public string? Number { get; set; }
-
-        //public Department? Department { get; set; }
         public ICollection<MaintenanceEpisode> MaintananceEpisodes { get; set; }
         public ICollection<Repairing> Repairings { get; set; }
         public ICollection<AdditionalWork> AdditionalWorks { get; set; }

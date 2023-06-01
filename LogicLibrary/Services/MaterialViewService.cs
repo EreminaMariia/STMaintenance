@@ -26,7 +26,6 @@ namespace LogicLibrary.Services
             }
             if (techPassport.Materials.Count > 0)
             {
-                //id = techPassport.Materials.Any() ? techPassport.Materials.Max(x => x.Id) + 1 : 1;
                 id = techPassport.MaterialsId++;
 
             }

@@ -49,24 +49,22 @@ namespace LogicLibrary
             var date = (DateTime.Now.Month) + "-" + DateTime.Now.Year;
             var timeDate = DateTime.Now.ToString("dd-MM-yy(hh-mm-ss)");
 
-            string outerPath = @"P:\Общая\Программа ТО\";
-            //string outerPath = @"P:\Цех\Общая\Отчет по состоянию оборудования ПВ-транс\";
-            //string outerPath = @"\\192.168.1.252\Share\Update\Программа ТО\";
-            //string outerPath = "";
+            //string outerPath = @"P:\Общая\Программа ТО\";
+            string outerPath = "";
             string name = outerPath + "Информация о простое оборудования" + "-" + date;
 
             MakeFullErrorGrid(techIds, timeDate);
             FinalMaking(sheet, package, name);
         }
 
-        public void PrintErrorOneMachineForm(TechPassport tech, DateTime start, DateTime end)
+        public void PrintErrorOneMachineForm(TechPassport tech, List<ErrorNewView> passportErrors, List<Downtime> passportDowntimes, DateTime start, DateTime end)
         {
             var date = (DateTime.Now.Month) + "-" + DateTime.Now.Year;
             var st = start.Day + "-" + start.Month + "-" + start.Year;
             var en = end.Day + "-" + end.Month + "-" + end.Year;
 
             string name = "Информация о простое оборудования" + tech.Name + "(" + st + "-" + en + ")" + date;
-            PrintOneMachineErrorCard(tech, 1, 1, start, new DateTime(end.Year, end.Month, end.Day, 23, 59, 59));
+            PrintOneMachineErrorCard(tech, passportErrors, passportDowntimes, 1, 1, start, new DateTime(end.Year, end.Month, end.Day, 23, 59, 59));
             FinalMaking(sheet, package, name);
             StartProcess(name);
         }
@@ -118,7 +116,6 @@ namespace LogicLibrary
                         string department = departmentNumber + " - " + departmentName;
 
                         bool IsNotWorking = true;
-                        //string comment = "";
                         List<MaintenanceError> errors = new List<MaintenanceError>();
                         if (passport.Errors != null)
                         {
@@ -213,7 +210,6 @@ namespace LogicLibrary
                     for (int i = 0; i < stopedTechs.Count; i++)
                     {
                         headerY = PrintOneMachineErrorCard(stopedTechs[i], headerY, headerX);
-                        //headerY = PrintOneMachineErrorCard(stopedTechs[i], headerY, headerX, new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1), new DateTime(DateTime.Now.Year, DateTime.Now.Month+1, 1));
                     }
                 }
             }
@@ -336,7 +332,7 @@ namespace LogicLibrary
             return headerY;
         }
 
-        private int PrintOneMachineErrorCard(TechPassport tech, int headerY, int headerX, DateTime startDate, DateTime endDate)
+        private int PrintOneMachineErrorCard(TechPassport tech, List<ErrorNewView> passportErrors, List<Downtime> passportDowntimes, int headerY, int headerX, DateTime startDate, DateTime endDate)
         {
             if (tech != null &&
                             (!string.IsNullOrEmpty(tech.Name) || !string.IsNullOrEmpty(tech.SerialNumber) || !string.IsNullOrEmpty(tech.InventoryNumber)))
@@ -346,15 +342,8 @@ namespace LogicLibrary
                     "Наименование оборудования", "Дата", "Проблема", "Дата", "Ответ/ результат");
 
                 var passport = tech;
-
-                //var errors = passport.Errors.Where
-                //(x => x.Date != null &&
-                //(x.IsActive == null || x.IsActive.Value)
-                //&& (startDate == null || x.DateOfSolving == null || x.DateOfSolving == DateTime.MinValue || x.DateOfSolving >= startDate) &&
-                //(endDate == null || x.Date <= endDate)).OrderBy(d => d.Date).ToList();
-                var errors = passport.Errors.Where
-                (x => x.Date != null &&
-                (x.IsActive == null || x.IsActive.Value)
+                var errors = passportErrors.Where
+                (x => x.Date != null && x.IsActive()
                 && (startDate == null ||  x.Date >= startDate) &&
                 (endDate == null || x.Date <= endDate)).OrderBy(d => d.Date).ToList();
 
@@ -399,8 +388,8 @@ namespace LogicLibrary
                     headerY++;
                 }
 
-                var oldDowntimes = passport.Downtimes.Where(x => x.End == null || x.End.Value >= new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1)).ToList();
-                var downtimes = passport.Downtimes.Where(x => (x.End == null || x.End.Value >= startDate) && (x.Start <= endDate)).ToList();
+                var oldDowntimes = passportDowntimes.Where(x => x.End == null || x.End.Value >= new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1)).ToList();
+                var downtimes = passportDowntimes.Where(x => (x.End == null || x.End.Value >= startDate) && (x.Start <= endDate)).ToList();
                 if (downtimes != null && downtimes.Count > 0)
                 {
                     var lastStartDate = downtimes.Max(x => x.Start);
@@ -433,15 +422,6 @@ namespace LogicLibrary
                             }
                         }
                     }
-
-                    //DateTime s = (lastDownTime.Start < startDate) ? startDate : lastDownTime.Start;
-                    //DateTime? e = (endDate != null && (lastDownTime.End == null || lastDownTime.End.Value > endDate.Value)) ? endDate.Value : lastDownTime.End;
-                    //DateTime? e = lastDownTime.End;
-
-                    //PrintHorizontalLineItem(headerY, 2, "Дата начала простоя");
-                    //PrintHorizontalLineItem(headerY++, 3, s.ToLongDateString() + " " + s.ToLongTimeString());
-                    //PrintHorizontalLineItem(headerY, 2, "Дата окончания простоя");
-                    //PrintHorizontalLineItem(headerY++, 3, (e != null && e.Value != DateTime.MinValue) ? (e.Value.ToLongDateString() + " " + e.Value.ToLongTimeString()) : "");
                     PrintHorizontalLineItem(headerY, 2, "Количество простоев");
                     PrintHorizontalLineItem(headerY++, 3, downtimes.Count.ToString());
                     PrintHorizontalLineItem(headerY, 2, "Общее количество часов простоя");
@@ -449,8 +429,6 @@ namespace LogicLibrary
                 }
                 else
                 {
-                    //PrintHorizontalLineItem(headerY++, 2, "Дата начала простоя");
-                    //PrintHorizontalLineItem(headerY++, 2, "Дата окончания простоя");
                     PrintHorizontalLineItem(headerY++, 2, "Количество простоев");
                     PrintHorizontalLineItem(headerY++, 2, "Общее количество часов простоя");
                 }
@@ -545,14 +523,12 @@ namespace LogicLibrary
 
             int headerY = 4;
             int headerX = 1;
-            //"Информация по оборудованию в эксплуатации в ООО \"ПВ - Транс\""
             headerY = MakeHeader(headerY, headerX + 1, header, 4,
                 "№ п/п", "Наименование", "Серийный номер", "Инвентарный номер", "Тип оборудования",
                 "Дата изготовления", "Дата начала эксплуатации", "Гарантия заканчивается",
                 "Участок эксплуатации", "Ответственный за эксплуатацию", "Точка подключения",
                 "Потребляемая мощность, кВт", "Поставщик");
 
-            //var techs = Data.Instance.GetFullTechPassports().Where(t => ids.Contains(t.Id)).ToList();
             for (int i = 0; i < techs.Length; i++)
             {
                 if (techs[i] != null &&
@@ -597,11 +573,7 @@ namespace LogicLibrary
 
             int endPoint = PrintHorizontalLine(headerY, headerX,
             number.ToString(), passport.Name + " " + passport.Version, passport.SerialNumber, passport.InventoryNumber, type,
-            release, commisioning, decommisioning, department, op, point, power, supplier);
-
-            //sheet.Cells[headerY, headerX, headerY, endPoint - 1].Style.Border.BorderAround(ExcelBorderStyle.Thin);
-            //sheet.Cells[headerY, headerX, headerY, endPoint - 1].Style.Border.Right.Style = ExcelBorderStyle.Thin;
-
+            release, commisioning, decommisioning, department, op, point, power, supplier);            
             headerY++;
             return headerY;
         }
@@ -630,6 +602,7 @@ namespace LogicLibrary
                         {
                             FutureDate = date,
                             Machine = maints.Machine,
+                            MachineModel = maints.MachineModel,
                             MachineId = maints.MachineId,
                             Name = maints.Name,
                             Type = maints.Type,
@@ -651,7 +624,7 @@ namespace LogicLibrary
             int headerX = 1;
             headerY = MakeHeader(headerY, headerX + 1,
                 "План работ по ТО и Р оборудования на период с " + start.ToShortDateString() + " по " + end.ToShortDateString(), 4,
-                "Дата", "Наименование оборудования", "Наименование работ", "Вид работ", "Требуемые ТМЦ", "Трудоемкость, ч", "Планируемый сотрудник ФИО");
+                "Дата", "Наименование оборудования", "Марка/Модель характеристики оборудования", "Наименование работ", "Вид работ", "Требуемые ТМЦ", "Трудоемкость, ч", "Планируемый сотрудник ФИО");
 
             List<IPlanedView> temp = MakePlannedList(start, end, planned, out List<MaintenanceNewView> maintenances);
 
@@ -666,9 +639,9 @@ namespace LogicLibrary
                     {
                         var work = (AdditionalWorkView)item;
                         MakeQrForXls(headerY - 1, headerX - 1,
-                            work.FutureDate.ToShortDateString() + "\n" + work.Machine + "\n" + work.Name + "\n" + work.Id);
+                            work.FutureDate.ToShortDateString() + "\n" + work.MachineId + "\n" + work.Name + "\n" + work.Id);
                         PrintHorizontalLine(headerY, headerX + 1,
-                        work.FutureDate.ToShortDateString(), work.Machine, work.Name, work.Type, work.Materials, work.WorkingHours, work.Operators);
+                        work.FutureDate.ToShortDateString(), work.Machine, work.MachineModel, work.Name, work.Type, work.Materials, work.WorkingHours, work.Operators);
                         headerY++;
 
                     }
@@ -676,11 +649,11 @@ namespace LogicLibrary
                     {
                         var episode = (MaintenanceEpisodeView)item;
                         MakeQrForXls(headerY - 1, headerX - 1,
-                            episode.FutureDate.ToShortDateString() + "\n" + episode.Machine + "\n" + episode.Name + "\n" + episode.Id);
+                            episode.FutureDate.ToShortDateString() + "\n" + episode.MachineId + "\n" + episode.Name + "\n" + episode.Id);
                         var m = maintenances.FirstOrDefault(n => n.Id == episode.MaintenanceId);
                         string materials = m != null ? m.Materials : "";
                         PrintHorizontalLine(headerY, headerX + 1,
-                        episode.FutureDate.ToShortDateString(), episode.Machine, episode.Name, episode.Type, materials, episode.WorkingHours.ToString(), episode.Operator);
+                        episode.FutureDate.ToShortDateString(), episode.Machine, episode.MachineModel, episode.Name, episode.Type, materials, episode.WorkingHours.ToString(), episode.Operator);
                         headerY++;
                     }
                 }
@@ -822,7 +795,7 @@ namespace LogicLibrary
 
             headerY = MakeHeader(headerY, headerX + 1,
                 "Наряд на работы на " + day.ToShortDateString(), 4,
-                "№ п/п", "Наименование оборудования", "Наименование выполняемых работ", "Вид работ", "Требуемые ТМЦ", "Трудоемкость плановая, ч", "Трудоемкость фактическая, ч", "Наработка оборудования, ч", "Работы выполнил ФИО");
+                "№ п/п", "Наименование оборудования", "Марка/Модель характеристики оборудования", "Наименование выполняемых работ", "Вид работ", "Требуемые ТМЦ", "Трудоемкость плановая, ч", "Трудоемкость фактическая, ч", "Наработка оборудования, ч", "Работы выполнил ФИО");
 
             List<IPlanedView> temp = MakePlannedList(day, day, planned, out List<MaintenanceNewView> maintenances);
 
@@ -835,7 +808,7 @@ namespace LogicLibrary
                     MakeQrForXls(headerY - 1, headerX - 1,
                         DateTime.Today.ToShortDateString() + "\n" + work.Machine + "\n" + work.Name + "\n" + work.Id);
                     PrintHorizontalLine(headerY, headerX + 1,
-                    number.ToString(), work.Machine, work.Name, work.Type, work.Materials, work.WorkingHours);
+                    number.ToString(), work.Machine, work.MachineModel, work.Name, work.Type, work.Materials, work.WorkingHours);
                     headerY++;
 
                 }
@@ -843,11 +816,11 @@ namespace LogicLibrary
                 {
                     var episode = (MaintenanceEpisodeView)item;
                     MakeQrForXls(headerY - 1, headerX - 1,
-                        DateTime.Today.ToShortDateString() + "\n" + episode.Machine + "\n" + episode.Name + "\n" + episode.Id);
+                        DateTime.Today.ToShortDateString() + "\n" + episode.MachineId + "\n" + episode.Name + "\n" + episode.Id);
                     var m = maintenances.FirstOrDefault(n => n.Id == episode.MaintenanceId);
                     string materials = m != null ? m.Materials : "";
                     PrintHorizontalLine(headerY, headerX + 1,
-                    number.ToString(), episode.Machine, episode.Name, episode.Type, materials, episode.WorkingHours.ToString());
+                    number.ToString(), episode.Machine, episode.MachineModel, episode.Name, episode.Type, materials, episode.WorkingHours.ToString());
                     headerY++;
                 }
                 number++;
@@ -1038,7 +1011,6 @@ namespace LogicLibrary
             {
                 result = PrintHorizontalLineItem(Y, result, value);
             }
-            //sheet.Cells[Y, X, Y, result].Style.Border.Diagonal.Style = ExcelBorderStyle.Thin;
             sheet.Cells[Y, X, Y, result - 1].Style.Border.BorderAround(ExcelBorderStyle.Thin);
             sheet.Cells[Y, X, Y, result - 1].Style.Border.Right.Style = ExcelBorderStyle.Thin;
             return result;
@@ -1068,7 +1040,6 @@ namespace LogicLibrary
         }
         private void FinalMaking(ExcelWorksheet sheet, ExcelPackage package, string name)
         {
-            //sheet.Protection.IsProtected = true;
             sheet.Protection.AllowFormatColumns = true;
             sheet.Protection.AllowFormatRows = true;
             sheet.PrinterSettings.PaperSize = ePaperSize.A4;
@@ -1099,8 +1070,6 @@ namespace LogicLibrary
             using (var ms = new MemoryStream(arr))
             {
                 Bitmap tempqrBitmap = new Bitmap(ms);
-                //qrBitmap.SetResolution(qrBitmap.HorizontalResolution / 1.5f, qrBitmap.VerticalResolution / 1.5f);
-                //qrBitmap.SetResolution(80, 80);
                 Bitmap qrBitmap = new Bitmap(tempqrBitmap, new Size(80, 80));
                 sheet.Row(Y + 1).Height = qrBitmap.Height * 0.8;
                 sheet.Column(X + 1).Width = qrBitmap.Width * 0.15;

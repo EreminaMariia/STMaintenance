@@ -9,78 +9,6 @@ using System.Threading.Tasks;
 
 namespace LogicLibrary
 {
-    //public class ArchiveView
-    //{
-    //    private double working = 0;
-    //    public int Id { get; set; }
-    //    [System.ComponentModel.DisplayName("Дата")]
-    //    public DateTime? Date { get; private set; }
-    //    [System.ComponentModel.DisplayName("Наименование оборудования")]
-    //    public string MachineName { get; private set; }
-    //    [System.ComponentModel.DisplayName("Наименование работ")]
-    //    public string Name { get; private set; }
-    //    [System.ComponentModel.DisplayName("Тип")]
-    //    public string Type { get; private set; }
-    //    [System.ComponentModel.DisplayName("Трудоёмкость")]
-    //    public string WorkingHours
-    //    {
-    //        get { return working.ToString(); }
-    //        private set { double.TryParse(value.Replace('.', ','), out working);}
-    //    }
-    //    [System.ComponentModel.DisplayName("Сотрудник проводивший работы")]
-    //    public string Operators { get; private set; }
-    //    public ArchiveView(MaintenanceEpisode episode)
-    //    {
-    //        Id = episode.Id;
-    //        Date = episode.Date;
-    //        MachineName = episode.Info.TechPassport.Name;
-    //        Name = episode.Info.MaintenanceName;
-    //        Type = "Плановые работы";
-    //        double h = episode.Hours != null? (double)episode.Hours : 0;
-    //        working = Math.Round(h, 4, MidpointRounding.AwayFromZero);
-    //        Operators = MakeOperatirsString(episode.Operators);
-    //    }
-
-    //    public ArchiveView(AdditionalWork work)
-    //    {
-    //        Id = work.Id;
-    //        Date = work.DateFact;
-    //        MachineName = work.TechPassport.Name;
-    //        Name = work.Name;
-    //        Type = "Внеплановые работы";
-    //        double h = work.Hours != null? (double)work.Hours : 0;
-    //        working = Math.Round(h, 4, MidpointRounding.AwayFromZero);
-    //        Operators = MakeOperatirsString(work.Operators);
-    //    }
-
-    //    public ArchiveView(Repairing repairing)
-    //    {
-    //        Id = repairing.Id;
-    //        Date = repairing.Error.DateOfSolving;
-    //        MachineName = repairing.Error.TechPassport.Name;
-    //        Name = repairing.Error.Name;
-    //        Type = "Ремонт";
-    //        if (repairing.Hours !=null)
-    //        {
-    //           working = Math.Round((double)repairing.Hours, 4, MidpointRounding.AwayFromZero);
-    //        }         
-    //        Operators = MakeOperatirsString(repairing.Operators);
-    //    }
-
-    //    private string MakeOperatirsString (ICollection<Operator> ops)
-    //    {
-    //        string result = "";
-    //        if (ops != null)
-    //        {
-    //            foreach (var op in ops)
-    //            {
-    //                Operators += (op.Name + "\n");
-    //            }
-    //        }
-    //        return result;
-    //    }
-    //}
-
     public class InnerArchiveView: BaseArchiveView
     {
         [System.ComponentModel.DisplayName("Наименование оборудования")]
@@ -170,8 +98,6 @@ namespace LogicLibrary
         public int Id { get; set; }
         [System.ComponentModel.DisplayName("Дата выполнения\nработ")]
         public DateTime? Date { get; private set; }
-        //[System.ComponentModel.DisplayName("Наименование оборудования")]
-        //public string MachineName { get; private set; }
         [System.ComponentModel.DisplayName("Наименование\nработ")]
         public string Name { get; private set; }
         [System.ComponentModel.DisplayName("Вид работ")]
@@ -198,7 +124,6 @@ namespace LogicLibrary
         {
             Id = episode.Id;
             Date = episode.FutureDate;
-            //MachineName = episode.Info.TechPassport.Name;
             Name = name;
             Type = "Плановые работы";
             double h = episode.WorkingHours;
@@ -211,7 +136,6 @@ namespace LogicLibrary
         {
             Id = work.Id;
             Date = work.DateFact;
-            //MachineName = work.TechPassport.Name;
             Name = work.Name;
             Type = "Внеплановые работы";
             double h = work.GetWorkingHours();
@@ -224,7 +148,6 @@ namespace LogicLibrary
         {
             Id = episode.Id;
             Date = episode.Date;
-            //MachineName = episode.Info.TechPassport.Name;
             Name = episode.Info.MaintenanceName;
             Type = "Плановые работы";
             double h = episode.Hours != null ? (double)episode.Hours : 0;
@@ -242,7 +165,6 @@ namespace LogicLibrary
         {
             Id = work.Id;
             Date = work.DateFact;
-            //MachineName = work.TechPassport.Name;
             Name = work.Name;
             Type = "Внеплановые работы";
             double h = work.Hours != null ? (double)work.Hours : 0;
@@ -255,7 +177,6 @@ namespace LogicLibrary
         {
             Id = error.Id;
             Date = error.DateOfSolving;
-            //MachineName = work.TechPassport.Name;
             Name = error.Name;
             Type = "Ремонт";
             working = 0;
@@ -273,14 +194,8 @@ namespace LogicLibrary
         {
             Id = repairing.Id;
             Date = repairing.Error.DateOfSolving;
-            //MachineName = repairing.Error.TechPassport.Name;
             Name = repairing.Error.Name;
             Type = "Ремонт";
-            //if (repairing.Hours != null)
-            //{
-            //    working = Math.Round((double)repairing.Hours, 4, MidpointRounding.AwayFromZero);
-            //    factWorking = working;
-            //}
             Operators = MakeOperatirsString(repairing.Operators);
         }
 

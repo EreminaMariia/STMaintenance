@@ -13,6 +13,7 @@ namespace LogicLibrary
         public int MaintenanceId { get; set; }
         public int MachineId { get; set; }
         public string Machine { get; set; }
+        public string MachineModel { get; set; }
         public int Id { get; set; }
         [System.ComponentModel.DisplayName("Дата")]
         public DateTime FutureDate { get; set; }
@@ -40,7 +41,6 @@ namespace LogicLibrary
             {
                 foreach(var op in episode.Operators)
                 {
-                    //
                     Operator += op.Name + "\n";
                     OperatorIds.Add(op.Id);
                 }               
@@ -53,6 +53,7 @@ namespace LogicLibrary
                 {
                     MachineId = episode.Info.TechPassport.Id;
                     Machine = episode.Info.TechPassport.Name;
+                    MachineModel = episode.Info.TechPassport.Version;
                 }
                 if (episode.Info.MaintenanceType != null)
                 {

@@ -21,7 +21,6 @@ namespace LogicLibrary.Services
             }
             if (techPassport.WorkingHours.Count > 0)
             {
-                //id = techPassport.WorkingHours.Any() ? techPassport.WorkingHours.Max(x => x.Id) + 1 : 1;
                 id = techPassport.WorkingHoursId++;
             }
 
@@ -34,7 +33,6 @@ namespace LogicLibrary.Services
 
             foreach (var m in techPassport.Maintenances)
             {
-                //m.RecountDate();
                 techPassport.RecountDateWithEpisodes(m);
             }
             return id;
@@ -59,7 +57,6 @@ namespace LogicLibrary.Services
 
                 foreach (var m in techPassport.Maintenances)
                 {
-                    //m.RecountDate();
                     techPassport.RecountDateWithEpisodes(m);
                 }
             }
