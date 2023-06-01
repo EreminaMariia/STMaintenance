@@ -276,6 +276,7 @@ namespace Entities
             return context.MaintenanceInfos
                 .Include(e => e.Episodes).ThenInclude(o => o.Operators)
                 .Include(t => t.MaintenanceType)
+                .Include(t => t.Materials).ThenInclude(m => m.MaterialInfo)
                 .Include(p => p.TechPassport).ThenInclude(h => h.WorkingHours)
                 .Where(p=> p.TechPassportId == passportId).ToList();
         }
