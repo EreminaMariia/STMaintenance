@@ -807,11 +807,11 @@ namespace Entities
         }
 
 
-        public int AddMaintanance(int passportId, string name, int type, bool isFixed, double interval, double hours, DateTime? date, bool isInWork)
+        public int AddMaintenance(int passportId, string name, int type, bool isFixed, double interval, double hours, DateTime? date, bool isInWork)
         {
             using var context = new MainContext();
             var maintenance = new MaintenanceInfo();
-            maintenance = MakeMaintanance(maintenance, name, type, isFixed, interval, hours, date, isInWork);
+            maintenance = MakeMaintenance(context, maintenance, name, type, isFixed, interval, hours, date, isInWork);
             maintenance.TechPassportId = passportId;
             context.MaintenanceInfos.Add(maintenance);
             context.SaveChanges();
@@ -850,7 +850,7 @@ namespace Entities
             var maintenance = context.MaintenanceInfos.FirstOrDefault(x => x.Id == id);
             if (maintenance != null)
             {
-                maintenance = MakeMaintanance(maintenance, name, type, isFixed, interval, hours, date, isInWork);
+                maintenance = MakeMaintenance(context, maintenance, name, type, isFixed, interval, hours, date, isInWork);
                 maintenance.TechPassportId = passportId;
                 context.SaveChanges();
             }
@@ -1079,9 +1079,8 @@ namespace Entities
             return context.MaintenanceEpisodes.Include(m => m.Info).Include(s => s.Operators).Where(x => x.Info.Id == id).ToList();
         }
 
-        private MaintenanceInfo MakeMaintanance(MaintenanceInfo maintenance, string name, int typeId, bool isFixed, double interval, double hours, DateTime? date, bool isInWork)
+        private MaintenanceInfo MakeMaintenance(MainContext context, MaintenanceInfo maintenance, string name, int typeId, bool isFixed, double interval, double hours, DateTime? date, bool isInWork)
         {
-            using var context = new MainContext();
             maintenance.MaintenanceName = name;
             maintenance.MaintenanceType = context.MaintenanceTypes.FirstOrDefault(x => x.Id == typeId);
             maintenance.IsIntervalFixed = isFixed;
@@ -1113,7 +1112,11 @@ namespace Entities
         public List<Material> GetMaterialsForMaintenance(List<int> ids)
         {
             using var context = new MainContext();
-            return context.Materials.Include(s => s.MaterialInfo).Include(s => s.MaintenanceInfo).Where(x => x.MaintenanceInfo != null && ids.Contains(x.MaintenanceInfo.Id)).ToList();
+            return context.Materials
+                .Include(s => s.MaterialInfo)
+                .Include(s => s.MaintenanceInfo)
+                .Where(x => x.MaintenanceInfo != null && ids.Contains(x.MaintenanceInfo.Id))
+                .ToList();
         }
 
         public List<Repairing> GetRepairings()

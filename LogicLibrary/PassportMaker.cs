@@ -636,7 +636,7 @@ namespace LogicLibrary
                                 }
                                 else
                                 {
-                                    id = Data.Instance.AddMaintanance(this.TechPassport.Id, m.Name, m.TypeId, m.IsFixed, interval, m.GetWorkingHours(), futureDate, m.IsInWork());
+                                    id = Data.Instance.AddMaintenance(this.TechPassport.Id, m.Name, m.TypeId, m.IsFixed, interval, m.GetWorkingHours(), futureDate, m.IsInWork());
                                     foreach (var ep in mEpisodes)
                                     {
                                         Data.Instance.AddMaintananceEpisode(id, ep.FutureDate, ep.WorkingHours, ep.OperatorIds, ep.IsDone);
@@ -645,7 +645,7 @@ namespace LogicLibrary
                             }
                             else
                             {
-                                id = Data.Instance.AddMaintanance(this.TechPassport.Id, m.Name, m.TypeId, m.IsFixed, interval, m.GetWorkingHours(), futureDate, m.IsInWork());
+                                id = Data.Instance.AddMaintenance(this.TechPassport.Id, m.Name, m.TypeId, m.IsFixed, interval, m.GetWorkingHours(), futureDate, m.IsInWork());
                                 foreach (var ep in mEpisodes)
                                 {
                                     Data.Instance.AddMaintananceEpisode(id, ep.FutureDate, ep.WorkingHours, ep.OperatorIds, ep.IsDone);

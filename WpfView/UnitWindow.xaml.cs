@@ -16,11 +16,14 @@ namespace WpfView
             InitializeComponent();
             unitComboBox.ItemsSource = units;
 
-            foreach (var item in unitComboBox.Items)
+            if(id != 0)
             {
-                if (((INameIdView)item).Id == id)
+                foreach (var item in unitComboBox.Items)
                 {
-                    unitComboBox.SelectedItem = item;
+                    if (((INameIdView)item).Id == id)
+                    {
+                        unitComboBox.SelectedItem = item;
+                    }
                 }
             }
 
@@ -59,11 +62,14 @@ namespace WpfView
             InitializeComponent();
             unitComboBox.ItemsSource = units;
 
-            foreach (var item in unitComboBox.Items)
+            if (!string.IsNullOrEmpty(name))
             {
-                if (((INameIdView)item).Name == name)
+                foreach (var item in unitComboBox.Items)
                 {
-                    unitComboBox.SelectedItem = item;
+                    if (((INameIdView)item).Name == name)
+                    {
+                        unitComboBox.SelectedItem = item;
+                    }
                 }
             }
             

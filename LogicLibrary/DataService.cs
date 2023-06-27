@@ -28,14 +28,14 @@ namespace LogicLibrary
             {
                 foreach (var item in list)
                 {
-                    var artInfos = Data.Instance.GetArtInfos().Where(x => x.Material != null && x.Material.Id == item.Id);
+                    //var artInfos = Data.Instance.GetArtInfos().Where(x => x.Material != null && x.Material.Id == item.Id);
                     string bdForm = "";
                     if (item.InnerArt != null)
                     {
                         bdForm = item.InnerArt.Replace(" ", "").ToLower();
                     }
                     var outerInfo = outerList.FirstOrDefault(x => x.SKLN_Cd == bdForm);
-                    result.Add(new MaterialInfoView(item, artInfos, outerInfo));
+                    result.Add(new MaterialInfoView(item, item.ArtInfos, outerInfo));
                 }
             }
             catch (Exception ex)
