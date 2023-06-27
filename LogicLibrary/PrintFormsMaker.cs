@@ -12,9 +12,11 @@ namespace LogicLibrary
     {
         ExcelWorksheet sheet;
         ExcelPackage package;
+        DataService dataService;
 
         public PrintFormsMaker(string name)
         {
+            dataService = new DataService();
             package = new ExcelPackage();
             sheet = package.Workbook.Worksheets.Add(name);
         }
@@ -266,7 +268,7 @@ namespace LogicLibrary
                         }
                     }
                     int end = headerY;
-                    sheet.Cells[start, 2, end - 1, 2].Merge = true;                   
+                    sheet.Cells[start, 2, end - 1, 2].Merge = true;
                 }
                 else
                 {
@@ -344,7 +346,7 @@ namespace LogicLibrary
                 var passport = tech;
                 var errors = passportErrors.Where
                 (x => x.Date != null && x.IsActive()
-                && (startDate == null ||  x.Date >= startDate) &&
+                && (startDate == null || x.Date >= startDate) &&
                 (endDate == null || x.Date <= endDate)).OrderBy(d => d.Date).ToList();
 
                 if (errors.Count > 0)
@@ -573,43 +575,49 @@ namespace LogicLibrary
 
             int endPoint = PrintHorizontalLine(headerY, headerX,
             number.ToString(), passport.Name + " " + passport.Version, passport.SerialNumber, passport.InventoryNumber, type,
-            release, commisioning, decommisioning, department, op, point, power, supplier);            
+            release, commisioning, decommisioning, department, op, point, power, supplier);
             headerY++;
             return headerY;
         }
         private List<IPlanedView> MakePlannedList(DateTime start, DateTime end, List<IPlanedView> planned, out List<MaintenanceNewView> maintenances)
         {
             maintenances = new List<MaintenanceNewView>();
-
             List<IPlanedView> temp = new List<IPlanedView>();
-            foreach (IPlanedView plan in planned)
-            {
-                if (plan is AdditionalWorkView || plan is MaintenanceEpisodeView)
-                {
-                    if (plan.FutureDate.Date <= end.Date && plan.FutureDate.Date >= start.Date)
-                    {
-                        temp.Add(plan);
-                    }
-                }
-                else if (plan is MaintenanceNewView)
-                {
-                    var maints = (MaintenanceNewView)plan;
-                    maintenances.Add(maints);
-                    List<DateTime> dates = maints.GetPlannedDates(start, end);
-                    foreach (DateTime date in dates)
-                    {
-                        temp.Add(new MaintenanceEpisodeView
-                        {
-                            FutureDate = date,
-                            Machine = maints.Machine,
-                            MachineModel = maints.MachineModel,
-                            MachineId = maints.MachineId,
-                            Name = maints.Name,
-                            Type = maints.Type,
-                            WorkingHours = maints.GetWorkingHours()
-                        });
-                    }
+            var additionalWorkViews = planned
+                .Where(x => x is AdditionalWorkView)
+                .Where(x => x.FutureDate.Date <= end.Date && x.FutureDate.Date >= start.Date)
+                .ToList();
+            temp.AddRange(additionalWorkViews);
 
+            var episodeViews = planned
+                .Where(x => x is MaintenanceEpisodeView)
+                .Where(x => x.FutureDate.Date <= end.Date && x.FutureDate.Date >= start.Date)
+                .Select(x => (MaintenanceEpisodeView)x)
+                .ToList();
+            var maintenanceNewViews = dataService.GetMaintenanceNewByIds(episodeViews.Select(x => x.MaintenanceId).ToList());
+            maintenances.AddRange(maintenanceNewViews);
+            temp.AddRange(episodeViews);
+
+            var newViews = planned
+                .Where(x => x is MaintenanceNewView)
+                .Select(x => (MaintenanceNewView)x)
+                .ToList();
+            maintenances.AddRange(newViews);
+            foreach(var newView in newViews)
+            {
+                List<DateTime> dates = newView.GetPlannedDates(start, end);
+                foreach (DateTime date in dates)
+                {
+                    temp.Add(new MaintenanceEpisodeView
+                    {
+                        FutureDate = date,
+                        Machine = newView.Machine,
+                        MachineModel = newView.MachineModel,
+                        MachineId = newView.MachineId,
+                        Name = newView.Name,
+                        Type = newView.Type,
+                        WorkingHours = newView.GetWorkingHours()
+                    });
                 }
             }
 

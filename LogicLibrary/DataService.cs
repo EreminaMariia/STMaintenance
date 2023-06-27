@@ -1,5 +1,6 @@
 ﻿using Entities;
 using Entities.Entities;
+using Microsoft.EntityFrameworkCore;
 
 namespace LogicLibrary
 {
@@ -183,11 +184,17 @@ namespace LogicLibrary
 
 
 
-        public MaintenanceNewView GetMaintenanceNewById(int id)
+        public List<MaintenanceNewView> GetMaintenanceNewByIds(List<int> ids)
         {
-            var list = Data.Instance.GetMaintenance();
-            MaintenanceInfo m = list.FirstOrDefault(x => x.Id == id);
-            return new MaintenanceNewView(m);
+            using var context = new MainContext();
+            return context.MaintenanceInfos
+                .Where(x => ids.Contains(x.Id))
+                .Include(e => e.Episodes).ThenInclude(o => o.Operators)
+                .Include(t => t.MaintenanceType)
+                .Include(t => t.Materials).ThenInclude(m => m.MaterialInfo)
+                .Include(p => p.TechPassport).ThenInclude(h => h.WorkingHours)
+                .Select(x=> new MaintenanceNewView(x))
+                .ToList();
         }
 
         public MaintenanceError GetErrorById(int id)

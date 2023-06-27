@@ -354,7 +354,7 @@ namespace WpfView
             //}
         }
 
-        private void HideIdColumn(object sender, System.Windows.Controls.DataGridAutoGeneratingColumnEventArgs e)
+        private void HideIdColumn(object sender, DataGridAutoGeneratingColumnEventArgs e)
         {
             e.Column.HeaderStyle = new Style(typeof(DataGridColumnHeader));
             e.Column.HeaderStyle.Setters.Add(new Setter(HorizontalContentAlignmentProperty, HorizontalAlignment.Center));

@@ -115,7 +115,7 @@ namespace Entities
         public List<ControledParametr> GetControlParams(int passportId)
         {
             using var context = new MainContext();
-            return context.ControledParametrs.Include(e =>e.Episodes).Include(u => u.Unit).Where(t => t.TechPassportId==passportId).ToList();
+            return context.ControledParametrs.Include(e => e.Episodes).Include(u => u.Unit).Where(t => t.TechPassportId == passportId).ToList();
         }
 
         public int GetControledParametrEpisodesId()
@@ -151,7 +151,7 @@ namespace Entities
         public List<MaintenanceError> GetErrors(int passportId)
         {
             using var context = new MainContext();
-            return context.MaintenanceErrors.Include(s => s.Repairings).Include(x => x.TechPassport).Where(x => (x.IsActive == null || x.IsActive.Value) && (x.TechPassportId==passportId)).ToList();
+            return context.MaintenanceErrors.Include(s => s.Repairings).Include(x => x.TechPassport).Where(x => (x.IsActive == null || x.IsActive.Value) && (x.TechPassportId == passportId)).ToList();
         }
 
         public List<Downtime> GetDowntimes(int passportId)
@@ -159,7 +159,7 @@ namespace Entities
             using var context = new MainContext();
             return context.Downtimes.Include(x => x.TechPassport).Where(y => y.TechPassportId == passportId).ToList();
         }
-        
+
         public List<AdditionalWork> GetAdditionalWorks()
         {
             using var context = new MainContext();
@@ -178,7 +178,7 @@ namespace Entities
                 .Include(m => m.Operators)
                 .Include(x => x.TechPassport)
                 .Include(e => e.MaintenanceType)
-                .Where(i => i.TechPassportId==passportId).ToList();
+                .Where(i => i.TechPassportId == passportId).ToList();
         }
 
         public List<ErrorCode> GetErrorCodes()
@@ -223,7 +223,7 @@ namespace Entities
                 .OrderBy(d => d.Department.Number)
                 .ToList();
         }
-        
+
         public List<EquipmentType> GetTypes()
         {
             using var context = new MainContext();
@@ -266,7 +266,7 @@ namespace Entities
             return context.MaintenanceInfos
                 .Include(e => e.Episodes).ThenInclude(o => o.Operators)
                 .Include(t => t.MaintenanceType)
-                .Include(t => t.Materials).ThenInclude(m=>m.MaterialInfo)
+                .Include(t => t.Materials).ThenInclude(m => m.MaterialInfo)
                 .Include(p => p.TechPassport).ThenInclude(h => h.WorkingHours).ToList();
         }
 
@@ -278,7 +278,7 @@ namespace Entities
                 .Include(t => t.MaintenanceType)
                 .Include(t => t.Materials).ThenInclude(m => m.MaterialInfo)
                 .Include(p => p.TechPassport).ThenInclude(h => h.WorkingHours)
-                .Where(p=> p.TechPassportId == passportId).ToList();
+                .Where(p => p.TechPassportId == passportId).ToList();
         }
 
         public void EditCharacteristicsByUnit(int id, int unitId)
@@ -821,7 +821,7 @@ namespace Entities
         public void ChangeAdditionalInfo(int id, DateTime date, List<int> workerIds)
         {
             using var context = new MainContext();
-            var add = context.AdditionalWorks.Include(o=>o.Operators).FirstOrDefault(x => x.Id == id);
+            var add = context.AdditionalWorks.Include(o => o.Operators).FirstOrDefault(x => x.Id == id);
             if (add != null)
             {
                 add.PlannedDate = date;
@@ -839,7 +839,7 @@ namespace Entities
                 work.DateFact = date;
                 work.HoursFact = hoursOnWork;
                 work.Operators = context.Operators.Where(x => workerIds.Contains(x.Id)).ToList();
-                work.PlannedDate = null;          
+                work.PlannedDate = null;
                 context.SaveChanges();
             }
         }
@@ -867,7 +867,7 @@ namespace Entities
             using var context = new MainContext();
             return context.MaintenanceEpisodes
                 .Include(m => m.Operators)
-                .Include(e => e.Info).ThenInclude(i=>i.MaintenanceType)
+                .Include(e => e.Info).ThenInclude(i => i.MaintenanceType)
                 .Include(e => e.Info).ThenInclude(i => i.TechPassport).ToList();
         }
 
@@ -1058,7 +1058,7 @@ namespace Entities
         public void EditMaintananceEpisode(int id, DateTime Date, double HoursOnWork, List<int> OperatorIds, bool IsDone)
         {
             using var context = new MainContext();
-            var maintananceEpisode = context.MaintenanceEpisodes.Include(o=>o.Operators).FirstOrDefault(x => x.Id == id);
+            var maintananceEpisode = context.MaintenanceEpisodes.Include(o => o.Operators).FirstOrDefault(x => x.Id == id);
             if (maintananceEpisode != null)
             {
                 maintananceEpisode.Date = Date;
@@ -1105,7 +1105,7 @@ namespace Entities
 
         public List<Material> GetMaterialsForAdditional(List<int> ids)
         {
-            using var context = new MainContext();            
+            using var context = new MainContext();
             return context.Materials.Include(s => s.MaterialInfo).Include(s => s.AdditionalWork).Where(x => x.AdditionalWork != null && ids.Contains(x.AdditionalWork.Id)).ToList();
         }
 
